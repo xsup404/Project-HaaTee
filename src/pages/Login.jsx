@@ -23,6 +23,13 @@ export default function Login({ onNavigate }) {
     'admin123': '123456',
   };
 
+  // User Credentials (สำหรับผู้ใช้ทั่วไป)
+  const USER_CREDENTIALS = {
+    'user@haatee.com': 'user123456',
+    'buyer@haatee.com': 'buyer123456',
+    'test@haatee.com': 'test123456',
+  };
+
   useEffect(() => {
     if (step !== 'otp' || timer <= 0) return;
     const interval = setInterval(() => setTimer(t => t - 1), 1000);
@@ -45,15 +52,20 @@ export default function Login({ onNavigate }) {
 
     setLoading(true);
     setTimeout(() => {
-      setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
-      setTimeout(() => {
-        setStep('otp');
-        setTimer(120);
-        setMessage({ type: '', text: '' });
+      if (USER_CREDENTIALS[email] === password) {
+        setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
+        setTimeout(() => {
+          setStep('otp');
+          setTimer(120);
+          setMessage({ type: '', text: '' });
+          setLoading(false);
+          setLoginType('user');
+          otpRefs.current[0]?.focus();
+        }, 1500);
+      } else {
+        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
         setLoading(false);
-        setLoginType('user');
-        otpRefs.current[0]?.focus();
-      }, 1500);
+      }
     }, 1200);
   };
 
@@ -139,9 +151,17 @@ export default function Login({ onNavigate }) {
               alert('เข้าสู่ระบบ Admin สำเร็จ!');
               onNavigate('admin');
             } else {
-              console.log('User login successful, navigating to home page', { loginType });
+              // บันทึก Buyer/User Data
+              const userData = {
+                name: 'ผู้ใช้ HaaTee',
+                email: email,
+                role: 'Buyer',
+                lastLogin: new Date().toLocaleString('th-TH')
+              };
+              localStorage.setItem('buyerUser', JSON.stringify(userData));
+              console.log('User login successful, navigating to buyer page', { loginType, email });
               alert('เข้าสู่ระบบ HaaTee สำเร็จ!');
-              onNavigate('home');
+              onNavigate('buyer');
             }
           }, 2000);
         }, 1200);

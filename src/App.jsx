@@ -6,6 +6,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin/Admin';
+import Buyer from './pages/Buyer/Buyer';
 // import AdminTest from './pages/Admin/AdminTest'; // Uncomment to test
 import './App.css';
 
@@ -34,6 +35,7 @@ const App = () => {
       {currentPage === 'login' && <Login onNavigate={navigateTo} />}
       {currentPage === 'register' && <Register onNavigate={navigateTo} />}
       {currentPage === 'admin' && <Admin onNavigate={navigateTo} />}
+      {currentPage === 'buyer' && <Buyer onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
 
       {showLoginToast && (
         <div className="toast">
