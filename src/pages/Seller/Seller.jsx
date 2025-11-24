@@ -20,6 +20,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [showAnalyticsCharts, setShowAnalyticsCharts] = useState(true);
+  const [analyticsPeriod, setAnalyticsPeriod] = useState('7');
 
   // Form states
   const [newListing, setNewListing] = useState({
@@ -699,15 +700,51 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   );
 
   // Analytics View
-  const chartData = [
-    { date: 'วันจันทร์', views: 240, saves: 85, contacts: 24 },
-    { date: 'วันอังคาร', views: 421, saves: 98, contacts: 35 },
-    { date: 'วันพุธ', views: 380, saves: 125, contacts: 38 },
-    { date: 'วันพฤหัสบดี', views: 520, saves: 156, contacts: 52 },
-    { date: 'วันศุกร์', views: 680, saves: 182, contacts: 68 },
-    { date: 'วันเสาร์', views: 590, saves: 165, contacts: 45 },
-    { date: 'วันอาทิตย์', views: 750, saves: 198, contacts: 75 }
-  ];
+  const getChartData = () => {
+    const allData = {
+      '7': [
+        { date: 'วันจันทร์', views: 240, saves: 85, contacts: 24 },
+        { date: 'วันอังคาร', views: 421, saves: 98, contacts: 35 },
+        { date: 'วันพุธ', views: 380, saves: 125, contacts: 38 },
+        { date: 'วันพฤหัสบดี', views: 520, saves: 156, contacts: 52 },
+        { date: 'วันศุกร์', views: 680, saves: 182, contacts: 68 },
+        { date: 'วันเสาร์', views: 590, saves: 165, contacts: 45 },
+        { date: 'วันอาทิตย์', views: 750, saves: 198, contacts: 75 }
+      ],
+      '14': [
+        { date: 'ว่า1', views: 240, saves: 85, contacts: 24 },
+        { date: 'ว่า2', views: 421, saves: 98, contacts: 35 },
+        { date: 'ว่า3', views: 380, saves: 125, contacts: 38 },
+        { date: 'ว่า4', views: 520, saves: 156, contacts: 52 },
+        { date: 'ว่า5', views: 680, saves: 182, contacts: 68 },
+        { date: 'ว่า6', views: 590, saves: 165, contacts: 45 },
+        { date: 'ว่า7', views: 750, saves: 198, contacts: 75 },
+        { date: 'ว่า8', views: 820, saves: 215, contacts: 82 },
+        { date: 'ว่า9', views: 680, saves: 178, contacts: 65 },
+        { date: 'ว่า10', views: 920, saves: 245, contacts: 95 },
+        { date: 'ว่า11', views: 850, saves: 210, contacts: 78 },
+        { date: 'ว่า12', views: 780, saves: 190, contacts: 72 },
+        { date: 'ว่า13', views: 650, saves: 170, contacts: 58 },
+        { date: 'ว่า14', views: 950, saves: 260, contacts: 98 }
+      ],
+      '30': [
+        { date: '1-5 พ.ย.', views: 1200, saves: 420, contacts: 120 },
+        { date: '6-10 พ.ย.', views: 1850, saves: 580, contacts: 185 },
+        { date: '11-15 พ.ย.', views: 2100, saves: 650, contacts: 210 },
+        { date: '16-20 พ.ย.', views: 1950, saves: 620, contacts: 195 },
+        { date: '21-25 พ.ย.', views: 2300, saves: 720, contacts: 240 },
+        { date: '26-30 พ.ย.', views: 2050, saves: 680, contacts: 210 }
+      ],
+      '90': [
+        { date: 'ก.ย.', views: 5200, saves: 1620, contacts: 520 },
+        { date: 'ต.ค.', views: 6800, saves: 2100, contacts: 680 },
+        { date: 'พ.ย.', views: 7200, saves: 2300, contacts: 750 }
+      ]
+    };
+    return allData[analyticsPeriod] || allData['7'];
+  };
+
+  const chartData = getChartData();
 
   const propertyTypeData = [
     { name: 'ขาย', value: listings.filter(l => l.type === 'sell').length, color: '#3B82F6' },
@@ -726,12 +763,16 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       <div className="charts-grid">
         <div className="card-section large">
           <div className="section-header">
-            <h3>สถิติ 7 วันล่าสุด</h3>
-            <select className="period-select">
-              <option>7 วัน</option>
-              <option>14 วัน</option>
-              <option>1 เดือน</option>
-              <option>3 เดือน</option>
+            <h3>สถิติ {analyticsPeriod === '7' ? '7 วัน' : analyticsPeriod === '14' ? '14 วัน' : analyticsPeriod === '30' ? '1 เดือน' : '3 เดือน'}ล่าสุด</h3>
+            <select 
+              className="period-select"
+              value={analyticsPeriod}
+              onChange={(e) => setAnalyticsPeriod(e.target.value)}
+            >
+              <option value="7">7 วัน</option>
+              <option value="14">14 วัน</option>
+              <option value="30">1 เดือน</option>
+              <option value="90">3 เดือน</option>
             </select>
           </div>
           <div className="chart-container">
