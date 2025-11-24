@@ -4,6 +4,8 @@ import { Menu, X, Plus, BarChart3, MessageCircle, FileText, User, LogOut,
   Clock, TrendingUp, Users, Award, Search, Calendar, Phone, Mail, 
   Bed, Bath, Zap, Download, ArrowRight, CheckCircle, Settings, Bell, Lock, Home as HomeIcon,
   ChevronRight, MoreVertical, AlertTriangle, Send, RotateCw } from 'lucide-react';
+import usersData from '../../data/users.json';
+import propertiesData from '../../data/properties.json';
 import './Seller.css';
 
 const Seller = ({ onNavigate, onLoginRequired }) => {
@@ -11,6 +13,8 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [currentSeller, setCurrentSeller] = useState(null);
+  const [sellerProperties, setSellerProperties] = useState([]);
   
   // Modal states
   const [showCreateListingModal, setShowCreateListingModal] = useState(false);
@@ -19,6 +23,47 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [showAnalyticsCharts, setShowAnalyticsCharts] = useState(true);
+
+  // Load seller data from localStorage and properties from JSON
+  useEffect(() => {
+    const sellerEmail = localStorage.getItem('sellerEmail');
+    if (!sellerEmail) {
+      onNavigate('login');
+      return;
+    }
+
+    // ค้นหาเจ้าของทรัพย์สินจาก users.json
+    const seller = usersData.find(u => u.email === sellerEmail);
+    if (seller) {
+      setCurrentSeller(seller);
+      
+      // ค้นหาทรัพย์สินที่เป็นของเจ้าของรายนี้
+      const myProperties = propertiesData.filter(p => p.sellerId === seller.id);
+      
+      // แปลงข้อมูลให้เข้ากับรูปแบบของ listings
+      const formattedProperties = myProperties.map(p => ({
+        id: p.id,
+        title: p.title,
+        location: p.location,
+        price: p.priceValue,
+        type: p.type === 'ขาย' ? 'sell' : p.type === 'เช่า' ? 'rent' : 'sell',
+        beds: p.beds,
+        baths: p.baths,
+        size: p.size.replace(' ตร.ม.', ''),
+        views: p.views,
+        saves: 0,
+        contacts: 0,
+        status: new Date(p.expiryDate) > new Date() ? 'active' : 'expired',
+        expiryDate: p.expiryDate,
+        description: p.description,
+        amenities: p.amenities,
+        image: p.image
+      }));
+      
+      setSellerProperties(formattedProperties);
+      setListings(formattedProperties);
+    }
+  }, [onNavigate]);
 
   // Form states
   const [newListing, setNewListing] = useState({
@@ -1098,28 +1143,34 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
         <div className="card-section">
           <div className="profile-header">
             <div className="profile-avatar-large">
-              <span>A</span>
+              <span>{currentSeller?.name?.[0] || 'A'}</span>
             </div>
             <div className="profile-info">
-              <h3>Admin Seller</h3>
-              <p>🏢 นายหน้าอสังหาริมทรัพย์</p>
-              <div className="verify-badge">✅ ยืนยันแล้ว</div>
+              <h3>{currentSeller?.name || 'เจ้าของทรัพย์'}</h3>
+              <p>🏢 {currentSeller?.role || 'นายหน้าอสังหาริมทรัพย์'}</p>
+              {currentSeller?.verified && <div className="verify-badge">✅ ยืนยันแล้ว</div>}
             </div>
           </div>
 
           <div className="profile-details">
             <div className="detail-row">
               <label><Mail size={16} /> อีเมล</label>
-              <p>seller@haatee.com</p>
+              <p>{currentSeller?.email || 'N/A'}</p>
             </div>
             <div className="detail-row">
               <label><Phone size={16} /> เบอร์โทร</label>
-              <p>081-2345-6789</p>
+              <p>{currentSeller?.phone || 'N/A'}</p>
             </div>
             <div className="detail-row">
-              <label><Building2 size={16} /> บริษัท</label>
-              <p>Pro Real Estate</p>
+              <label><Award size={16} /> ประเมินดี</label>
+              <p>⭐ {currentSeller?.rating || 4.5} / 5.0</p>
             </div>
+            {currentSeller?.certificates && currentSeller?.certificates.length > 0 && (
+              <div className="detail-row">
+                <label><CheckCircle size={16} /> ใบรับรอง</label>
+                <p>{currentSeller.certificates.join(', ')}</p>
+              </div>
+            )}
           </div>
 
           <div className="profile-actions">
@@ -1146,10 +1197,17 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
               </div>
             </div>
             <div className="stat-item">
-              <span className="stat-icon">💬</span>
+              <span className="stat-icon">✅</span>
               <div>
-                <p>ยอดติดต่อ</p>
-                <strong>{stats.totalContacts.toLocaleString()}</strong>
+                <p>ขายสำเร็จ</p>
+                <strong>{currentSeller?.totalSold || 0}</strong>
+              </div>
+            </div>
+            <div className="stat-item">
+              <span className="stat-icon">⏱</span>
+              <div>
+                <p>เวลาตอบรับ</p>
+                <strong>{currentSeller?.responseTime || '2 hours'}</strong>
               </div>
             </div>
           </div>
@@ -1173,12 +1231,12 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
         <div className="sidebar-user">
           <div className="user-avatar">
-            <div className="avatar-placeholder">A</div>
+            <div className="avatar-placeholder">{currentSeller?.name?.[0] || 'A'}</div>
             <div className="user-status"></div>
           </div>
           <div className="user-info">
-            <h4>Admin</h4>
-            <p>เจ้าของทรัพย์</p>
+            <h4>{currentSeller?.name || 'เจ้าของทรัพย์'}</h4>
+            <p>{currentSeller?.role || 'เจ้าของทรัพย์'}</p>
           </div>
         </div>
 
@@ -1265,7 +1323,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
               <span className="notification-badge">2</span>
             </button>
             <div className="header-avatar">
-              <span>A</span>
+              <span>{currentSeller?.name?.[0] || 'A'}</span>
             </div>
           </div>
         </header>

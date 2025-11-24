@@ -33,10 +33,24 @@ export default function Login({ onNavigate }) {
   };
 
   // Seller Credentials (สำหรับเจ้าของทรัพย์สิน/นายหน้า)
+  // ตรวจสอบจาก users.json ที่มีข้อมูลขายของจริง
   const SELLER_CREDENTIALS = {
-    'seller@haatee.com': 'seller123456',
-    'agent@haatee.com': 'agent123456',
-    'property@haatee.com': 'property123456',
+    'damrong@haatee.com': 'seller123456',
+    'somsak@haatee.com': 'seller123456',
+    'anant@haatee.com': 'seller123456',
+    'vichai@haatee.com': 'seller123456',
+    'waruni@haatee.com': 'seller123456',
+    'company@realestateasia.com': 'seller123456',
+    'setthapol@haatee.com': 'seller123456',
+    'sirindhon@haatee.com': 'seller123456',
+    'somthorn@haatee.com': 'seller123456',
+    'arsa@haatee.com': 'seller123456',
+    'niyom@haatee.com': 'seller123456',
+    'samboorn@haatee.com': 'seller123456',
+    'piyo@haatee.com': 'seller123456',
+    'somshorn@haatee.com': 'seller123456',
+    'wachara@haatee.com': 'seller123456',
+    'vimon@haatee.com': 'seller123456',
   };
 
   useEffect(() => {
@@ -132,7 +146,7 @@ export default function Login({ onNavigate }) {
           otpRefs.current[0]?.focus();
         }, 1500);
       } else {
-        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาใช้อีเมลเจ้าของทรัพย์สิน' });
         setLoading(false);
       }
     }, 1200);
@@ -193,14 +207,15 @@ export default function Login({ onNavigate }) {
               alert('เข้าสู่ระบบ Admin สำเร็จ!');
               onNavigate('admin');
             } else if (loginType === 'seller') {
-              // บันทึก Seller Data
-              const sellerData = {
-                name: 'เจ้าของทรัพย์สิน',
+              // บันทึก Seller Data จาก users.json
+              // ค้นหาเจ้าของทรัพย์สินจากอีเมล
+              const sellerInfo = {
                 email: sellerEmail,
                 role: 'Property Owner/Agent',
                 lastLogin: new Date().toLocaleString('th-TH')
               };
-              localStorage.setItem('sellerUser', JSON.stringify(sellerData));
+              localStorage.setItem('sellerUser', JSON.stringify(sellerInfo));
+              localStorage.setItem('sellerEmail', sellerEmail); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
               console.log('Seller login successful, navigating to seller page', { loginType, sellerEmail });
               alert('เข้าสู่ระบบ Seller สำเร็จ!');
               onNavigate('seller');
