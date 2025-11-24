@@ -844,56 +844,60 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           </div>
         </div>
 
-        <div className="card-section">
+        <div className="card-section full-width-stats">
           <div className="section-header">
             <h3>สรุปสถิติสำคัญ</h3>
           </div>
           
-          <div className="stats-cards-grid">
-            <div className="stat-card blue">
-              <div className="stat-card-icon">👁</div>
-              <div className="stat-card-content">
-                <p className="stat-card-label">ยอดดูทั้งหมด</p>
-                <p className="stat-card-value">{stats.totalViews.toLocaleString()}</p>
+          <div className="stats-cards-grid-large">
+            <div className="stat-card-large blue">
+              <div className="stat-card-large-icon">👁</div>
+              <div className="stat-card-large-content">
+                <p className="stat-card-large-label">ยอดดูทั้งหมด</p>
+                <p className="stat-card-large-value">{stats.totalViews.toLocaleString()}</p>
+                <p className="stat-card-description">จำนวนครั้งที่ผู้ใช้เข้าดูประกาศของคุณ</p>
               </div>
             </div>
 
-            <div className="stat-card green">
-              <div className="stat-card-icon">💚</div>
-              <div className="stat-card-content">
-                <p className="stat-card-label">ยอดสนใจ</p>
-                <p className="stat-card-value">{stats.totalSaves.toLocaleString()}</p>
+            <div className="stat-card-large green">
+              <div className="stat-card-large-icon">💚</div>
+              <div className="stat-card-large-content">
+                <p className="stat-card-large-label">ยอดสนใจ</p>
+                <p className="stat-card-large-value">{stats.totalSaves.toLocaleString()}</p>
+                <p className="stat-card-description">จำนวนคนที่บันทึกประกาศของคุณ</p>
               </div>
             </div>
 
-            <div className="stat-card orange">
-              <div className="stat-card-icon">📞</div>
-              <div className="stat-card-content">
-                <p className="stat-card-label">ยอดติดต่อ</p>
-                <p className="stat-card-value">{stats.totalContacts.toLocaleString()}</p>
+            <div className="stat-card-large orange">
+              <div className="stat-card-large-icon">📞</div>
+              <div className="stat-card-large-content">
+                <p className="stat-card-large-label">ยอดติดต่อ</p>
+                <p className="stat-card-large-value">{stats.totalContacts.toLocaleString()}</p>
+                <p className="stat-card-description">จำนวนผู้ที่สนใจและติดต่อมา</p>
               </div>
             </div>
 
-            <div className="stat-card purple">
-              <div className="stat-card-icon">📈</div>
-              <div className="stat-card-content">
-                <p className="stat-card-label">อัตราการแปลง</p>
-                <p className="stat-card-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</p>
+            <div className="stat-card-large purple">
+              <div className="stat-card-large-icon">📈</div>
+              <div className="stat-card-large-content">
+                <p className="stat-card-large-label">อัตราการแปลง</p>
+                <p className="stat-card-large-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</p>
+                <p className="stat-card-description">เปอร์เซ็นต์ผู้ดูที่ติดต่อ</p>
               </div>
             </div>
           </div>
 
           <div className="property-type-section">
             <h4>การแจกแจงประเภททรัพย์</h4>
-            <div className="property-type-cards">
-              <div className="property-type-card">
+            <div className="property-type-cards-large">
+              <div className="property-type-card-large">
                 <span className="property-icon">🏢</span>
                 <div className="property-info">
                   <p className="property-label">ขายสิ่งปลูกสร้าง</p>
                   <p className="property-count">{listings.filter(l => l.type === 'sell').length} ประกาศ</p>
                 </div>
               </div>
-              <div className="property-type-card">
+              <div className="property-type-card-large">
                 <span className="property-icon">🏠</span>
                 <div className="property-info">
                   <p className="property-label">เช่าสิ่งปลูกสร้าง</p>
