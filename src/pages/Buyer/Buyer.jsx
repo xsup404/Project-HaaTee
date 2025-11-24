@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, MapPin, Bath, Bed, Search, Menu, X, ArrowRight, Building, Sparkles, CheckCircle, Star, TrendingUp, Users, Award, ChevronRight, ChevronDown, MessageCircle, Flag, Download, Calendar, User, Bell, Zap, Home as HomeIcon, FileCheck, Shield, Clock, BarChart3, Filter, MapPinIcon, Check, Trash2, Plus, Settings, FileText, Sliders, Lock, LogOut } from 'lucide-react';
+import propertiesData from '../../data/properties.json';
 import './Buyer.css';
 
 const Buyer = ({ onNavigate, onLoginRequired }) => {
@@ -50,6 +51,8 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
   const [savedProperties, setSavedProperties] = useState([8, 9]); // รหัส property ที่บันทึก
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [allProperties, setAllProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -69,6 +72,20 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
       } catch (e) {
         console.error('Error parsing search params:', e);
       }
+    }
+  }, []);
+
+  // Load and filter properties
+  useEffect(() => {
+    try {
+      // Sort by createdAt DESC (newest first)
+      const sorted = [...propertiesData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setAllProperties(sorted);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setAllProperties([]);
+      setLoading(false);
     }
   }, []);
 
@@ -168,6 +185,10 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
   ];
 
   const filteredProperties = allProperties.filter(property => {
+    // Filter by search mode (buy/rent)
+    if (searchMode === 'buy' && property.listingType !== 'sale') return false;
+    if (searchMode === 'rent' && property.listingType !== 'rent') return false;
+
     // If on saved tab, only show saved properties
     if (currentTab === 'saved') {
       return property.saved === true;
@@ -230,20 +251,20 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
       {currentTab === 'browse' && (
         <>
           {/* HERO SECTION */}
-          <section className="buyer-hero-future">
-            <div className="buyer-hero-bg-future" style={{ backgroundImage: 'url(/B.jpg)' }}>
-              <div className="buyer-hero-overlay-future"></div>
-              <div className="pixel-pattern-future"></div>
-            </div>
-            <div className="container-future">
-              <div className="buyer-hero-content-future">
-                <h1 className="buyer-hero-title-future">
-                  <span className="title-line-future">ค้นหาบ้าน</span>
-                  <span className="title-line-future gradient-text-future">ที่เข้าใจคุณกว่าใคร</span>
-                </h1>
-              </div>
-            </div>
-          </section>
+              <section className="buyer-hero-future">
+                <div className="buyer-hero-bg-future" style={{ backgroundImage: 'url(/B.jpg)' }}>
+                  <div className="buyer-hero-overlay-future"></div>
+                  <div className="pixel-pattern-future"></div>
+                </div>
+                <div className="container-future">
+                  <div className="buyer-hero-content-future">
+                    <h1 className="buyer-hero-title-future">
+                      <span className="title-line-future">ค้นหาบ้าน</span>
+                      <span className="title-line-future gradient-text-future">ที่เข้าใจคุณกว่าใคร</span>
+                    </h1>
+                  </div>
+                </div>
+              </section>
 
           {/* SEARCH BAR FLOATING */}
           <div className="search-bar-floating-future">
