@@ -7,6 +7,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
   const [scrollY, setScrollY] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchType, setSearchType] = useState('');
+  const [searchPrice, setSearchPrice] = useState('');
+  const [savedProperties, setSavedProperties] = useState([]);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -40,7 +44,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 4,
       size: '450 ตร.ม.',
       type: 'ขาย',
-      featured: true
+      featured: true,
+      description: 'วิลล่าสมัยใหม่หรูหรา ตั้งอยู่ใกล้ชายหาดที่สวยงาม วิวทะเลอันดามันชั้นหนึ่ง สระว่ายน้ำส่วนตัว ระบบ Smart Home ครบครัน พื้นที่กว้างขวาง เหมาะสำหรับครอบครัวใหญ่',
+      amenities: ['สระว่ายน้ำ', 'จอดรถ', 'Smart Home', 'เครื่องปรับอากาศ', 'ครัวเปิด'],
+      owner: { name: 'คุณสมชาย', verified: true, rating: 4.8 }
     },
     {
       id: 2,
@@ -52,7 +59,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 2,
       size: '180 ตร.ม.',
       type: 'ขาย',
-      featured: true
+      featured: true,
+      description: 'คอนโดมิเนียมหรูริมแม่น้ำเจ้าพระยา วิวที่สวยงาม ติดต่อโครงการ ใกล้ BTS, MRT โครงการดี มีระบบรักษาความปลอดภัยครบครัน',
+      amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'ห้องประชุม', 'บาร์ลาว', 'จอดรถ'],
+      owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 }
     },
     {
       id: 3,
@@ -64,7 +74,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 3,
       size: '320 ตร.ม.',
       type: 'ขาย',
-      featured: false
+      featured: false,
+      description: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น สภาพดีมาก ตกแต่งสวย พื้นที่กว้างขวาง เหมาะสำหรับการอยู่อาศัย มีอุปกรณ์ครบครัน',
+      amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'บ้านอยู่เเถบกัลปพฤกษ์', 'ใกล้ห้าง'],
+      owner: { name: 'คุณดำรง', verified: true, rating: 4.7 }
     },
     {
       id: 4,
@@ -76,7 +89,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 3,
       size: '200 ตร.ม.',
       type: 'ขาย',
-      featured: false
+      featured: false,
+      description: 'ทาวน์โฮม 3 ชั้น ตั้งอยู่ใกล้สถานีรถไฟฟ้า BTS สะดวกในการสัญจรไปมา ตกแต่งอย่างดี มีระบบรักษาความปลอดภัย',
+      amenities: ['สระว่ายน้ำส่วนตัว', 'จอดรถ', 'ระบบรักษาความปลอดภัย', 'สวนหน้าบ้าน'],
+      owner: { name: 'คุณอรษา', verified: true, rating: 4.6 }
     },
     {
       id: 5,
@@ -88,7 +104,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 3,
       size: '380 ตร.ม.',
       type: 'ขาย',
-      featured: true
+      featured: true,
+      description: 'บ้านพูลวิลล่าเชียงใหม่ สภาพใหม่สวย สระว่ายน้ำเป็นส่วนตัว สวนกว้างขวาง วิวธรรมชาติสวย ราคาดีมาก',
+      amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'สวนสัตว์เลี้ยง', 'ครัวใหญ่'],
+      owner: { name: 'คุณชัยศักดิ์', verified: true, rating: 5.0 }
     },
     {
       id: 6,
@@ -100,7 +119,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       baths: 2,
       size: '95 ตร.ม.',
       type: 'เช่า',
-      featured: false
+      featured: false,
+      description: 'อพาร์ทเมนท์หรูในหัวใจของกรุงเทพ ใกล้สถานี BTS, MRT พร้อมเข้าอยู่ได้ทันที ตกแต่งสวยสมบูรณ์',
+      amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'จอดรถ', 'รักษาความปลอดภัย 24 ชม'],
+      owner: { name: 'บริษัท เรียลทาวเวอร์', verified: true, rating: 4.8 }
     },
   ];
 
@@ -148,6 +170,24 @@ const Home = ({ onNavigate, onLoginRequired }) => {
     onNavigate('login');
   };
 
+  const handleSearch = () => {
+    const searchParams = {
+      location: searchLocation,
+      type: searchType,
+      price: searchPrice
+    };
+    sessionStorage.setItem('homeSearchParams', JSON.stringify(searchParams));
+    onNavigate('properties');
+  };
+
+  const toggleSavedProperty = (propertyId) => {
+    if (savedProperties.includes(propertyId)) {
+      setSavedProperties(savedProperties.filter(id => id !== propertyId));
+    } else {
+      setSavedProperties([...savedProperties, propertyId]);
+    }
+  };
+
   return (
     <div className="home-page-future">
       <div
@@ -163,7 +203,6 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => onNavigate('home')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">
@@ -237,32 +276,37 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           <div className="hero-search-future">
             <div className="search-field-future">
               <MapPin size={18} />
-              <input type="text" placeholder="ค้นหาทำเล, ประเภททรัพย์สิน, ชื่อโครงการ..." />
+              <input 
+                type="text" 
+                placeholder="ค้นหาทำเล, ประเภททรัพย์สิน, ชื่อโครงการ..." 
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+              />
             </div>
             <div className="search-field-future">
               <Building size={18} />
-              <select>
-                <option>ประเภททรัพย์สิน</option>
-                <option>บ้านเดี่ยว</option>
-                <option>คอนโด</option>
-                <option>ทาวน์โฮม</option>
-                <option>ที่ดิน</option>
-                <option>อพาร์ทเม้นท์</option>
-                <option>อาคารพาณิชย์</option>
+              <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                <option value="">ประเภททรัพย์สิน</option>
+                <option value="บ้านเดี่ยว">บ้านเดี่ยว</option>
+                <option value="คอนโด">คอนโด</option>
+                <option value="ทาวน์โฮม">ทาวน์โฮม</option>
+                <option value="ที่ดิน">ที่ดิน</option>
+                <option value="อพาร์ทเม้นท์">อพาร์ทเม้นท์</option>
+                <option value="อาคารพาณิชย์">อาคารพาณิชย์</option>
               </select>
             </div>
             <div className="search-field-future">
               <span className="currency-icon">฿</span>
-              <select>
-                <option>ช่วงราคา</option>
-                <option>ต่ำกว่า 1 ล้าน</option>
-                <option>1-3 ล้าน</option>
-                <option>3-5 ล้าน</option>
-                <option>5-10 ล้าน</option>
-                <option>มากกว่า 10 ล้าน</option>
+              <select value={searchPrice} onChange={(e) => setSearchPrice(e.target.value)}>
+                <option value="">ช่วงราคา</option>
+                <option value="under-1m">ต่ำกว่า 1 ล้าน</option>
+                <option value="1-3m">1-3 ล้าน</option>
+                <option value="3-5m">3-5 ล้าน</option>
+                <option value="5-10m">5-10 ล้าน</option>
+                <option value="over-10m">มากกว่า 10 ล้าน</option>
               </select>
             </div>
-            <button className="search-btn-future" onClick={() => onNavigate('properties')}>
+            <button className="search-btn-future" onClick={handleSearch}>
               <Search size={18} />
               <span>ค้นหา</span>
             </button>
@@ -327,7 +371,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
               <div
                 key={property.id}
                 className="property-card-future"
-                onClick={() => onNavigate('properties')}
+                onClick={() => onNavigate('propertyDetail', { property })}
               >
                 <div className="property-image-future">
                   <img src={property.image} alt={property.title} />
@@ -337,10 +381,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
                     className="favorite-btn-future"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onLoginRequired('บันทึกรายการโปรด');
+                      toggleSavedProperty(property.id);
                     }}
                   >
-                    <Heart size={16} />
+                    <Heart size={16} fill={savedProperties.includes(property.id) ? 'currentColor' : 'none'} />
                   </button>
                 </div>
                 <div className="property-content-future">
@@ -594,6 +638,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           </div>
         </div>
       </footer>
+
     </div>
   );
 };
