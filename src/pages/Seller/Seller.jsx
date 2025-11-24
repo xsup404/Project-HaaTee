@@ -3,7 +3,7 @@ import { Menu, X, Plus, BarChart3, MessageCircle, FileText, User, LogOut,
   Building2, MapPin, DollarSign, AlertCircle, Check, Trash2, Edit2, Eye, Heart, 
   Clock, TrendingUp, Users, Award, Search, Calendar, Phone, Mail, 
   Bed, Bath, Zap, Download, ArrowRight, CheckCircle, Settings, Bell, Lock, Home as HomeIcon,
-  ChevronRight, MoreVertical, AlertTriangle } from 'lucide-react';
+  ChevronRight, MoreVertical, AlertTriangle, Send, RotateCw } from 'lucide-react';
 import './Seller.css';
 
 const Seller = ({ onNavigate, onLoginRequired }) => {
@@ -11,6 +11,50 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // Modal states
+  const [showCreateListingModal, setShowCreateListingModal] = useState(false);
+  const [showEditListingModal, setShowEditListingModal] = useState(false);
+  const [editingListingId, setEditingListingId] = useState(null);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [selectedChatId, setSelectedChatId] = useState(null);
+  const [showAnalyticsCharts, setShowAnalyticsCharts] = useState(true);
+
+  // Form states
+  const [newListing, setNewListing] = useState({
+    title: '',
+    location: '',
+    price: '',
+    type: 'sell',
+    beds: '',
+    baths: '',
+    size: '',
+    amenities: [],
+    description: '',
+    images: []
+  });
+
+  const [contractData, setContractData] = useState({
+    propertyId: '',
+    tenantEmail: '',
+    monthlyRent: '',
+    leaseDuration: '12',
+    deposit: '',
+    conditions: '',
+    startDate: ''
+  });
+
+  const [chatMessages, setChatMessages] = useState({
+    1: [
+      { id: 1, sender: 'contact', text: 'สนใจเช่าคอนโดนี้ได้ไหม?', time: '10:30' },
+      { id: 2, sender: 'me', text: 'ได้ครับ พร้อมดูต่อตามที่ต้องการได้ครับ', time: '10:35' }
+    ],
+    2: [
+      { id: 1, sender: 'contact', text: 'ราคากรรมสิทธิ์เท่าไหร่?', time: '09:15' }
+    ]
+  });
+
+  const [messages, setMessages] = useState('');
 
   // Listings data
   const [listings, setListings] = useState([
@@ -82,6 +126,127 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       setShowLogoutModal(false);
       onNavigate('login');
     }, 500);
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false);
+  };
+
+  // Handle Create Listing
+  const handleCreateListing = () => {
+    if (!newListing.title || !newListing.location || !newListing.price) {
+      alert('กรุณากรอกข้อมูลที่จำเป็น');
+      return;
+    }
+
+    const listing = {
+      id: listings.length + 1,
+      ...newListing,
+      views: 0,
+      saves: 0,
+      contacts: 0,
+      status: 'active',
+      expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString('th-TH')
+    };
+
+    setListings([...listings, listing]);
+    setNewListing({
+      title: '',
+      location: '',
+      price: '',
+      type: 'sell',
+      beds: '',
+      baths: '',
+      size: '',
+      amenities: [],
+      description: '',
+      images: []
+    });
+    setShowCreateListingModal(false);
+    alert('เพิ่มประกาศสำเร็จ!');
+  };
+
+  // Handle Edit Listing
+  const handleEditListing = (id) => {
+    const listing = listings.find(l => l.id === id);
+    setNewListing(listing);
+    setEditingListingId(id);
+    setShowEditListingModal(true);
+  };
+
+  const handleSaveEditListing = () => {
+    setListings(listings.map(l => l.id === editingListingId ? { ...newListing, id: editingListingId } : l));
+    setShowEditListingModal(false);
+    setEditingListingId(null);
+    setNewListing({
+      title: '',
+      location: '',
+      price: '',
+      type: 'sell',
+      beds: '',
+      baths: '',
+      size: '',
+      amenities: [],
+      description: '',
+      images: []
+    });
+    alert('แก้ไขประกาศสำเร็จ!');
+  };
+
+  // Handle Delete Listing
+  const handleDeleteListing = (id) => {
+    if (window.confirm('แน่ใจว่าต้องการลบประกาศนี้?')) {
+      setListings(listings.filter(l => l.id !== id));
+      alert('ลบประกาศสำเร็จ!');
+    }
+  };
+
+  // Handle Repost Listing
+  const handleRepostListing = (id) => {
+    setListings(listings.map(l => 
+      l.id === id 
+        ? { ...l, status: 'active', expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString('th-TH') }
+        : l
+    ));
+    alert('รีโพสต์ประกาศสำเร็จ!');
+  };
+
+  // Handle Create Contract
+  const handleCreateContract = () => {
+    if (!contractData.propertyId || !contractData.tenantEmail || !contractData.monthlyRent) {
+      alert('กรุณากรอกข้อมูลที่จำเป็น');
+      return;
+    }
+    alert('ร่างสัญญาสำเร็จ! ส่งไปยัง ' + contractData.tenantEmail);
+    setShowContractModal(false);
+    setContractData({
+      propertyId: '',
+      tenantEmail: '',
+      monthlyRent: '',
+      leaseDuration: '12',
+      deposit: '',
+      conditions: '',
+      startDate: ''
+    });
+  };
+
+  // Handle Send Message
+  const handleSendMessage = () => {
+    if (!messages.trim() || !selectedChatId) return;
+    
+    setChatMessages({
+      ...chatMessages,
+      [selectedChatId]: [
+        ...chatMessages[selectedChatId],
+        {
+          id: chatMessages[selectedChatId].length + 1,
+          sender: 'me',
+          text: messages,
+          time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]
+    });
+    setMessages('');
   };
 
   const handleLogoutCancel = () => {
@@ -249,7 +414,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           <h2>ทรัพย์สิน</h2>
           <p>จัดการและเพิ่มประกาศทรัพย์สินของคุณ</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowCreateListingModal(true)}>
           <Plus size={18} /> ลงประกาศใหม่
         </button>
       </div>
@@ -299,9 +464,41 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      <button className="btn-icon" title="แก้ไข"><Edit2 size={16} /></button>
-                      <button className="btn-icon" title="ลบ"><Trash2 size={16} /></button>
-                      <button className="btn-icon" title="เพิ่มเติม"><MoreVertical size={16} /></button>
+                      <button 
+                        className="btn-icon" 
+                        title="แก้ไข"
+                        onClick={() => handleEditListing(listing.id)}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn-icon" 
+                        title="ลบ"
+                        onClick={() => handleDeleteListing(listing.id)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                      {listing.status === 'expired' && (
+                        <button 
+                          className="btn-icon" 
+                          title="รีโพสต์"
+                          onClick={() => handleRepostListing(listing.id)}
+                        >
+                          <RotateCw size={16} />
+                        </button>
+                      )}
+                      {listing.status === 'active' && (
+                        <button 
+                          className="btn-icon" 
+                          title="สร้างสัญญา"
+                          onClick={() => {
+                            setContractData({ ...contractData, propertyId: listing.id });
+                            setShowContractModal(true);
+                          }}
+                        >
+                          <FileText size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -310,6 +507,197 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           </table>
         </div>
       </div>
+
+      {/* Create Listing Modal */}
+      {showCreateListingModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateListingModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>ลงประกาศใหม่</h3>
+              <button onClick={() => setShowCreateListingModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>ชื่อทรัพย์ *</label>
+                <input 
+                  type="text" 
+                  value={newListing.title}
+                  onChange={(e) => setNewListing({ ...newListing, title: e.target.value })}
+                  placeholder="เช่น คอนโดหรู ริมแม่น้ำ"
+                />
+              </div>
+              <div className="form-group">
+                <label>ที่อยู่ *</label>
+                <input 
+                  type="text" 
+                  value={newListing.location}
+                  onChange={(e) => setNewListing({ ...newListing, location: e.target.value })}
+                  placeholder="เช่น สาทร กรุงเทพฯ"
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>ประเภท *</label>
+                  <select 
+                    value={newListing.type}
+                    onChange={(e) => setNewListing({ ...newListing, type: e.target.value })}
+                  >
+                    <option value="sell">ขาย</option>
+                    <option value="rent">เช่า</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>ราคา *</label>
+                  <input 
+                    type="number" 
+                    value={newListing.price}
+                    onChange={(e) => setNewListing({ ...newListing, price: e.target.value })}
+                    placeholder="ราคา"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>ห้องนอน</label>
+                  <input 
+                    type="number" 
+                    value={newListing.beds}
+                    onChange={(e) => setNewListing({ ...newListing, beds: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ห้องน้ำ</label>
+                  <input 
+                    type="number" 
+                    value={newListing.baths}
+                    onChange={(e) => setNewListing({ ...newListing, baths: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ขนาด (ตร.ม.)</label>
+                  <input 
+                    type="number" 
+                    value={newListing.size}
+                    onChange={(e) => setNewListing({ ...newListing, size: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>รายละเอียด</label>
+                <textarea 
+                  value={newListing.description}
+                  onChange={(e) => setNewListing({ ...newListing, description: e.target.value })}
+                  placeholder="อธิบายรายละเอียดเพิ่มเติม"
+                  rows="4"
+                />
+              </div>
+              <div className="form-group">
+                <label>อัปโหลดรูปภาพ</label>
+                <div className="image-upload">
+                  <input type="file" multiple accept="image/*" />
+                  <p>ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</p>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowCreateListingModal(false)}>ยกเลิก</button>
+              <button className="btn-primary" onClick={handleCreateListing}>เพิ่มประกาศ</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Listing Modal */}
+      {showEditListingModal && (
+        <div className="modal-overlay" onClick={() => setShowEditListingModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>แก้ไขประกาศ</h3>
+              <button onClick={() => setShowEditListingModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>ชื่อทรัพย์ *</label>
+                <input 
+                  type="text" 
+                  value={newListing.title}
+                  onChange={(e) => setNewListing({ ...newListing, title: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>ที่อยู่ *</label>
+                <input 
+                  type="text" 
+                  value={newListing.location}
+                  onChange={(e) => setNewListing({ ...newListing, location: e.target.value })}
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>ประเภท *</label>
+                  <select 
+                    value={newListing.type}
+                    onChange={(e) => setNewListing({ ...newListing, type: e.target.value })}
+                  >
+                    <option value="sell">ขาย</option>
+                    <option value="rent">เช่า</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>ราคา *</label>
+                  <input 
+                    type="number" 
+                    value={newListing.price}
+                    onChange={(e) => setNewListing({ ...newListing, price: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>ห้องนอน</label>
+                  <input 
+                    type="number" 
+                    value={newListing.beds}
+                    onChange={(e) => setNewListing({ ...newListing, beds: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ห้องน้ำ</label>
+                  <input 
+                    type="number" 
+                    value={newListing.baths}
+                    onChange={(e) => setNewListing({ ...newListing, baths: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ขนาด (ตร.ม.)</label>
+                  <input 
+                    type="number" 
+                    value={newListing.size}
+                    onChange={(e) => setNewListing({ ...newListing, size: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>รายละเอียด</label>
+                <textarea 
+                  value={newListing.description}
+                  onChange={(e) => setNewListing({ ...newListing, description: e.target.value })}
+                  rows="4"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowEditListingModal(false)}>ยกเลิก</button>
+              <button className="btn-primary" onClick={handleSaveEditListing}>บันทึกการเปลี่ยนแปลง</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -335,7 +723,43 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
             </select>
           </div>
           <div className="chart-placeholder">
-            <p>📊 แสดงแผนภูมิสถิติ (Views, Saves, Contacts)</p>
+            <div className="chart-svg">
+              <svg viewBox="0 0 500 200" style={{ width: '100%', height: '200px' }}>
+                {/* Bar chart simulation */}
+                <rect x="40" y="120" width="40" height="60" fill="#3B82F6" opacity="0.8" />
+                <rect x="90" y="80" width="40" height="100" fill="#3B82F6" opacity="0.6" />
+                <rect x="140" y="100" width="40" height="80" fill="#3B82F6" opacity="0.8" />
+                <rect x="190" y="60" width="40" height="120" fill="#10B981" opacity="0.8" />
+                <rect x="240" y="40" width="40" height="140" fill="#10B981" opacity="0.6" />
+                <rect x="290" y="70" width="40" height="110" fill="#F97316" opacity="0.8" />
+                <rect x="340" y="50" width="40" height="130" fill="#F97316" opacity="0.6" />
+                {/* Axes */}
+                <line x1="30" y1="30" x2="30" y2="180" stroke="#E2E8F0" strokeWidth="2" />
+                <line x1="30" y1="180" x2="400" y2="180" stroke="#E2E8F0" strokeWidth="2" />
+                {/* Labels */}
+                <text x="60" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.1</text>
+                <text x="110" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.2</text>
+                <text x="160" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.3</text>
+                <text x="210" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.4</text>
+                <text x="260" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.5</text>
+                <text x="310" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.6</text>
+                <text x="360" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.7</text>
+              </svg>
+            </div>
+            <div className="chart-legend">
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#3B82F6' }}></span>
+                <span>ยอดดู</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#10B981' }}></span>
+                <span>ยอดสนใจ</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#F97316' }}></span>
+                <span>ยอดติดต่อ</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -346,11 +770,30 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           <div className="stat-info-grid">
             <div className="stat-info-item">
               <span className="stat-label">ขาย</span>
-              <strong>2</strong>
+              <strong>{listings.filter(l => l.type === 'sell').length}</strong>
             </div>
             <div className="stat-info-item">
               <span className="stat-label">เช่า</span>
-              <strong>1</strong>
+              <strong>{listings.filter(l => l.type === 'rent').length}</strong>
+            </div>
+          </div>
+
+          <div className="stats-summary" style={{ marginTop: '20px' }}>
+            <div className="summary-row">
+              <span>ยอดดูทั้งหมด:</span>
+              <strong>{stats.totalViews.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row">
+              <span>ยอดสนใจทั้งหมด:</span>
+              <strong>{stats.totalSaves.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row">
+              <span>ยอดติดต่อทั้งหมด:</span>
+              <strong>{stats.totalContacts.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '12px', marginTop: '12px' }}>
+              <span>อัตราการแปลง:</span>
+              <strong style={{ color: '#10B981' }}>{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</strong>
             </div>
           </div>
         </div>
@@ -396,11 +839,80 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
         </div>
       </div>
 
-      <div className="card-section">
-        <div className="chat-placeholder">
-          <MessageCircle size={48} />
-          <p>📬 ไม่มีข้อความใหม่</p>
-          <p className="text-muted">ผู้สนใจจะติดต่อคุณผ่านช่องทางนี้</p>
+      <div className="chat-container">
+        <div className="chat-list">
+          <div className="chat-list-header">
+            <h3>Inbox</h3>
+            <span className="unread-count">2</span>
+          </div>
+          <div className="chat-list-content">
+            <div 
+              className={`chat-item ${selectedChatId === 1 ? 'active' : ''}`}
+              onClick={() => setSelectedChatId(1)}
+            >
+              <div className="chat-avatar">N</div>
+              <div className="chat-info">
+                <p className="chat-name">นายสินธ์ กิจการ</p>
+                <p className="chat-preview">สนใจเช่าคอนโดนี้ได้ไหม?</p>
+              </div>
+              <span className="chat-time">10:30</span>
+            </div>
+            <div 
+              className={`chat-item ${selectedChatId === 2 ? 'active' : ''}`}
+              onClick={() => setSelectedChatId(2)}
+            >
+              <div className="chat-avatar">S</div>
+              <div className="chat-info">
+                <p className="chat-name">สมศรี อินทร์เสม</p>
+                <p className="chat-preview">ราคากรรมสิทธิ์เท่าไหร่?</p>
+              </div>
+              <span className="chat-time">09:15</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="chat-window">
+          {selectedChatId ? (
+            <>
+              <div className="chat-window-header">
+                <div className="chat-header-info">
+                  <h3>{selectedChatId === 1 ? 'นายสินธ์ กิจการ' : 'สมศรี อินทร์เสม'}</h3>
+                  <p>กำลังออนไลน์</p>
+                </div>
+              </div>
+
+              <div className="messages-container">
+                {chatMessages[selectedChatId]?.map((msg) => (
+                  <div key={msg.id} className={`message ${msg.sender === 'me' ? 'sent' : 'received'}`}>
+                    <div className="message-bubble">
+                      <p>{msg.text}</p>
+                      <span className="message-time">{msg.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="message-input-container">
+                <input 
+                  type="text" 
+                  value={messages}
+                  onChange={(e) => setMessages(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="พิมพ์ข้อความ..."
+                  className="message-input"
+                />
+                <button className="btn-send" onClick={handleSendMessage}>
+                  <Send size={18} />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <MessageCircle size={48} />
+              <p>📬 เลือกแชทเพื่อเริ่มสนทนา</p>
+              <p className="text-muted">เลือกแชทจากรายการทางซ้าย</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -414,18 +926,165 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           <h2>สัญญาดิจิทัล</h2>
           <p>บริหารสัญญา E-Contract ของคุณ</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowContractModal(true)}>
           <Plus size={18} /> สร้างสัญญาใหม่
         </button>
       </div>
 
       <div className="card-section">
-        <div className="empty-state">
-          <FileText size={48} />
-          <p>📄 ยังไม่มีสัญญา</p>
-          <p className="text-muted">สร้างสัญญาดิจิทัล E-Contract ได้อย่างง่าย</p>
+        <div className="contracts-list">
+          <div className="contract-item">
+            <div className="contract-header">
+              <div className="contract-info">
+                <h4>สัญญาเช่า - คอนโดหรู ริมแม่น้ำ</h4>
+                <p>ผู้เช่า: นายสินธ์ กิจการ</p>
+              </div>
+              <div className="contract-status">
+                <span className="badge success">✓ ทั้งฝ่ายเซ็นแล้ว</span>
+              </div>
+            </div>
+            <div className="contract-details">
+              <div className="detail-item">
+                <span>ระยะเวลาเช่า:</span>
+                <strong>12 เดือน</strong>
+              </div>
+              <div className="detail-item">
+                <span>ค่าเช่ารายเดือน:</span>
+                <strong>฿45,000</strong>
+              </div>
+              <div className="detail-item">
+                <span>เงินมัดจำ:</span>
+                <strong>฿135,000</strong>
+              </div>
+              <div className="detail-item">
+                <span>วันที่สร้าง:</span>
+                <strong>24 พ.ย. 2568</strong>
+              </div>
+            </div>
+            <div className="contract-actions">
+              <button className="btn-secondary"><Download size={16} /> ดาวน์โหลด</button>
+              <button className="btn-secondary"><Eye size={16} /> ดู</button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Create Contract Modal */}
+      {showContractModal && (
+        <div className="modal-overlay" onClick={() => setShowContractModal(false)}>
+          <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>สร้างสัญญาดิจิทัล E-Contract</h3>
+              <button onClick={() => setShowContractModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="contract-wizard">
+                <div className="wizard-step active">
+                  <h4>ขั้นที่ 1: เลือกทรัพย์สิน</h4>
+                  <div className="form-group">
+                    <label>ทรัพย์สิน *</label>
+                    <select 
+                      value={contractData.propertyId}
+                      onChange={(e) => setContractData({ ...contractData, propertyId: e.target.value })}
+                    >
+                      <option value="">-- เลือกทรัพย์สิน --</option>
+                      {listings.filter(l => l.status === 'active').map(l => (
+                        <option key={l.id} value={l.id}>{l.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="wizard-step active">
+                  <h4>ขั้นที่ 2: ข้อมูลผู้เช่า</h4>
+                  <div className="form-group">
+                    <label>อีเมลผู้เช่า *</label>
+                    <input 
+                      type="email"
+                      value={contractData.tenantEmail}
+                      onChange={(e) => setContractData({ ...contractData, tenantEmail: e.target.value })}
+                      placeholder="ผู้เช่า@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="wizard-step active">
+                  <h4>ขั้นที่ 3: เงื่อนไขสัญญา</h4>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>ค่าเช่ารายเดือน (฿) *</label>
+                      <input 
+                        type="number"
+                        value={contractData.monthlyRent}
+                        onChange={(e) => setContractData({ ...contractData, monthlyRent: e.target.value })}
+                        placeholder="45000"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>ระยะเวลาเช่า (เดือน) *</label>
+                      <select 
+                        value={contractData.leaseDuration}
+                        onChange={(e) => setContractData({ ...contractData, leaseDuration: e.target.value })}
+                      >
+                        <option value="6">6 เดือน</option>
+                        <option value="12">12 เดือน (1 ปี)</option>
+                        <option value="24">24 เดือน (2 ปี)</option>
+                        <option value="36">36 เดือน (3 ปี)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>เงินมัดจำ (฿)</label>
+                    <input 
+                      type="number"
+                      value={contractData.deposit}
+                      onChange={(e) => setContractData({ ...contractData, deposit: e.target.value })}
+                      placeholder="แนะนำ: 3 เดือน"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>วันที่เริ่มเช่า</label>
+                    <input 
+                      type="date"
+                      value={contractData.startDate}
+                      onChange={(e) => setContractData({ ...contractData, startDate: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>เงื่อนไขและข้อตกลงเพิ่มเติม</label>
+                    <textarea 
+                      value={contractData.conditions}
+                      onChange={(e) => setContractData({ ...contractData, conditions: e.target.value })}
+                      placeholder="ระบุเงื่อนไขอื่นๆ เช่น ห้ามเลี้ยงสัตว์, สูบบุหรี่ ฯลฯ"
+                      rows="4"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="contract-preview">
+                <h4>ตัวอย่างสัญญา</h4>
+                <div className="preview-box">
+                  <p><strong>สัญญาเช่าอสังหาริมทรัพย์</strong></p>
+                  <p>ประเภท: ระหว่างปีที่ 1 ถึง 3 ปี</p>
+                  <p>ผู้ให้เช่า: [ชื่อของคุณ]</p>
+                  <p>ผู้เช่า: {contractData.tenantEmail}</p>
+                  <p>ทรัพย์สิน: {listings.find(l => l.id == contractData.propertyId)?.title}</p>
+                  <p>ค่าเช่ารายเดือน: ฿{contractData.monthlyRent}</p>
+                  <p>ระยะเวลา: {contractData.leaseDuration} เดือน</p>
+                  {contractData.conditions && <p>เงื่อนไข: {contractData.conditions}</p>}
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowContractModal(false)}>ยกเลิก</button>
+              <button className="btn-primary" onClick={handleCreateContract}>ส่งสัญญาให้ผู้เช่า</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
