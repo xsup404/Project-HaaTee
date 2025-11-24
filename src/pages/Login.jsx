@@ -18,15 +18,21 @@ export default function Login({ onNavigate }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState('user');
   const [usersData, setUsersData] = useState([]);
+  const [buyersData, setBuyersData] = useState([]);
   const otpRefs = useRef([]);
 
   // Load users data from JSON file
   useEffect(() => {
     const loadUsersData = async () => {
       try {
-        const response = await fetch('/src/data/users.json');
-        const data = await response.json();
-        setUsersData(data);
+        const [sellersRes, buyersRes] = await Promise.all([
+          fetch('/src/data/users.json'),
+          fetch('/src/data/buyers.json')
+        ]);
+        const sellers = await sellersRes.json();
+        const buyers = await buyersRes.json();
+        setUsersData(sellers);
+        setBuyersData(buyers);
       } catch (error) {
         console.error('Failed to load users data:', error);
       }
@@ -40,10 +46,11 @@ export default function Login({ onNavigate }) {
     'admin123': 'admin123456',
   };
 
-  // User/Buyer Credentials (สำหรับผู้ซื้อ)
-  const USER_CREDENTIALS = {
-    'buyer@haatee.com': 'buyer123456',
-  };
+  // User/Buyer Credentials - สร้างจาก buyers.json
+  const USER_CREDENTIALS = buyersData.reduce((acc, buyer) => {
+    acc[buyer.email] = 'buyer123456';
+    return acc;
+  }, {});
 
   // Seller Credentials - สร้างจาก users.json
   const SELLER_CREDENTIALS = usersData.reduce((acc, user) => {
@@ -214,12 +221,12 @@ export default function Login({ onNavigate }) {
             } else {
               // บันทึก Buyer/User Data
               const userData = {
-                name: 'ผู้ใช้ HaaTee',
                 email: email,
                 role: 'Buyer',
                 lastLogin: new Date().toLocaleString('th-TH')
               };
               localStorage.setItem('buyerUser', JSON.stringify(userData));
+              localStorage.setItem('buyerEmail', email); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
               console.log('User login successful, navigating to buyer page', { loginType, email });
               alert('เข้าสู่ระบบ HaaTee สำเร็จ!');
               onNavigate('buyer');
