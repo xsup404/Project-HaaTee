@@ -849,37 +849,41 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
             <h3>สรุปสถิติสำคัญ</h3>
           </div>
           
-          <div className="stats-cards-grid-wide">
-            <div className="stat-card-wide blue">
-              <div className="stat-card-wide-icon">👁</div>
-              <div className="stat-card-wide-content">
-                <p className="stat-card-wide-label">ยอดดูทั้งหมด</p>
-                <p className="stat-card-wide-value">{stats.totalViews.toLocaleString()}</p>
+          <div className="stats-cards-grid-2x2">
+            <div className="stat-card-2x2 blue">
+              <div className="stat-card-2x2-top">
+                <div className="stat-card-2x2-icon">👁</div>
+                <div className="stat-card-2x2-label">ยอดดูทั้งหมด</div>
               </div>
+              <div className="stat-card-2x2-value">{stats.totalViews.toLocaleString()}</div>
+              <div className="stat-card-2x2-description">จำนวนครั้งที่ผู้ใช้เข้าดูประกาศของคุณ</div>
             </div>
 
-            <div className="stat-card-wide green">
-              <div className="stat-card-wide-icon">💚</div>
-              <div className="stat-card-wide-content">
-                <p className="stat-card-wide-label">ยอดสนใจ</p>
-                <p className="stat-card-wide-value">{stats.totalSaves.toLocaleString()}</p>
+            <div className="stat-card-2x2 green">
+              <div className="stat-card-2x2-top">
+                <div className="stat-card-2x2-icon">💚</div>
+                <div className="stat-card-2x2-label">ยอดสนใจ</div>
               </div>
+              <div className="stat-card-2x2-value">{stats.totalSaves.toLocaleString()}</div>
+              <div className="stat-card-2x2-description">จำนวนคนที่บันทึกประกาศของคุณ</div>
             </div>
 
-            <div className="stat-card-wide orange">
-              <div className="stat-card-wide-icon">📞</div>
-              <div className="stat-card-wide-content">
-                <p className="stat-card-wide-label">ยอดติดต่อ</p>
-                <p className="stat-card-wide-value">{stats.totalContacts.toLocaleString()}</p>
+            <div className="stat-card-2x2 orange">
+              <div className="stat-card-2x2-top">
+                <div className="stat-card-2x2-icon">📞</div>
+                <div className="stat-card-2x2-label">ยอดติดต่อ</div>
               </div>
+              <div className="stat-card-2x2-value">{stats.totalContacts.toLocaleString()}</div>
+              <div className="stat-card-2x2-description">จำนวนผู้ที่สนใจและติดต่อมา</div>
             </div>
 
-            <div className="stat-card-wide purple">
-              <div className="stat-card-wide-icon">📈</div>
-              <div className="stat-card-wide-content">
-                <p className="stat-card-wide-label">อัตราการแปลง</p>
-                <p className="stat-card-wide-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</p>
+            <div className="stat-card-2x2 purple">
+              <div className="stat-card-2x2-top">
+                <div className="stat-card-2x2-icon">📈</div>
+                <div className="stat-card-2x2-label">อัตราการแปลง</div>
               </div>
+              <div className="stat-card-2x2-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</div>
+              <div className="stat-card-2x2-description">เปอร์เซ็นต์ผู้ดูที่ติดต่อ</div>
             </div>
           </div>
 
