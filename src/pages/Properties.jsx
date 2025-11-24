@@ -15,8 +15,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
   const [selectedLocation, setSelectedLocation] = useState('ทั้งหมด');
   const [allProperties, setAllProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [displayedCount, setDisplayedCount] = useState(40);
+  const itemsPerPage = 40;
 
   // Load properties from imported JSON
   useEffect(() => {
@@ -39,11 +39,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
     return matchesSearch && matchesType && matchesListingType;
   });
 
-  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-  const paginatedProperties = filteredProperties.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const displayedProperties = filteredProperties.slice(0, displayedCount);
+  const hasMore = displayedCount < filteredProperties.length;
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '40px' }}>กำลังโหลดข้อมูล...</div>;
@@ -276,35 +273,15 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
               </button>
             </div>
           </div>
-          
-          {/* Pagination */}
-          <div className="pagination-future" style={{ marginBottom: '20px', display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                style={{
-                  padding: '8px 12px',
-                  border: page === currentPage ? '2px solid #4CAF50' : '1px solid #ddd',
-                  background: page === currentPage ? '#4CAF50' : 'white',
-                  color: page === currentPage ? 'white' : 'black',
-                  cursor: 'pointer',
-                  borderRadius: '4px'
-                }}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* ===== PROPERTIES GRID ===== */}
       <section className="properties-listing-future">
         <div className="container-future">
-          {paginatedProperties.length > 0 ? (
+          {displayedProperties.length > 0 ? (
             <div className="properties-grid-future">
-              {paginatedProperties.map((property) => (
+              {displayedProperties.map((property) => (
                 <div 
                   key={property.id} 
                   className="property-card-future"
@@ -404,8 +381,19 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           )}
 
           {filteredProperties.length > 0 && (
-            <div className="load-more-section-future">
-              <p className="showing-text-future">แสดงหน้า {currentPage} จาก {totalPages} | ทั้งหมด {filteredProperties.length} รายการ</p>
+            <div className="load-more-section-future" style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <p className="showing-text-future" style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
+                แสดง {displayedCount} จาก {filteredProperties.length} รายการ
+              </p>
+              {hasMore && (
+                <button
+                  className="btn-future btn-primary-future"
+                  onClick={() => setDisplayedCount(prev => prev + 40)}
+                  style={{ padding: '12px 40px', fontSize: '16px', borderRadius: '8px' }}
+                >
+                  <span>แสดงเพิ่มเติม (+40)</span>
+                </button>
+              )}
             </div>
           )}
         </div>

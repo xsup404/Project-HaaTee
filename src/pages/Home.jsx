@@ -13,6 +13,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
   const [searchPrice, setSearchPrice] = useState('');
   const [savedProperties, setSavedProperties] = useState([]);
   const [featuredProperties, setFeaturedProperties] = useState([]);
+  const [displayedCount, setDisplayedCount] = useState(20);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,8 +25,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
   // Load featured properties from imported JSON
   useEffect(() => {
     try {
-      // Get first 20 properties, shuffle them
-      const shuffled = [...propertiesData].sort(() => Math.random() - 0.5).slice(0, 20);
+      // Get all properties and shuffle them
+      const shuffled = [...propertiesData].sort(() => Math.random() - 0.5);
       setFeaturedProperties(shuffled);
       setLoading(false);
     } catch (error) {
@@ -291,7 +292,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           </div>
 
           <div className="properties-grid-future">
-            {featuredProperties.map((property) => (
+            {featuredProperties.slice(0, displayedCount).map((property) => (
               <div
                 key={property.id}
                 className="property-card-future"
@@ -338,6 +339,18 @@ const Home = ({ onNavigate, onLoginRequired }) => {
               </div>
             ))}
           </div>
+
+          {displayedCount < featuredProperties.length && (
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <button
+                className="btn-future btn-primary-future"
+                onClick={() => setDisplayedCount(prev => prev + 20)}
+                style={{ padding: '12px 40px', fontSize: '16px', borderRadius: '8px' }}
+              >
+                <span>แสดงเพิ่มเติม ({Math.min(20, featuredProperties.length - displayedCount)} รายการ)</span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
