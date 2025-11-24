@@ -4,6 +4,7 @@ import { Menu, X, Plus, BarChart3, MessageCircle, FileText, User, LogOut,
   Clock, TrendingUp, Users, Award, Search, Calendar, Phone, Mail, 
   Bed, Bath, Zap, Download, ArrowRight, CheckCircle, Settings, Bell, Lock, Home as HomeIcon,
   ChevronRight, MoreVertical, AlertTriangle, Send, RotateCw } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import './Seller.css';
 
 const Seller = ({ onNavigate, onLoginRequired }) => {
@@ -247,10 +248,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       ]
     });
     setMessages('');
-  };
-
-  const handleLogoutCancel = () => {
-    setShowLogoutModal(false);
   };
 
   // Dashboard View
@@ -702,6 +699,21 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   );
 
   // Analytics View
+  const chartData = [
+    { date: 'วันจันทร์', views: 240, saves: 85, contacts: 24 },
+    { date: 'วันอังคาร', views: 421, saves: 98, contacts: 35 },
+    { date: 'วันพุธ', views: 380, saves: 125, contacts: 38 },
+    { date: 'วันพฤหัสบดี', views: 520, saves: 156, contacts: 52 },
+    { date: 'วันศุกร์', views: 680, saves: 182, contacts: 68 },
+    { date: 'วันเสาร์', views: 590, saves: 165, contacts: 45 },
+    { date: 'วันอาทิตย์', views: 750, saves: 198, contacts: 75 }
+  ];
+
+  const propertyTypeData = [
+    { name: 'ขาย', value: listings.filter(l => l.type === 'sell').length, color: '#3B82F6' },
+    { name: 'เช่า', value: listings.filter(l => l.type === 'rent').length, color: '#10B981' }
+  ];
+
   const renderAnalytics = () => (
     <div className="dashboard-wrapper">
       <div className="page-header">
@@ -722,63 +734,102 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
               <option>3 เดือน</option>
             </select>
           </div>
-          <div className="chart-placeholder">
-            <div className="chart-svg">
-              <svg viewBox="0 0 500 200" style={{ width: '100%', height: '200px' }}>
-                {/* Bar chart simulation */}
-                <rect x="40" y="120" width="40" height="60" fill="#3B82F6" opacity="0.8" />
-                <rect x="90" y="80" width="40" height="100" fill="#3B82F6" opacity="0.6" />
-                <rect x="140" y="100" width="40" height="80" fill="#3B82F6" opacity="0.8" />
-                <rect x="190" y="60" width="40" height="120" fill="#10B981" opacity="0.8" />
-                <rect x="240" y="40" width="40" height="140" fill="#10B981" opacity="0.6" />
-                <rect x="290" y="70" width="40" height="110" fill="#F97316" opacity="0.8" />
-                <rect x="340" y="50" width="40" height="130" fill="#F97316" opacity="0.6" />
-                {/* Axes */}
-                <line x1="30" y1="30" x2="30" y2="180" stroke="#E2E8F0" strokeWidth="2" />
-                <line x1="30" y1="180" x2="400" y2="180" stroke="#E2E8F0" strokeWidth="2" />
-                {/* Labels */}
-                <text x="60" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.1</text>
-                <text x="110" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.2</text>
-                <text x="160" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.3</text>
-                <text x="210" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.4</text>
-                <text x="260" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.5</text>
-                <text x="310" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.6</text>
-                <text x="360" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.7</text>
-              </svg>
-            </div>
-            <div className="chart-legend">
-              <div className="legend-item">
-                <span className="legend-color" style={{ backgroundColor: '#3B82F6' }}></span>
-                <span>ยอดดู</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color" style={{ backgroundColor: '#10B981' }}></span>
-                <span>ยอดสนใจ</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color" style={{ backgroundColor: '#F97316' }}></span>
-                <span>ยอดติดต่อ</span>
-              </div>
-            </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorSaves" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorContacts" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#F97316" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#F97316" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="date" fontSize={12} stroke="#718096" />
+                <YAxis fontSize={12} stroke="#718096" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }}
+                  cursor={{ stroke: '#E2E8F0', strokeWidth: 2 }}
+                  formatter={(value) => value.toLocaleString()}
+                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                <Line 
+                  type="monotone" 
+                  dataKey="views" 
+                  stroke="#3B82F6" 
+                  name="ยอดดู"
+                  strokeWidth={3}
+                  dot={{ fill: '#3B82F6', r: 5 }}
+                  activeDot={{ r: 7, fill: '#0052A3' }}
+                  fillOpacity={1} 
+                  fill="url(#colorViews)"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="saves" 
+                  stroke="#10B981" 
+                  name="ยอดสนใจ"
+                  strokeWidth={3}
+                  dot={{ fill: '#10B981', r: 5 }}
+                  activeDot={{ r: 7, fill: '#059669' }}
+                  fillOpacity={1} 
+                  fill="url(#colorSaves)"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="contacts" 
+                  stroke="#F97316" 
+                  name="ยอดติดต่อ"
+                  strokeWidth={3}
+                  dot={{ fill: '#F97316', r: 5 }}
+                  activeDot={{ r: 7, fill: '#DC2626' }}
+                  fillOpacity={1} 
+                  fill="url(#colorContacts)"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         <div className="card-section">
           <div className="section-header">
-            <h3>สัดส่วนประเภท</h3>
+            <h3>ความเป็นไปได้ข้อมูล</h3>
           </div>
-          <div className="stat-info-grid">
-            <div className="stat-info-item">
-              <span className="stat-label">ขาย</span>
-              <strong>{listings.filter(l => l.type === 'sell').length}</strong>
-            </div>
-            <div className="stat-info-item">
-              <span className="stat-label">เช่า</span>
-              <strong>{listings.filter(l => l.type === 'rent').length}</strong>
-            </div>
+          
+          <div className="chart-mini">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={propertyTypeData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {propertyTypeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `${value} ประกาศ`} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
 
-          <div className="stats-summary" style={{ marginTop: '20px' }}>
+          <div className="stats-summary">
             <div className="summary-row">
               <span>ยอดดูทั้งหมด:</span>
               <strong>{stats.totalViews.toLocaleString()}</strong>
