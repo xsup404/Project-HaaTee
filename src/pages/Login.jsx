@@ -211,13 +211,13 @@ export default function Login({ onNavigate }) {
               // ค้นหาเจ้าของทรัพย์สินจากอีเมล
               const sellerInfo = {
                 email: sellerEmail,
-                role: 'Property Owner/Agent',
+                role: 'seller',
                 lastLogin: new Date().toLocaleString('th-TH')
               };
               localStorage.setItem('sellerUser', JSON.stringify(sellerInfo));
               localStorage.setItem('sellerEmail', sellerEmail); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
               console.log('Seller login successful, navigating to seller page', { loginType, sellerEmail });
-              alert('เข้าสู่ระบบ Seller สำเร็จ!');
+              alert('เข้าสู่ระบบสำเร็จ!');
               onNavigate('seller');
             } else {
               // บันทึก Buyer/User Data

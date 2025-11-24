@@ -1147,7 +1147,10 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
             </div>
             <div className="profile-info">
               <h3>{currentSeller?.name || 'เจ้าของทรัพย์'}</h3>
-              <p>🏢 {currentSeller?.role || 'นายหน้าอสังหาริมทรัพย์'}</p>
+              <p>
+                {currentSeller?.sellerType === 'agent' ? '👨‍💼 นายหน้า' : '🏠 เจ้าของทรัพย์'}
+                {currentSeller?.role && ` / ${currentSeller.role}`}
+              </p>
               {currentSeller?.verified && <div className="verify-badge">✅ ยืนยันแล้ว</div>}
             </div>
           </div>
@@ -1236,7 +1239,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           </div>
           <div className="user-info">
             <h4>{currentSeller?.name || 'เจ้าของทรัพย์'}</h4>
-            <p>{currentSeller?.role || 'เจ้าของทรัพย์'}</p>
+            <p>{currentSeller?.sellerType === 'agent' ? '👨‍💼 นายหน้า' : '🏠 เจ้าของทรัพย์'}</p>
           </div>
         </div>
 
