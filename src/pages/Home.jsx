@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MapPin, Bath, Bed, Search, ChevronRight, Menu, X, ArrowRight, Home as HomeIcon, Building, Key, Shield, Clock, CheckCircle, Star, TrendingUp, Users, Award, Sparkles, ChevronLeft, FileCheck, Bell, Zap } from 'lucide-react';
 import '../styles/Home.css';
+import propertiesData from '../data/properties.json';
 
 const Home = ({ onNavigate, onLoginRequired }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,11 +12,27 @@ const Home = ({ onNavigate, onLoginRequired }) => {
   const [searchType, setSearchType] = useState('');
   const [searchPrice, setSearchPrice] = useState('');
   const [savedProperties, setSavedProperties] = useState([]);
+  const [featuredProperties, setFeaturedProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load featured properties from imported JSON
+  useEffect(() => {
+    try {
+      // Get first 20 properties, shuffle them
+      const shuffled = [...propertiesData].sort(() => Math.random() - 0.5).slice(0, 20);
+      setFeaturedProperties(shuffled);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setFeaturedProperties([]);
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -32,117 +49,6 @@ const Home = ({ onNavigate, onLoginRequired }) => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
-
-  const featuredProperties = [
-    {
-      id: 15,
-      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&h=800&fit=crop',
-      title: 'วิลล่าสมัยใหม่ หาดกะตะ ภูเก็ต',
-      location: 'หาดกะตะ ภูเก็ต',
-      price: '฿45,000,000',
-      beds: 5,
-      baths: 4,
-      size: '450 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'วิลล่าหรูหาดกะตะ หาดชาด วิวทะเลมหัศจรรย์ ใกล้ชายหาด สิ่งอำนวยครบครัน',
-      amenities: ['สระว่ายน้ำส่วนตัว', 'บาร์ลาว', 'ห้องยิม', 'จอดรถหลายคัน'],
-      owner: { name: 'คุณสมศรณ์', verified: true, rating: 4.9 },
-      seller: { id: 14, name: 'คุณสมศรณ์', email: 'somshorn@haatee.com', phone: '088-678-9012', verified: true, rating: 4.9 },
-      sellerId: 14,
-      expiryDate: '2025-12-09'
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop',
-      title: 'คอนโดหรู ริมแม่น้ำเจ้าพระยา',
-      location: 'สาทร กรุงเทพฯ',
-      price: '฿18,500,000',
-      beds: 3,
-      baths: 2,
-      size: '180 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'คอนโดมิเนียมหรูริมแม่น้ำเจ้าพระยา วิวที่สวยงาม ติดต่อโครงการ ใกล้ BTS, MRT',
-      amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'ห้องประชุม', 'บาร์ลาว'],
-      owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 },
-      seller: { id: 5, name: 'คุณวรรณี', email: 'waruni@haatee.com', phone: '088-765-4321', verified: true, rating: 4.9 },
-      sellerId: 5,
-      expiryDate: '2025-12-10'
-    },
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=800&fit=crop',
-      title: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น',
-      location: 'พระราม 9 กรุงเทพฯ',
-      price: '฿12,900,000',
-      beds: 4,
-      baths: 3,
-      size: '320 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น สภาพดีมาก ตกแต่งสวย พื้นที่กว้างขวาง เหมาะสำหรับการอยู่อาศัย มีอุปกรณ์ครบครัน',
-      amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'ใกล้ห้าง', 'ใกล้โรงเรียน'],
-      owner: { name: 'คุณดำรง', verified: true, rating: 4.7 },
-      seller: { id: 1, name: 'คุณดำรง', email: 'damrong@haatee.com', phone: '089-123-4567', verified: true, rating: 4.8 },
-      sellerId: 1,
-      expiryDate: '2025-12-20'
-    },
-    {
-      id: 11,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=800&fit=crop',
-      title: 'ทาวน์โฮม 3 ชั้น ใกล้ BTS',
-      location: 'สุขุมวิท กรุงเทพฯ',
-      price: '฿8,500,000',
-      beds: 3,
-      baths: 3,
-      size: '200 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'ทาวน์โฮม 3 ชั้น ตั้งอยู่ใกล้สถานีรถไฟฟ้า BTS สะดวกในการสัญจรไปมา ตกแต่งอย่างดี',
-      amenities: ['สระว่ายน้ำส่วนตัว', 'จอดรถ', 'ระบบรักษาความปลอดภัย', 'สวนหน้าบ้าน'],
-      owner: { name: 'คุณอรษา', verified: true, rating: 4.6 },
-      seller: { id: 10, name: 'คุณอรษา', email: 'arsa@haatee.com', phone: '087-654-3210', verified: true, rating: 4.6 },
-      sellerId: 10,
-      expiryDate: '2025-12-19'
-    },
-    {
-      id: 16,
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&h=800&fit=crop',
-      title: 'วิลล่าพูลวิว เชียงใหม่',
-      location: 'หางดง เชียงใหม่',
-      price: '฿28,000,000',
-      beds: 4,
-      baths: 3,
-      size: '380 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'วิลล่าพูลวิว เชียงใหม่ วิวธรรมชาติสวยงาม บรรยากาศเงียบสงบ ใจกลางป่า',
-      amenities: ['สระว่ายน้ำ', 'สวน', 'ห้องนั่งเล่นกลางแจ้ง', 'ที่จอดรถ'],
-      owner: { name: 'คุณวัชรา', verified: true, rating: 4.8 },
-      seller: { id: 15, name: 'คุณวัชรา', email: 'wachara@haatee.com', phone: '081-789-0123', verified: true, rating: 4.8 },
-      sellerId: 15,
-      expiryDate: '2025-12-21'
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&h=800&fit=crop',
-      title: 'บ้านหรู 2 ชั้น สไตล์ Contemporary',
-      location: 'เอกมัย กรุงเทพฯ',
-      price: '฿22,000,000',
-      beds: 5,
-      baths: 4,
-      size: '400 ตร.ม.',
-      type: 'ขาย',
-      featured: true,
-      description: 'บ้านหรูระดับเอกมัย ดีไซน์สวยงาม พื้นที่ใหญ่ สิ่งอำนวยความสะดวกครบครัน ทำเลดีตรงใจ',
-      amenities: ['สระว่ายน้ำ', 'โครงการปิด', 'ห้องยิม', 'ที่จอดรถ 2 คัน'],
-      owner: { name: 'คุณดำรง', verified: true, rating: 4.8 },
-      seller: { id: 1, name: 'คุณดำรง', email: 'damrong@haatee.com', phone: '089-123-4567', verified: true, rating: 4.8 },
-      sellerId: 1,
-      expiryDate: '2025-12-15'
-    },
-  ];
 
   const categories = [
     {
