@@ -846,46 +846,60 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
         <div className="card-section">
           <div className="section-header">
-            <h3>ความเป็นไปได้ข้อมูล</h3>
+            <h3>สรุปสถิติสำคัญ</h3>
           </div>
           
-          <div className="chart-mini">
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={propertyTypeData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {propertyTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value} ประกาศ`} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="stats-cards-grid">
+            <div className="stat-card blue">
+              <div className="stat-card-icon">👁</div>
+              <div className="stat-card-content">
+                <p className="stat-card-label">ยอดดูทั้งหมด</p>
+                <p className="stat-card-value">{stats.totalViews.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="stat-card green">
+              <div className="stat-card-icon">💚</div>
+              <div className="stat-card-content">
+                <p className="stat-card-label">ยอดสนใจ</p>
+                <p className="stat-card-value">{stats.totalSaves.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="stat-card orange">
+              <div className="stat-card-icon">📞</div>
+              <div className="stat-card-content">
+                <p className="stat-card-label">ยอดติดต่อ</p>
+                <p className="stat-card-value">{stats.totalContacts.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="stat-card purple">
+              <div className="stat-card-icon">📈</div>
+              <div className="stat-card-content">
+                <p className="stat-card-label">อัตราการแปลง</p>
+                <p className="stat-card-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</p>
+              </div>
+            </div>
           </div>
 
-          <div className="stats-summary">
-            <div className="summary-row">
-              <span>ยอดดูทั้งหมด:</span>
-              <strong>{stats.totalViews.toLocaleString()}</strong>
-            </div>
-            <div className="summary-row">
-              <span>ยอดสนใจทั้งหมด:</span>
-              <strong>{stats.totalSaves.toLocaleString()}</strong>
-            </div>
-            <div className="summary-row">
-              <span>ยอดติดต่อทั้งหมด:</span>
-              <strong>{stats.totalContacts.toLocaleString()}</strong>
-            </div>
-            <div className="summary-row" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '12px', marginTop: '12px' }}>
-              <span>อัตราการแปลง:</span>
-              <strong style={{ color: '#10B981' }}>{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</strong>
+          <div className="property-type-section">
+            <h4>การแจกแจงประเภททรัพย์</h4>
+            <div className="property-type-cards">
+              <div className="property-type-card">
+                <span className="property-icon">🏢</span>
+                <div className="property-info">
+                  <p className="property-label">ขายสิ่งปลูกสร้าง</p>
+                  <p className="property-count">{listings.filter(l => l.type === 'sell').length} ประกาศ</p>
+                </div>
+              </div>
+              <div className="property-type-card">
+                <span className="property-icon">🏠</span>
+                <div className="property-info">
+                  <p className="property-label">เช่าสิ่งปลูกสร้าง</p>
+                  <p className="property-count">{listings.filter(l => l.type === 'rent').length} ประกาศ</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
