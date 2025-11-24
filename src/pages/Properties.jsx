@@ -12,6 +12,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
   const [selectedType, setSelectedType] = useState('ทั้งหมด');
   const [selectedPrice, setSelectedPrice] = useState('ทั้งหมด');
   const [selectedLocation, setSelectedLocation] = useState('ทั้งหมด');
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const allProperties = [
     // บ้านเดี่ยว
@@ -325,7 +327,6 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => onNavigate('home')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">
@@ -527,7 +528,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           {filteredProperties.length > 0 ? (
             <div className="properties-grid-future">
               {filteredProperties.map((property) => (
-                <div key={property.id} className="property-card-future">
+                <div 
+                  key={property.id} 
+                  className="property-card-future"
+                  onClick={() => setSelectedProperty(property)}
+                >
                   <div className="property-image-future">
                     <img src={property.image} alt={property.title} />
                     <div className="property-overlay-future"></div>
@@ -689,6 +694,67 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           </div>
         </div>
       </footer>
+
+      {/* Property Detail Modal */}
+      {selectedProperty && (
+        <div className="property-detail-modal-fullscreen" onClick={() => setSelectedProperty(null)}>
+          <div className="pd-fullscreen-content" onClick={(e) => e.stopPropagation()}>
+            <button className="pd-close-btn" onClick={() => setSelectedProperty(null)}>
+              ✕
+            </button>
+
+            <div className="pd-fullscreen-grid">
+              {/* Image */}
+              <div className="pd-fullscreen-image">
+                <img src={selectedProperty.image} alt={selectedProperty.title} />
+                <div className="pd-fullscreen-type-badge">{selectedProperty.type}</div>
+              </div>
+
+              {/* Content */}
+              <div className="pd-fullscreen-content-area">
+                <h1 className="pd-fullscreen-title">{selectedProperty.title}</h1>
+                <div className="pd-fullscreen-price">{selectedProperty.price}</div>
+                <div className="pd-fullscreen-location">
+                  <MapPin size={18} /> {selectedProperty.location}
+                </div>
+
+                <div className="pd-fullscreen-specs">
+                  <div className="pd-spec">
+                    <Bed size={20} />
+                    <div><div className="pd-spec-label">ห้องนอน</div><div className="pd-spec-value">{selectedProperty.beds}</div></div>
+                  </div>
+                  <div className="pd-spec">
+                    <Bath size={20} />
+                    <div><div className="pd-spec-label">ห้องน้ำ</div><div className="pd-spec-value">{selectedProperty.baths}</div></div>
+                  </div>
+                  <div className="pd-spec">
+                    <Building size={20} />
+                    <div><div className="pd-spec-label">ขนาด</div><div className="pd-spec-value">{selectedProperty.size}</div></div>
+                  </div>
+                </div>
+
+                <div className="pd-fullscreen-actions">
+                  <button 
+                    className="pd-fullscreen-contact"
+                    onClick={() => {
+                      onLoginRequired('ติดต่อเจ้าของ');
+                      setSelectedProperty(null);
+                    }}
+                  >
+                    ติดต่อเจ้าของ
+                  </button>
+                  <button 
+                    className="pd-fullscreen-schedule"
+                    onClick={() => onLoginRequired('นัดชมทรัพย์สิน')}
+                  >
+                    นัดชมทรัพย์สิน
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
