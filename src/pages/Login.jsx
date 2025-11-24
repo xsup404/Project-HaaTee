@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import usersData from '../../data/users.json';
 import '../styles/Login.css';
 
 export default function Login({ onNavigate }) {
@@ -18,7 +17,22 @@ export default function Login({ onNavigate }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState('user');
+  const [usersData, setUsersData] = useState([]);
   const otpRefs = useRef([]);
+
+  // Load users data from JSON file
+  useEffect(() => {
+    const loadUsersData = async () => {
+      try {
+        const response = await fetch('/src/data/users.json');
+        const data = await response.json();
+        setUsersData(data);
+      } catch (error) {
+        console.error('Failed to load users data:', error);
+      }
+    };
+    loadUsersData();
+  }, []);
 
   // Admin Credentials
   const ADMIN_CREDENTIALS = {
