@@ -8,6 +8,8 @@ export default function Login({ onNavigate }) {
   const [password, setPassword] = useState('');
   const [adminId, setAdminId] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [sellerEmail, setSellerEmail] = useState('');
+  const [sellerPassword, setSellerPassword] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(120);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -28,6 +30,13 @@ export default function Login({ onNavigate }) {
     'user@haatee.com': 'user123456',
     'buyer@haatee.com': 'buyer123456',
     'test@haatee.com': 'test123456',
+  };
+
+  // Seller Credentials (สำหรับเจ้าของทรัพย์สิน/นายหน้า)
+  const SELLER_CREDENTIALS = {
+    'seller@haatee.com': 'seller123456',
+    'agent@haatee.com': 'agent123456',
+    'property@haatee.com': 'property123456',
   };
 
   useEffect(() => {
@@ -96,6 +105,39 @@ export default function Login({ onNavigate }) {
     }, 1200);
   };
 
+  // Seller Login Handler
+  const handleSellerLogin = (e) => {
+    e.preventDefault();
+    if (!sellerEmail.trim() || !sellerPassword.trim()) {
+      setMessage({ type: 'error', text: '⚠️ กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน' });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sellerEmail)) {
+      setMessage({ type: 'error', text: '⚠️ รูปแบบอีเมลไม่ถูกต้อง' });
+      return;
+    }
+
+    setLoading(true);
+    setTimeout(() => {
+      if (SELLER_CREDENTIALS[sellerEmail] === sellerPassword) {
+        setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
+        setTimeout(() => {
+          setStep('otp');
+          setTimer(120);
+          setMessage({ type: '', text: '' });
+          setLoading(false);
+          setLoginType('seller');
+          otpRefs.current[0]?.focus();
+        }, 1500);
+      } else {
+        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+        setLoading(false);
+      }
+    }, 1200);
+  };
+
   const handleOtpChange = (index, value) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
@@ -150,6 +192,18 @@ export default function Login({ onNavigate }) {
               console.log('Admin login successful, navigating to admin page', { loginType, adminId });
               alert('เข้าสู่ระบบ Admin สำเร็จ!');
               onNavigate('admin');
+            } else if (loginType === 'seller') {
+              // บันทึก Seller Data
+              const sellerData = {
+                name: 'เจ้าของทรัพย์สิน',
+                email: sellerEmail,
+                role: 'Property Owner/Agent',
+                lastLogin: new Date().toLocaleString('th-TH')
+              };
+              localStorage.setItem('sellerUser', JSON.stringify(sellerData));
+              console.log('Seller login successful, navigating to seller page', { loginType, sellerEmail });
+              alert('เข้าสู่ระบบ Seller สำเร็จ!');
+              onNavigate('seller');
             } else {
               // บันทึก Buyer/User Data
               const userData = {
@@ -241,6 +295,26 @@ export default function Login({ onNavigate }) {
                   👤 ผู้ใช้ทั่วไป
                 </button>
                 <button
+                  className={activeTab === 'seller' ? 'tab-btn active' : 'tab-btn'}
+                  onClick={() => {
+                    setActiveTab('seller');
+                    setMessage({ type: '', text: '' });
+                  }}
+                  style={{
+                    padding: '14px 24px',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: activeTab === 'seller' ? '4px solid var(--primary)' : '4px solid transparent',
+                    cursor: 'pointer',
+                    fontWeight: '700',
+                    color: activeTab === 'seller' ? 'var(--primary)' : 'var(--text-gray)',
+                    fontSize: '14px',
+                    transition: 'all var(--transition)'
+                  }}
+                >
+                  🏢 เจ้าของทรัพย์
+                </button>
+                <button
                   className={activeTab === 'admin' ? 'tab-btn active' : 'tab-btn'}
                   onClick={() => {
                     setActiveTab('admin');
@@ -303,6 +377,100 @@ export default function Login({ onNavigate }) {
                         className="form-input"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        placeholder="กรุณากรอกรหัสผ่าน"
+                        disabled={loading}
+                        autoComplete="current-password"
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex="-1"
+                      >
+                        {showPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="form-options">
+                    <label className="checkbox-container">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                      />
+                      <span className="checkbox-label">จดจำฉันไว้</span>
+                    </label>
+                    <a href="#" className="forgot-password" onClick={(e) => e.preventDefault()}>
+                      ลืมรหัสผ่าน?
+                    </a>
+                  </div>
+
+                  <button type="submit" className="btn-login" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <span className="spinner"></span>
+                        <span>กำลังตรวจสอบ...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🔐</span>
+                        <span>เข้าสู่ระบบ</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* Seller Login Form */}
+              {activeTab === 'seller' && (
+                <form onSubmit={handleSellerLogin} className="login-form">
+                  <div style={{
+                    padding: '12px 14px',
+                    background: 'transparent',
+                    border: '1px solid rgba(25, 118, 210, 0.15)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginBottom: '12px',
+                    fontSize: '11px',
+                    color: 'var(--text-dark)',
+                    lineHeight: '1.4'
+                  }}>
+                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
+                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller@haatee.com</code></p>
+                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller123456</code></p>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="sellerEmail" className="form-label">
+                      อีเมล <span className="required">*</span>
+                    </label>
+                    <div className="input-wrapper">
+                      <span className="input-icon">📧</span>
+                      <input
+                        id="sellerEmail"
+                        type="email"
+                        className="form-input"
+                        value={sellerEmail}
+                        onChange={(e) => setSellerEmail(e.target.value)}
+                        placeholder="seller@haatee.com"
+                        disabled={loading}
+                        autoComplete="email"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="sellerPassword" className="form-label">
+                      รหัสผ่าน <span className="required">*</span>
+                    </label>
+                    <div className="input-wrapper">
+                      <span className="input-icon">🔒</span>
+                      <input
+                        id="sellerPassword"
+                        type={showPassword ? 'text' : 'password'}
+                        className="form-input"
+                        value={sellerPassword}
+                        onChange={(e) => setSellerPassword(e.target.value)}
                         placeholder="กรุณากรอกรหัสผ่าน"
                         disabled={loading}
                         autoComplete="current-password"
