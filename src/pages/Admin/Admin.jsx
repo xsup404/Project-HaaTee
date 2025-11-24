@@ -39,6 +39,60 @@ const Admin = ({ onNavigate }) => {
   const [topProperties, setTopProperties] = useState([]);
   const [users, setUsers] = useState([]);
   const [properties, setProperties] = useState([]);
+  const [issues, setIssues] = useState([
+    {
+      id: 1,
+      title: 'ระบบ Database ล่ม',
+      description: 'ต้องแก้ไขใน 24 ชั่วโมง',
+      severity: 'critical',
+      priority: 'เร่งด่วน',
+      emoji: '🔴',
+      bgColor: '#FEE2E2',
+      borderColor: '#EF4444',
+      textColor: '#991B1B',
+      subtextColor: '#7F1D1D',
+      priorityColor: '#DC2626'
+    },
+    {
+      id: 2,
+      title: 'บัญชีผู้ใช้ล็อคไม่ได้',
+      description: 'ต้องแก้ไขใน 3 วัน',
+      severity: 'high',
+      priority: 'สำคัญ',
+      emoji: '🟠',
+      bgColor: '#FFEDD5',
+      borderColor: '#F97316',
+      textColor: '#92400E',
+      subtextColor: '#B45309',
+      priorityColor: '#EA580C'
+    },
+    {
+      id: 3,
+      title: 'UI/UX ไม่ตรงกับ Design',
+      description: 'ต้องแก้ไขใน 1 สัปดาห์',
+      severity: 'high',
+      priority: 'สำคัญ',
+      emoji: '🟠',
+      bgColor: '#FFEDD5',
+      borderColor: '#F97316',
+      textColor: '#92400E',
+      subtextColor: '#B45309',
+      priorityColor: '#EA580C'
+    },
+    {
+      id: 4,
+      title: 'Performance ช้าลง',
+      description: 'ต้องแก้ไขเมื่อมีเวลา',
+      severity: 'low',
+      priority: 'ตามปกติ',
+      emoji: '🟡',
+      bgColor: '#FEFCE8',
+      borderColor: '#FCD34D',
+      textColor: '#713F12',
+      subtextColor: '#854D0E',
+      priorityColor: '#FBBD34'
+    }
+  ]);
 
   // โหลดข้อมูลจริงจาก JSON
   useEffect(() => {
@@ -194,53 +248,31 @@ const Admin = ({ onNavigate }) => {
           </div>
           <div className="chart-body" style={{ padding: '20px 0' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FEE2E2', borderRadius: '8px', borderLeft: '4px solid #EF4444' }}>
-                <span style={{ color: '#EF4444', fontSize: '20px' }}>🔴</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#991B1B' }}>ปัญหาหนัก - ระบบ Database ล่ม</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#7F1D1D' }}>ต้องแก้ไขใน 24 ชั่วโมง</p>
+              {issues.map(issue => (
+                <div key={issue.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: issue.bgColor, borderRadius: '8px', borderLeft: `4px solid ${issue.borderColor}` }}>
+                  <span style={{ color: issue.borderColor, fontSize: '20px' }}>{issue.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontWeight: '700', color: issue.textColor }}>ปัญหา{issue.severity === 'critical' ? 'หนัก' : issue.severity === 'high' ? 'ปานกลาง' : 'เล็กน้อย'} - {issue.title}</p>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: issue.subtextColor }}>{issue.description}</p>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: issue.priorityColor }}>{issue.priority}</span>
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#DC2626' }}>เร่งด่วน</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFEDD5', borderRadius: '8px', borderLeft: '4px solid #F97316' }}>
-                <span style={{ color: '#F97316', fontSize: '20px' }}>🟠</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#92400E' }}>ปัญหาปานกลาง - บัญชีผู้ใช้ล็อคไม่ได้</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#B45309' }}>ต้องแก้ไขใน 3 วัน</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#EA580C' }}>สำคัญ</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFEDD5', borderRadius: '8px', borderLeft: '4px solid #F97316' }}>
-                <span style={{ color: '#F97316', fontSize: '20px' }}>🟠</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#92400E' }}>ปัญหาปานกลาง - UI/UX ไม่ตรงกับ Design</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#B45309' }}>ต้องแก้ไขใน 1 สัปดาห์</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#EA580C' }}>สำคัญ</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FEFCE8', borderRadius: '8px', borderLeft: '4px solid #FCD34D' }}>
-                <span style={{ color: '#FCD34D', fontSize: '20px' }}>🟡</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#713F12' }}>ปัญหาเล็กน้อย - Performance ช้าลง</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#854D0E' }}>ต้องแก้ไขเมื่อมีเวลา</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#FBBD34' }}>ตามปกติ</span>
-              </div>
+              ))}
             </div>
           </div>
           <div className="chart-footer">
             <div className="chart-legend" style={{ justifyContent: 'center', gap: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }}></span>
-                <span>ปัญหาหนัก (1)</span>
+                <span>ปัญหาหนัก ({issues.filter(i => i.severity === 'critical').length})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F97316' }}></span>
-                <span>ปัญหาปานกลาง (2)</span>
+                <span>ปัญหาปานกลาง ({issues.filter(i => i.severity === 'high').length})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FCD34D' }}></span>
-                <span>ปัญหาเล็กน้อย (1)</span>
+                <span>ปัญหาเล็กน้อย ({issues.filter(i => i.severity === 'low').length})</span>
               </div>
             </div>
           </div>
