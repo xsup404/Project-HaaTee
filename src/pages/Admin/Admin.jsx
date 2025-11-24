@@ -650,68 +650,63 @@ const Admin = ({ onNavigate }) => {
     </div>
   );
 
-  const renderContentModeration = () => (
-    <div style={{ padding: '24px' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#1a202c', marginBottom: '16px' }}>
-        ตรวจสอบเนื้อหา
-      </h2>
+  const renderContentModeration = (reportType = 'room') => {
+    const filteredIssues = issues.filter(issue => issue.type === reportType);
+    const typeLabels = {
+      room: 'รายงานห้อง',
+      chat: 'รายงานแชท',
+      problem: 'รายงานปัญหา'
+    };
 
-      <div style={{ background: '#FEE2E2', border: '2px solid #FECACA', borderRadius: '8px', padding: '16px', marginBottom: '20px', display: 'flex', gap: '12px' }}>
-        <span style={{ fontSize: '24px' }}>🔴</span>
-        <div>
-          <p style={{ fontWeight: '600', color: '#991B1B', margin: '0 0 4px 0', fontSize: '14px' }}>15 รายงานรอตรวจสอบ</p>
-          <p style={{ color: '#7F1D1D', fontSize: '13px', margin: '0' }}>จำเป็นต้องดำเนินการโดยเร็ว</p>
-        </div>
-      </div>
+    return (
+      <div style={{ padding: '24px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#1a202c', marginBottom: '16px' }}>
+          {typeLabels[reportType]}
+        </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '24px' }}>
-        <div style={{ background: '#FEE2E2', padding: '16px', borderRadius: '8px', border: '1px solid #FECACA', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#991B1B', marginBottom: '8px' }}>🔴 รอตรวจสอบ</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#EF4444', margin: '0' }}>15</h3>
-        </div>
-        <div style={{ background: '#D1FAE5', padding: '16px', borderRadius: '8px', border: '1px solid #A7F3D0', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#065F46', marginBottom: '8px' }}>✓ อนุมัติแล้ว</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#10B981', margin: '0' }}>45</h3>
-        </div>
-        <div style={{ background: '#F3F4F6', padding: '16px', borderRadius: '8px', border: '1px solid #D1D5DB', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#4B5563', marginBottom: '8px' }}>✕ ปฏิเสธแล้ว</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#6B7280', margin: '0' }}>20</h3>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {[
-          { id: 1, title: 'คอนโด The Peak', owner: 'สมชาย ใจดี', reason: 'ปลอมแปลง', count: 3, severity: 'high' },
-          { id: 2, title: 'บ้านเดี่ยว Premium', owner: 'บุญมี ถูกใจ', reason: 'หลอกลวง', count: 2, severity: 'high' },
-          { id: 3, title: 'ทาวน์โฮม Modern', owner: 'สมหญิง ม่วง', reason: 'ไม่เหมาะสม', count: 1, severity: 'medium' },
-        ].map(r => (
-          <div key={r.id} style={{
-            background: 'white',
-            border: `2px solid ${r.severity === 'high' ? '#EF4444' : '#F59E0B'}`,
-            borderRadius: '10px',
-            padding: '16px',
-            borderLeft: `6px solid ${r.severity === 'high' ? '#EF4444' : '#F59E0B'}`
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-              <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1a202c', margin: '0 0 4px 0' }}>🏠 {r.title}</h3>
-                <p style={{ fontSize: '13px', color: '#718096', margin: '0' }}>👤 {r.owner} | ⚠️ {r.reason} ({r.count} รายงาน)</p>
-              </div>
-              <span style={{ padding: '6px 12px', background: r.severity === 'high' ? '#FEE2E2' : '#FFEDD5', color: r.severity === 'high' ? '#991B1B' : '#92400E', borderRadius: '6px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                {r.severity === 'high' ? '🔴 เร่งด่วน' : '🟠 ปานกลาง'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button style={{ padding: '8px 16px', background: '#0066CC', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>👁️ ดู</button>
-              <button style={{ padding: '8px 16px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✓ อนุมัติ</button>
-              <button style={{ padding: '8px 16px', background: '#EF4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>🗑️ ลบ</button>
-              <button style={{ padding: '8px 16px', background: '#6B7280', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✕ ยกเลิก</button>
-            </div>
+        <div style={{ background: '#FEE2E2', border: '2px solid #FECACA', borderRadius: '8px', padding: '16px', marginBottom: '20px', display: 'flex', gap: '12px' }}>
+          <span style={{ fontSize: '24px' }}>📋</span>
+          <div>
+            <p style={{ fontWeight: '600', color: '#991B1B', margin: '0 0 4px 0', fontSize: '14px' }}>{filteredIssues.length} รายงาน</p>
+            <p style={{ color: '#7F1D1D', fontSize: '13px', margin: '0' }}>รวมรายงาน{typeLabels[reportType]}</p>
           </div>
-        ))}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {filteredIssues.length > 0 ? (
+            filteredIssues.map(issue => (
+              <div key={issue.id} style={{
+                background: issue.bgColor,
+                border: `2px solid ${issue.borderColor}`,
+                borderRadius: '10px',
+                padding: '16px',
+                borderLeft: `6px solid ${issue.borderColor}`
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: issue.textColor, margin: '0 0 4px 0' }}>{issue.emoji} {issue.title}</h3>
+                    <p style={{ fontSize: '13px', color: issue.subtextColor, margin: '0' }}>👤 {issue.reporter} | 📝 {issue.description}</p>
+                  </div>
+                  <span style={{ padding: '6px 12px', background: issue.bgColor, color: issue.textColor, borderRadius: '6px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                    {issue.emoji} {issue.priority}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button style={{ padding: '8px 16px', background: '#0066CC', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>👁️ ดู</button>
+                  <button style={{ padding: '8px 16px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✓ แก้ไขแล้ว</button>
+                  <button style={{ padding: '8px 16px', background: '#6B7280', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>⏸️ ถ้ำเลื่อน</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>
+              <p style={{ fontSize: '16px' }}>ไม่มีรายงาน{typeLabels[reportType]}</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderChatMonitoring = () => (
     <div style={{ padding: '24px' }}>
@@ -883,24 +878,16 @@ const Admin = ({ onNavigate }) => {
 
   const renderContent = () => {
     switch(activeTab) {
-      case 'dashboard':
-        return renderDashboard();
+      case 'room-reports':
+        return renderContentModeration('room');
+      case 'chat-reports':
+        return renderContentModeration('chat');
+      case 'problem-reports':
+        return renderContentModeration('problem');
       case 'users':
         return renderUserManagement();
-      case 'properties':
-        return renderPropertyManagement();
-      case 'contracts':
-        return renderContractManagement();
-      case 'reports':
-        return renderContentModeration();
-      case 'chat':
-        return renderChatMonitoring();
-      case 'analytics':
-        return renderAnalytics();
-      case 'settings':
-        return renderSettings();
       default:
-        return renderDashboard();
+        return renderContentModeration('room');
     }
   };
 
@@ -930,13 +917,36 @@ const Admin = ({ onNavigate }) => {
 
         <nav className="sidebar-nav">
           <div className="nav-section">
-            <p className="nav-section-title">{sidebarOpen ? 'เมนูหลัก' : ''}</p>
+            <p className="nav-section-title">{sidebarOpen ? 'การจัดการรายงาน' : ''}</p>
             <button 
-              className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
+              className={`nav-btn ${activeTab === 'room-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('room-reports')}
             >
-              <LayoutDashboard size={20} />
-              {sidebarOpen && <span>แดชบอร์ด</span>}
+              <AlertCircle size={20} />
+              {sidebarOpen && <span>รายงานห้อง</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'room' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'room' && i.status === 'open').length}</span>
+              )}
+            </button>
+            <button 
+              className={`nav-btn ${activeTab === 'chat-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('chat-reports')}
+            >
+              <MessageSquare size={20} />
+              {sidebarOpen && <span>รายงานแชท</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'chat' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'chat' && i.status === 'open').length}</span>
+              )}
+            </button>
+            <button 
+              className={`nav-btn ${activeTab === 'problem-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('problem-reports')}
+            >
+              <AlertCircle size={20} />
+              {sidebarOpen && <span>รายงานปัญหา</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'problem' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'problem' && i.status === 'open').length}</span>
+              )}
             </button>
             <button 
               className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
@@ -945,56 +955,6 @@ const Admin = ({ onNavigate }) => {
               <Users size={20} />
               {sidebarOpen && <span>จัดการผู้ใช้</span>}
               {sidebarOpen && <span className="badge">{stats.newUsers}</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'properties' ? 'active' : ''}`}
-              onClick={() => setActiveTab('properties')}
-            >
-              <Building2 size={20} />
-              {sidebarOpen && <span>ทรัพย์สิน</span>}
-              {sidebarOpen && <span className="badge">{stats.newProperties}</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'contracts' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contracts')}
-            >
-              <FileText size={20} />
-              {sidebarOpen && <span>สัญญาดิจิทัล</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'reports' ? 'active' : ''}`}
-              onClick={() => setActiveTab('reports')}
-            >
-              <AlertCircle size={20} />
-              {sidebarOpen && <span>รายงานปัญหา</span>}
-              {sidebarOpen && stats.pendingReports > 0 && (
-                <span className="badge danger">{stats.pendingReports}</span>
-              )}
-            </button>
-          </div>
-
-          <div className="nav-section">
-            <p className="nav-section-title">{sidebarOpen ? 'เครื่องมือ' : ''}</p>
-            <button
-              className={`nav-btn ${activeTab === 'chat' ? 'active' : ''}`}
-              onClick={() => setActiveTab('chat')}
-            >
-              <MessageSquare size={20} />
-              {sidebarOpen && <span>ข้อความ</span>}
-            </button>
-            <button
-              className={`nav-btn ${activeTab === 'analytics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('analytics')}
-            >
-              <BarChart3 size={20} />
-              {sidebarOpen && <span>รายงานและสถิติ</span>}
-            </button>
-            <button
-              className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
-            >
-              <Settings size={20} />
-              {sidebarOpen && <span>ตั้งค่า</span>}
             </button>
           </div>
         </nav>
@@ -1020,14 +980,10 @@ const Admin = ({ onNavigate }) => {
             </button>
             <div className="header-title">
               <h2>
-                {activeTab === 'dashboard' && 'แดชบอร์ด'}
+                {activeTab === 'room-reports' && 'รายงานห้อง'}
+                {activeTab === 'chat-reports' && 'รายงานแชท'}
+                {activeTab === 'problem-reports' && 'รายงานปัญหา'}
                 {activeTab === 'users' && 'จัดการผู้ใช้งาน'}
-                {activeTab === 'properties' && 'จัดการทรัพย์สิน'}
-                {activeTab === 'contracts' && 'สัญญาดิจิทัล'}
-                {activeTab === 'reports' && 'รายงานปัญหา'}
-                {activeTab === 'chat' && 'ระบบข้อความ'}
-                {activeTab === 'analytics' && 'รายงานและสถิติ'}
-                {activeTab === 'settings' && 'ตั้งค่าระบบ'}
               </h2>
               <p className="header-subtitle">
                 {new Date().toLocaleDateString('th-TH', {
