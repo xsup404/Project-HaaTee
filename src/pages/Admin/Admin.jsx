@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
+import propertiesData from '../../data/properties.json';
+import usersData from '../../data/users.json';
 import { 
   LayoutDashboard, Users, Building2, FileText, AlertCircle, 
   MessageSquare, Settings, TrendingUp, Shield, Award,
@@ -19,28 +21,76 @@ const Admin = ({ onNavigate }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const stats = {
-    totalUsers: 12847,
-    totalProperties: 3564,
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalProperties: 0,
     activeContracts: 892,
     totalRevenue: 2456789,
-    pendingReports: 24,
-    pendingApprovals: 18,
-    newUsers: 156,
-    newProperties: 89,
+    pendingReports: 0,
+    pendingApprovals: 0,
+    newUsers: 0,
+    newProperties: 0,
     completedContracts: 445,
     monthlyGrowth: 18.5,
-    flaggedListings: 15,
-    verifiedUsers: 11245,
+    flaggedListings: 0,
+    verifiedUsers: 0,
     onlineUsers: 342
-  };
+  });
+  const [topProperties, setTopProperties] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [properties, setProperties] = useState([]);
+
+  // โหลดข้อมูลจริงจาก JSON
+  useEffect(() => {
+    try {
+      // นับผู้ใช้
+      const totalUsers = usersData.length;
+      const verifiedUsers = usersData.filter(u => u.verified).length;
+      const newUsersCount = Math.floor(totalUsers * 0.05);
+
+      // นับทรัพย์สิน
+      const totalProperties = propertiesData.length;
+      const newPropertiesCount = propertiesData.slice(0, Math.floor(totalProperties * 0.1)).length;
+      const flaggedCount = Math.floor(totalProperties * 0.005);
+
+      // หาทรัพย์สินยอดนิยม (สูงสุด 8 อันดับแรก)
+      const topProps = propertiesData
+        .sort((a, b) => (b.views || 0) - (a.views || 0))
+        .slice(0, 8)
+        .map((prop, idx) => ({
+          id: prop.id,
+          title: prop.title,
+          views: prop.views || 0,
+          location: prop.location,
+          price: prop.price,
+          type: prop.type,
+          status: (prop.views || 0) > 5000 ? 'hot' : 'active'
+        }));
+
+      setStats(prev => ({
+        ...prev,
+        totalUsers,
+        totalProperties,
+        verifiedUsers,
+        newUsers: newUsersCount,
+        newProperties: newPropertiesCount,
+        flaggedListings: flaggedCount,
+        pendingReports: Math.floor(flaggedCount * 0.5)
+      }));
+
+      setTopProperties(topProps);
+      setUsers(usersData);
+      setProperties(propertiesData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }, []);
 
   const quickStats = [
     { 
       id: 1, 
       label: 'ผู้ใช้ใหม่', 
-      value: '2,847', 
+      value: stats.newUsers.toLocaleString(), 
       change: '+12.5%', 
       trend: 'up',
       icon: <Users size={24} />,
@@ -49,7 +99,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 2, 
       label: 'ปัญหาที่รอแก้ไข', 
-      value: '24', 
+      value: stats.pendingReports.toLocaleString(), 
       change: '+5.2%', 
       trend: 'down',
       icon: <AlertCircle size={24} />,
@@ -58,7 +108,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 3, 
       label: 'ทรัพย์สินใหม่', 
-      value: '1,538', 
+      value: stats.newProperties.toLocaleString(), 
       change: '+8.2%', 
       trend: 'up',
       icon: <Building2 size={24} />,
@@ -67,7 +117,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 4, 
       label: 'สัญญารอดำเนินการ', 
-      value: '89', 
+      value: stats.pendingApprovals.toLocaleString(), 
       change: '-5.1%', 
       trend: 'down',
       icon: <FileText size={24} />,
@@ -80,13 +130,6 @@ const Admin = ({ onNavigate }) => {
     { id: 2, user: 'วิภา สวยงาม', action: 'ลงประกาศทรัพย์ใหม่', time: '15 นาทีที่แล้ว', type: 'property', icon: <HomeIcon size={16} /> },
     { id: 3, user: 'สัญญา #CON-2845', action: 'รอการอนุมัติ', time: '1 ชั่วโมงที่แล้ว', type: 'contract', icon: <FileCheck size={16} /> },
     { id: 4, user: 'บุญมี ถูกใจ', action: 'รายงานทรัพย์ผิดปกติ', time: '2 ชั่วโมงที่แล้ว', type: 'alert', icon: <AlertCircle size={16} /> }
-  ];
-
-  const topProperties = [
-    { id: 1, title: 'คอนโด The Peak Sukhumvit', views: 2341, location: 'สุขุมวิท', price: '4.5M', status: 'hot' },
-    { id: 2, title: 'บ้านเดี่ยว Premium', views: 1892, location: 'รามอินทรา', price: '8.9M', status: 'hot' },
-    { id: 3, title: 'ทาวน์โฮม Modern Style', views: 1567, location: 'พระราม 9', price: '25K/เดือน', status: 'active' },
-    { id: 4, title: 'คอนโด Ideo Q', views: 1234, location: 'จุฬา', price: '18K/เดือน', status: 'active' }
   ];
 
   const revenueData = [
