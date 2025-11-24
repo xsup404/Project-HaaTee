@@ -32,6 +32,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น สภาพดีมาก ตกแต่งสวย พื้นที่กว้างขวาง เหมาะสำหรับการอยู่อาศัย มีอุปกรณ์ครบครัน',
       amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'ใกล้ห้าง', 'ใกล้โรงเรียน'],
       owner: { name: 'คุณดำรง', verified: true, rating: 4.7 },
+      seller: { id: 1, name: 'คุณดำรง', email: 'damrong@haatee.com', phone: '089-123-4567', verified: true, rating: 4.8 },
+      sellerId: 1,
       expiryDate: '2025-12-20'
     },
     {
@@ -52,6 +54,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'บ้านหรูระดับเอกมัย ดีไซน์สวยงาม พื้นที่ใหญ่ สิ่งอำนวยความสะดวกครบครัน ทำเลดีตรงใจ',
       amenities: ['สระว่ายน้ำ', 'โครงการปิด', 'ห้องยิม', 'ที่จอดรถ 2 คัน'],
       owner: { name: 'คุณดำรง', verified: true, rating: 4.9 },
+      seller: { id: 1, name: 'คุณดำรง', email: 'damrong@haatee.com', phone: '089-123-4567', verified: true, rating: 4.8 },
+      sellerId: 1,
       expiryDate: '2025-12-15'
     },
     {
@@ -71,6 +75,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'บ้านสวนแนวราบ บรรยากาศเงียบสงบ เหมาะสำหรับการอยู่อาศัยครอบครัว ที่ดินกว้างมีสวน',
       amenities: ['ที่จอดรถ', 'สนามสีเขียว', 'เบาบ้าน'],
       owner: { name: 'คุณสมศักดิ์', verified: false, rating: 4.4 },
+      seller: { id: 2, name: 'คุณสมศักดิ์', email: 'somsak@haatee.com', phone: '086-987-6543', verified: false, rating: 4.4 },
+      sellerId: 2,
       expiryDate: '2025-12-25'
     },
     {
@@ -90,6 +96,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'บ้านเดี่ยว 3 ชั้น ตั้งอยู่ในบางแสน สภาพใหม่ ใกล้ชายหาด เหมาะสำหรับสันทนาการ',
       amenities: ['สระว่ายน้ำ', 'จอดรถ', 'ใกล้ชายหาด', 'ห้องนั่งเล่นใหญ่'],
       owner: { name: 'คุณอนันต์', verified: true, rating: 4.6 },
+      seller: { id: 3, name: 'คุณอนันต์', email: 'anant@haatee.com', phone: '081-456-7890', verified: true, rating: 4.6 },
+      sellerId: 3,
       expiryDate: '2025-12-18'
     },
     {
@@ -109,6 +117,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'บ้านสไตล์ Minimalist สีขาวดีไซน์โมเดิร์น สะอาด พื้นที่ใช้สอยได้เต็มที่',
       amenities: ['ที่จอดรถ 2 คัน', 'สวน', 'ใกล้ BTS'],
       owner: { name: 'คุณวิชัย', verified: true, rating: 4.5 },
+      seller: { id: 4, name: 'คุณวิชัย', email: 'vichai@haatee.com', phone: '085-321-6789', verified: true, rating: 4.5 },
+      sellerId: 4,
       expiryDate: '2025-12-22'
     },
     // คอนโด
@@ -130,6 +140,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'คอนโดมิเนียมหรูริมแม่น้ำเจ้าพระยา วิวที่สวยงาม ติดต่อโครงการ ใกล้ BTS, MRT',
       amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'ห้องประชุม', 'บาร์ลาว'],
       owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 },
+      seller: { id: 5, name: 'คุณวรรณี', email: 'waruni@haatee.com', phone: '088-765-4321', verified: true, rating: 4.9 },
+      sellerId: 5,
       expiryDate: '2025-12-10'
     },
     {
@@ -149,6 +161,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'คอนโดโมเดิร์นในอารีย์ ใจกลางเมือง ใกล้สถานี BTS เหมาะสำหรับคนทำงาน',
       amenities: ['ยิม', 'ลิฟท์', 'ที่จอดรถ', 'WiFi'],
       owner: { name: 'บริษัท ดวลประมาณ', verified: true, rating: 4.5 },
+      seller: { id: 6, name: 'บริษัท ดวลประมาณ', email: 'company@realestateasia.com', phone: '02-123-4567', verified: true, rating: 4.5 },
+      sellerId: 6,
       expiryDate: '2025-12-28'
     },
     {
@@ -168,6 +182,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'คอนโด Luxury ในทองหล่อ ทำเลดี ใกล้ห้างสรรพสินค้า สิ่งอำนวยสมบูรณ์',
       amenities: ['สระว่ายน้ำ', 'สปา', 'สลอยด์', 'จอดรถครบ'],
       owner: { name: 'คุณเศรษฐ', verified: true, rating: 4.7 },
+      seller: { id: 7, name: 'คุณเศรษฐ', email: 'setthapol@haatee.com', phone: '084-234-5678', verified: true, rating: 4.7 },
+      sellerId: 7,
       expiryDate: '2025-12-12'
     },
     {
@@ -187,6 +203,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'คอนโด Hi-Rise สีลม วิวเมือง 180 องศา ตำแหน่งมุม สิ่งอำนวยครบครัน',
       amenities: ['สระว่ายน้ำ 2 ชั้น', 'ยิมขนาดใหญ่', 'ร้านอาหาร', 'เคเบิล'],
       owner: { name: 'คุณสิรินธร', verified: true, rating: 4.6 },
+      seller: { id: 8, name: 'คุณสิรินธร', email: 'sirindhon@haatee.com', phone: '089-876-5432', verified: true, rating: 4.6 },
+      sellerId: 8,
       expiryDate: '2025-12-17'
     },
     {
@@ -206,6 +224,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'คอนโด Pool Villa สุขุมวิท ตำแหน่งดี ใกล้ห้างเปิดใหม่ วิวสวนฟรี',
       amenities: ['สระว่ายน้ำ', 'สวน', 'ยิม', 'บาร์ลาว'],
       owner: { name: 'คุณสมทรง', verified: true, rating: 4.7 },
+      seller: { id: 9, name: 'คุณสมทรง', email: 'somthorn@haatee.com', phone: '081-567-8901', verified: true, rating: 4.7 },
+      sellerId: 9,
       expiryDate: '2025-12-23'
     },
     // ทาวน์เฮาส์
@@ -226,6 +246,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'ทาวน์โฮม 3 ชั้น ตั้งอยู่ใกล้สถานีรถไฟฟ้า BTS สะดวกในการสัญจรไปมา ตกแต่งอย่างดี',
       amenities: ['สระว่ายน้ำส่วนตัว', 'จอดรถ', 'ระบบรักษาความปลอดภัย', 'สวนหน้าบ้าน'],
       owner: { name: 'คุณอรษา', verified: true, rating: 4.6 },
+      seller: { id: 10, name: 'คุณอรษา', email: 'arsa@haatee.com', phone: '087-654-3210', verified: true, rating: 4.6 },
+      sellerId: 10,
       expiryDate: '2025-12-19'
     },
     {
@@ -246,6 +268,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'ทาวน์เฮาส์โมเดิร์นในบางนา ติดต่อศูนย์การค้า สภาพใหม่ มีสำนัก Sport Club',
       amenities: ['สระว่ายน้ำ', 'ยิม', 'โครงการปิด', 'ที่จอดรถ 2 คัน'],
       owner: { name: 'คุณนิยม', verified: true, rating: 4.7 },
+      seller: { id: 11, name: 'คุณนิยม', email: 'niyom@haatee.com', phone: '082-345-6789', verified: true, rating: 4.7 },
+      sellerId: 11,
       expiryDate: '2025-12-14'
     },
     {
@@ -265,6 +289,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'ทาวน์เฮาส์ 2 ชั้น ลาดพร้าว บรรยากาศสงบ ใกล้สถานีรถไฟฟ้า โครงการดี',
       amenities: ['ที่จอดรถ', 'โครงการปิด', 'ระบบรักษาความปลอดภัย'],
       owner: { name: 'คุณสมบูรณ์', verified: true, rating: 4.5 },
+      seller: { id: 12, name: 'คุณสมบูรณ์', email: 'samboorn@haatee.com', phone: '086-456-7890', verified: true, rating: 4.5 },
+      sellerId: 12,
       expiryDate: '2025-12-26'
     },
     {
@@ -284,6 +310,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'ทาวน์เฮาส์ 3 ชั้น เอกมัย ใกล้ห้างสรรพสินค้า ทำเลดี โครงการปิด',
       amenities: ['สระว่ายน้ำ', 'ยิม', 'ที่จอดรถ 2 คัน', 'รักษาความปลอดภัย 24/7'],
       owner: { name: 'คุณปิยา', verified: true, rating: 4.8 },
+      seller: { id: 13, name: 'คุณปิยา', email: 'piyo@haatee.com', phone: '085-567-8901', verified: true, rating: 4.8 },
+      sellerId: 13,
       expiryDate: '2025-12-11'
     },
     // วิลล่า
@@ -305,6 +333,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'วิลล่าหรูหาดกะตะ หาดชาด วิวทะเลมหัศจรรย์ ใกล้ชายหาด สิ่งอำนวยครบครัน',
       amenities: ['สระว่ายน้ำส่วนตัว', 'บาร์ลาว', 'ห้องยิม', 'จอดรถหลายคัน'],
       owner: { name: 'คุณสมศรณ์', verified: true, rating: 4.9 },
+      seller: { id: 14, name: 'คุณสมศรณ์', email: 'somshorn@haatee.com', phone: '088-678-9012', verified: true, rating: 4.9 },
+      sellerId: 14,
       expiryDate: '2025-12-09'
     },
     {
@@ -325,6 +355,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'วิลล่าพูลวิว เชียงใหม่ วิวธรรมชาติสวยงาม บรรยากาศเงียบสงบ ใจกลางป่า',
       amenities: ['สระว่ายน้ำ', 'สวน', 'ห้องนั่งเล่นกลางแจ้ง', 'ที่จอดรถ'],
       owner: { name: 'คุณวัชรา', verified: true, rating: 4.8 },
+      seller: { id: 15, name: 'คุณวัชรา', email: 'wachara@haatee.com', phone: '081-789-0123', verified: true, rating: 4.8 },
+      sellerId: 15,
       expiryDate: '2025-12-21'
     },
     {
@@ -344,6 +376,8 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       description: 'วิลล่าสตูดิโอสอเต้ ประมาณ สไตล์สมัยใหม่ ใกล้ทะเล สิ่งอำนวยครบ',
       amenities: ['สระว่ายน้ำ', 'บาร์ลาว', 'ที่จอดรถ', 'ระบบรักษาความปลอดภัย'],
       owner: { name: 'คุณวิมล', verified: true, rating: 4.7 },
+      seller: { id: 16, name: 'คุณวิมล', email: 'vimon@haatee.com', phone: '087-890-1234', verified: true, rating: 4.7 },
+      sellerId: 16,
       expiryDate: '2025-12-27'
     },
   ];
