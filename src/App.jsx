@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Home from './pages/Home';
 import Properties from './pages/Properties';
+import PropertyDetail from './pages/PropertyDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -13,6 +14,7 @@ import './App.css';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
+  const [selectedProperty, setSelectedProperty] = useState(null);
   const [showLoginToast, setShowLoginToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -22,7 +24,10 @@ const App = () => {
     setTimeout(() => setShowLoginToast(false), 3000);
   };
 
-  const navigateTo = (page) => {
+  const navigateTo = (page, params = {}) => {
+    if (page === 'propertyDetail' && params.property) {
+      setSelectedProperty(params.property);
+    }
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
@@ -31,6 +36,7 @@ const App = () => {
     <div className="app-container">
       {currentPage === 'home' && <Home onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
       {currentPage === 'properties' && <Properties onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
+      {currentPage === 'propertyDetail' && <PropertyDetail property={selectedProperty} onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
       {currentPage === 'about' && <About onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
       {currentPage === 'contact' && <Contact onNavigate={navigateTo} onLoginRequired={handleLoginRequired} />}
       {currentPage === 'login' && <Login onNavigate={navigateTo} />}
