@@ -510,7 +510,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
               <div className="properties-grid-wide-future">
                 {allProperties
                   .filter(p => p.type === 'บ้านเดี่ยว')
-                  .slice(0, 9)
+                  .slice(0, 10)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
                       <div className="property-image-future">
@@ -607,7 +607,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
               <div className="properties-grid-wide-future">
                 {allProperties
                   .filter(p => p.type === 'คอนโด')
-                  .slice(0, 9)
+                  .slice(0, 10)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
                       <div className="property-image-future">
@@ -704,7 +704,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
               <div className="properties-grid-wide-future">
                 {allProperties
                   .filter(p => p.type === 'ทาวน์เฮาส์')
-                  .slice(0, 9)
+                  .slice(0, 10)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
                       <div className="property-image-future">
@@ -801,7 +801,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
               <div className="properties-grid-wide-future">
                 {allProperties
                   .filter(p => p.type === 'บ้านแฝด')
-                  .slice(0, 9)
+                  .slice(0, 10)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
                       <div className="property-image-future">
@@ -898,7 +898,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
               <div className="properties-grid-wide-future">
                 {allProperties
                   .filter(p => p.type === 'วิลล่า')
-                  .slice(0, 9)
+                  .slice(0, 10)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
                       <div className="property-image-future">
