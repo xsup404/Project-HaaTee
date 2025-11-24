@@ -406,27 +406,26 @@ const Admin = ({ onNavigate }) => {
           <thead>
             <tr>
               <th>ชื่อผู้ใช้</th>
+              <th>อีเมล</th>
               <th>ประเภท</th>
               <th>สถานะ</th>
-              <th>วันที่สมัคร</th>
               <th>ดำเนินการ</th>
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5].map(i => (
-              <tr key={i}>
+            {users.slice(0, 10).map(user => (
+              <tr key={user.id}>
                 <td>
                   <div className="user-cell">
-                    <img src={`https://ui-avatars.com/api/?name=User+${i}`} alt="" />
+                    <img src={`https://ui-avatars.com/api/?name=${user.name}`} alt="" />
                     <div>
-                      <div className="user-name">ผู้ใช้ทดสอบ {i}</div>
-                      <div className="user-id">user{i}@haatee.com</div>
+                      <div className="user-name">{user.name}</div>
                     </div>
                   </div>
                 </td>
-                <td><span className="badge-type buyer">ผู้ซื้อ</span></td>
-                <td><span className="status-badge active">ใช้งาน</span></td>
-                <td>15 พ.ย. 2567</td>
+                <td>{user.email}</td>
+                <td><span className="badge-type buyer">{user.role === 'agent' ? 'ตัวแทน' : 'เจ้าของ'}</span></td>
+                <td><span className="status-badge active">{user.verified ? 'ยืนยันแล้ว' : 'รอยืนยัน'}</span></td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-btn"><Eye size={16} /></button>
@@ -494,14 +493,14 @@ const Admin = ({ onNavigate }) => {
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5].map(i => (
-              <tr key={i}>
-                <td><strong>คอนโด {i}</strong></td>
-                <td>เจ้าของ ทดสอบ</td>
-                <td>฿2,500,000</td>
-                <td><span className="badge-type">ขาย</span></td>
-                <td>1,245</td>
-                <td><span className="status-badge active">ใช้งาน</span></td>
+            {topProperties.slice(0, 10).map(prop => (
+              <tr key={prop.id}>
+                <td><strong>{prop.title}</strong></td>
+                <td>{prop.seller?.name || 'ไม่ระบุ'}</td>
+                <td>{prop.price}</td>
+                <td><span className="badge-type">{prop.type}</span></td>
+                <td>{(prop.views || 0).toLocaleString()}</td>
+                <td><span className="status-badge active">{prop.status === 'hot' ? 'ยอดนิยม' : 'ใช้งาน'}</span></td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-btn"><Eye size={16} /></button>
