@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import usersData from '../../data/users.json';
 import '../styles/Login.css';
 
 export default function Login({ onNavigate }) {
@@ -21,37 +22,20 @@ export default function Login({ onNavigate }) {
 
   // Admin Credentials
   const ADMIN_CREDENTIALS = {
-    'admin@haatee.com': '123456',
-    'admin123': '123456',
+    'admin@haatee.com': 'admin123456',
+    'admin123': 'admin123456',
   };
 
-  // User Credentials (สำหรับผู้ใช้ทั่วไป)
+  // User/Buyer Credentials (สำหรับผู้ซื้อ)
   const USER_CREDENTIALS = {
-    'user@haatee.com': 'user123456',
     'buyer@haatee.com': 'buyer123456',
-    'test@haatee.com': 'test123456',
   };
 
-  // Seller Credentials (สำหรับเจ้าของทรัพย์สิน/นายหน้า)
-  // ตรวจสอบจาก users.json ที่มีข้อมูลขายของจริง
-  const SELLER_CREDENTIALS = {
-    'damrong@haatee.com': 'seller123456',
-    'somsak@haatee.com': 'seller123456',
-    'anant@haatee.com': 'seller123456',
-    'vichai@haatee.com': 'seller123456',
-    'waruni@haatee.com': 'seller123456',
-    'company@realestateasia.com': 'seller123456',
-    'setthapol@haatee.com': 'seller123456',
-    'sirindhon@haatee.com': 'seller123456',
-    'somthorn@haatee.com': 'seller123456',
-    'arsa@haatee.com': 'seller123456',
-    'niyom@haatee.com': 'seller123456',
-    'samboorn@haatee.com': 'seller123456',
-    'piyo@haatee.com': 'seller123456',
-    'somshorn@haatee.com': 'seller123456',
-    'wachara@haatee.com': 'seller123456',
-    'vimon@haatee.com': 'seller123456',
-  };
+  // Seller Credentials - สร้างจาก users.json
+  const SELLER_CREDENTIALS = usersData.reduce((acc, user) => {
+    acc[user.email] = 'seller123456';
+    return acc;
+  }, {});
 
   useEffect(() => {
     if (step !== 'otp' || timer <= 0) return;
@@ -127,15 +111,9 @@ export default function Login({ onNavigate }) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(sellerEmail)) {
-      setMessage({ type: 'error', text: '⚠️ รูปแบบอีเมลไม่ถูกต้อง' });
-      return;
-    }
-
     setLoading(true);
     setTimeout(() => {
-      if (SELLER_CREDENTIALS[sellerEmail] === sellerPassword) {
+      if (SELLER_CREDENTIALS[sellerEmail.trim()] === sellerPassword) {
         setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
         setTimeout(() => {
           setStep('otp');
@@ -361,6 +339,20 @@ export default function Login({ onNavigate }) {
               {/* User Login Form */}
               {activeTab === 'user' && (
                 <form onSubmit={handleUserLogin} className="login-form">
+                  <div style={{
+                    padding: '12px 14px',
+                    background: 'transparent',
+                    border: '1px solid rgba(25, 118, 210, 0.15)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginBottom: '12px',
+                    fontSize: '11px',
+                    color: 'var(--text-dark)',
+                    lineHeight: '1.4'
+                  }}>
+                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
+                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer@haatee.com</code></p>
+                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer123456</code></p>
+                  </div>
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
                       อีเมล <span className="required">*</span>
@@ -451,8 +443,9 @@ export default function Login({ onNavigate }) {
                     lineHeight: '1.4'
                   }}>
                     <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
-                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller@haatee.com</code></p>
+                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>damrong@haatee.com</code></p>
                     <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller123456</code></p>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '10px', opacity: 0.7 }}>ใช้ email ผู้ขายจาก users.json ได้เลย</p>
                   </div>
 
                   <div className="form-group">
@@ -546,7 +539,7 @@ export default function Login({ onNavigate }) {
                   }}>
                     <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
                     <p style={{ margin: '2px 0' }}>🆔 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin@haatee.com</code></p>
-                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>123456</code></p>
+                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin123456</code></p>
                   </div>
 
                   <div className="form-group">
