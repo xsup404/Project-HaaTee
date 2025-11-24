@@ -448,9 +448,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -539,9 +536,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -636,9 +630,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -733,9 +724,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -830,9 +818,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -927,9 +912,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                         </button>
 
                         <div className="property-stats-future">
-                          <div className="stat-badge-future">
-                            <span>👁️ {property.views}</span>
-                          </div>
                           {property.rating && (
                             <div className="rating-badge-future">
                               <Star size={12} fill="currentColor" />
@@ -1238,9 +1220,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
                       </button>
 
                       <div className="property-stats-future">
-                        <div className="stat-badge-future">
-                          <span>👁️ {property.views}</span>
-                        </div>
                         {property.rating && (
                           <div className="rating-badge-future">
                             <Star size={12} fill="currentColor" />
