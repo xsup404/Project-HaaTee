@@ -411,8 +411,7 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
 
               <div className="properties-grid-future">
                 {allProperties
-                  .filter(p => p.featured)
-                  .sort((a, b) => b.views - a.views)
+                  .sort((a, b) => (b.views || 0) - (a.views || 0))
                   .slice(0, 3)
                   .map((property) => (
                     <div key={property.id} className="property-card-future" onClick={() => setSelectedProperty(property)}>
