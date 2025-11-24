@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import propertiesData from '../../data/properties.json';
 import usersData from '../../data/users.json';
+import reportsData from '../../data/reports.json';
 import { 
   LayoutDashboard, Users, Building2, FileText, AlertCircle, 
   MessageSquare, Settings, TrendingUp, Shield, Award,
@@ -39,60 +40,7 @@ const Admin = ({ onNavigate }) => {
   const [topProperties, setTopProperties] = useState([]);
   const [users, setUsers] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [issues, setIssues] = useState([
-    {
-      id: 1,
-      title: 'ระบบ Database ล่ม',
-      description: 'ต้องแก้ไขใน 24 ชั่วโมง',
-      severity: 'critical',
-      priority: 'เร่งด่วน',
-      emoji: '🔴',
-      bgColor: '#FEE2E2',
-      borderColor: '#EF4444',
-      textColor: '#991B1B',
-      subtextColor: '#7F1D1D',
-      priorityColor: '#DC2626'
-    },
-    {
-      id: 2,
-      title: 'บัญชีผู้ใช้ล็อคไม่ได้',
-      description: 'ต้องแก้ไขใน 3 วัน',
-      severity: 'high',
-      priority: 'สำคัญ',
-      emoji: '🟠',
-      bgColor: '#FFEDD5',
-      borderColor: '#F97316',
-      textColor: '#92400E',
-      subtextColor: '#B45309',
-      priorityColor: '#EA580C'
-    },
-    {
-      id: 3,
-      title: 'UI/UX ไม่ตรงกับ Design',
-      description: 'ต้องแก้ไขใน 1 สัปดาห์',
-      severity: 'high',
-      priority: 'สำคัญ',
-      emoji: '🟠',
-      bgColor: '#FFEDD5',
-      borderColor: '#F97316',
-      textColor: '#92400E',
-      subtextColor: '#B45309',
-      priorityColor: '#EA580C'
-    },
-    {
-      id: 4,
-      title: 'Performance ช้าลง',
-      description: 'ต้องแก้ไขเมื่อมีเวลา',
-      severity: 'low',
-      priority: 'ตามปกติ',
-      emoji: '🟡',
-      bgColor: '#FEFCE8',
-      borderColor: '#FCD34D',
-      textColor: '#713F12',
-      subtextColor: '#854D0E',
-      priorityColor: '#FBBD34'
-    }
-  ]);
+  const [issues, setIssues] = useState([]);
 
   // โหลดข้อมูลจริงจาก JSON
   useEffect(() => {
@@ -135,6 +83,45 @@ const Admin = ({ onNavigate }) => {
       setTopProperties(topProps);
       setUsers(usersData);
       setProperties(propertiesData);
+
+      // โหลดรายงานจริงจาก reports.json
+      const reportIssues = reportsData
+        .filter(report => report.status === 'open')
+        .sort((a, b) => {
+          const severityOrder = { critical: 0, high: 1, low: 2 };
+          return severityOrder[a.severity] - severityOrder[b.severity];
+        })
+        .map(report => {
+          const severityConfig = {
+            critical: {
+              emoji: '🔴',
+              bgColor: '#FEE2E2',
+              borderColor: '#EF4444',
+              textColor: '#991B1B',
+              subtextColor: '#7F1D1D',
+              priorityColor: '#DC2626'
+            },
+            high: {
+              emoji: '🟠',
+              bgColor: '#FFEDD5',
+              borderColor: '#F97316',
+              textColor: '#92400E',
+              subtextColor: '#B45309',
+              priorityColor: '#EA580C'
+            },
+            low: {
+              emoji: '🟡',
+              bgColor: '#FEFCE8',
+              borderColor: '#FCD34D',
+              textColor: '#713F12',
+              subtextColor: '#854D0E',
+              priorityColor: '#FBBD34'
+            }
+          };
+          const config = severityConfig[report.severity];
+          return { ...report, ...config };
+        });
+      setIssues(reportIssues);
     } catch (error) {
       console.error('Error loading data:', error);
     }
