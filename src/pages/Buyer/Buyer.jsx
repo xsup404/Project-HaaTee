@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Heart, MapPin, Bath, Bed, Search, Menu, X, ArrowRight, Building, Sparkles, CheckCircle, Star, TrendingUp, Users, Award, ChevronRight, ChevronDown, MessageCircle, Flag, Download, Calendar, User, Bell, Zap, Home as HomeIcon, FileCheck, Shield, Clock, BarChart3, Filter, MapPinIcon, Check, Trash2, Plus, Settings, FileText, Sliders, Lock, LogOut } from 'lucide-react';
 import propertiesData from '../../data/properties.json';
 import './Buyer.css';
@@ -75,11 +75,13 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
     }
   }, []);
 
-  // Load and filter properties
+  // Load and filter properties - OPTIMIZED: Load first 1000 only for better performance
   useEffect(() => {
     try {
-      // Sort by createdAt DESC (newest first)
-      const sorted = [...propertiesData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Sort by createdAt DESC (newest first) and limit to first 1000
+      const sorted = [...propertiesData]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 1000); // Limit for performance
       setAllProperties(sorted);
       setLoading(false);
     } catch (error) {
