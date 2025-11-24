@@ -1,35 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Heart, MapPin, Bed, Bath, Building, ChevronLeft, Send, Phone, MessageCircle, CheckCircle, User, Flag } from 'lucide-react';
+import { Heart, MapPin, Bed, Bath, Building, ChevronLeft, Phone, MessageCircle, CheckCircle, User, Flag } from 'lucide-react';
 import '../styles/PropertyDetail.css';
 
 const PropertyDetail = ({ property, onNavigate, onLoginRequired }) => {
   const [isSaved, setIsSaved] = useState(false);
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState([
-    { id: 1, sender: 'owner', text: 'สวัสดีค่ะ ยินดีต้อนรับครับ', time: '10:30 AM' },
-    { id: 2, sender: 'buyer', text: 'สวัสดีค่ะ ทรัพย์สินนี้ยังว่างอยู่ไหมค่ะ', time: '10:35 AM' },
-    { id: 3, sender: 'owner', text: 'ว่างอยู่ครับ พร้อมให้ทำสัญญาได้เลยครับ', time: '10:36 AM' }
-  ]);
   const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleSendMessage = () => {
-    if (!chatMessage.trim()) return;
-    setChatMessages([
-      ...chatMessages,
-      {
-        id: chatMessages.length + 1,
-        sender: 'buyer',
-        text: chatMessage,
-        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-      }
-    ]);
-    setChatMessage('');
-    setTimeout(scrollToBottom, 100);
-  };
 
   if (!property) {
     return (
@@ -64,8 +39,13 @@ const PropertyDetail = ({ property, onNavigate, onLoginRequired }) => {
       <div className="pd-main">
         {/* Gallery Section */}
         <div className="pd-gallery-wrapper">
-          <div className="pd-gallery-main">
-            <img src={property.image} alt={property.title} />
+          <div className="pd-gallery-main-container">
+            <div className="pd-gallery-main">
+              <img src={property.image} alt={property.title} />
+              <div className="pd-gallery-badge">
+                <span className="pd-badge-featured">Featured</span>
+              </div>
+            </div>
           </div>
           <div className="pd-gallery-thumbnails">
             <div className="pd-thumbnail-item active">
@@ -168,31 +148,130 @@ const PropertyDetail = ({ property, onNavigate, onLoginRequired }) => {
             </div>
           )}
 
-          {/* Chat Section */}
+          {/* Location Map Section */}
           <div className="pd-section">
-            <h3>แชทกับเจ้าของ</h3>
-            <div className="pd-chat-box">
-              <div className="pd-messages">
-                {chatMessages.map((msg) => (
-                  <div key={msg.id} className={`pd-message ${msg.sender}`}>
-                    <div className="pd-msg-content">{msg.text}</div>
-                    <div className="pd-msg-time">{msg.time}</div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
+            <h3>📍 ตำแหน่งที่ตั้ง</h3>
+            <div className="pd-map-container">
+              <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" className="pd-map">
+                <rect width="400" height="300" fill="#E8F4F8" />
+                <circle cx="100" cy="150" r="40" fill="#B3E5FC" opacity="0.5" />
+                <circle cx="350" cy="100" r="30" fill="#B3E5FC" opacity="0.5" />
+                <line x1="0" y1="75" x2="400" y2="75" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <line x1="0" y1="150" x2="400" y2="150" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <line x1="0" y1="225" x2="400" y2="225" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <line x1="100" y1="0" x2="100" y2="300" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <line x1="200" y1="0" x2="200" y2="300" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <line x1="300" y1="0" x2="300" y2="300" stroke="#BDBDBD" strokeWidth="0.5" opacity="0.3" />
+                <rect x="10" y="100" width="380" height="4" fill="#F9A825" opacity="0.6" />
+                <rect x="50" y="10" width="4" height="280" fill="#F9A825" opacity="0.6" />
+                <rect x="180" y="40" width="4" height="220" fill="#F9A825" opacity="0.6" />
+                <rect x="30" y="50" width="30" height="30" fill="#90CAF9" />
+                <rect x="80" y="60" width="25" height="25" fill="#90CAF9" />
+                <rect x="250" y="120" width="35" height="35" fill="#90CAF9" />
+                <rect x="320" y="180" width="28" height="28" fill="#90CAF9" />
+                <circle cx="200" cy="150" r="12" fill="#F44336" />
+                <circle cx="200" cy="150" r="8" fill="white" />
+                <path d="M 200 160 L 195 175 L 200 180 L 205 175 Z" fill="#F44336" />
+              </svg>
+              <p className="pd-location-text">
+                <MapPin size={18} />
+                {property.location}
+              </p>
+            </div>
+          </div>
+
+          {/* Floor Plan Section */}
+          {property.floorPlan && (
+            <div className="pd-section">
+              <h3>🏠 แปลนบ้าน</h3>
+              <div className="pd-floorplan-container">
+                <img src={property.floorPlan} alt="Floor Plan" className="pd-floorplan-image" />
               </div>
-              <div className="pd-input-box">
-                <input
-                  type="text"
-                  placeholder="พิมพ์ข้อความ..."
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="pd-input"
-                />
-                <button className="pd-send-btn" onClick={handleSendMessage}>
-                  <Send size={20} />
-                </button>
+            </div>
+          )}
+
+          {/* Detailed Features Section */}
+          <div className="pd-section">
+            <h3>✨ รายละเอียดเพิ่มเติม</h3>
+            <div className="pd-features-grid">
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">🏗️</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">โครงสร้าง</p>
+                  <p className="pd-feature-value">คอนกรีตเสริมเหล็ก</p>
+                </div>
+              </div>
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">📅</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">ปีที่สร้าง</p>
+                  <p className="pd-feature-value">2020</p>
+                </div>
+              </div>
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">🛏️</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">ห้องนอน</p>
+                  <p className="pd-feature-value">{property.beds} ห้อง</p>
+                </div>
+              </div>
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">🛁</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">ห้องน้ำ</p>
+                  <p className="pd-feature-value">{property.baths} ห้อง</p>
+                </div>
+              </div>
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">📐</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">พื้นที่</p>
+                  <p className="pd-feature-value">{property.size}</p>
+                </div>
+              </div>
+              <div className="pd-feature-item">
+                <div className="pd-feature-icon">🔑</div>
+                <div className="pd-feature-content">
+                  <p className="pd-feature-label">สถานะ</p>
+                  <p className="pd-feature-value">พร้อมอยู่</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Nearby Amenities Section */}
+          <div className="pd-section">
+            <h3>🏪 สิ่งอำนวยความสะดวกใกล้เคียง</h3>
+            <div className="pd-nearby-grid">
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🏥</div>
+                <p>โรงพยาบาล</p>
+                <span>500 ม.</span>
+              </div>
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🏫</div>
+                <p>โรงเรียน</p>
+                <span>800 ม.</span>
+              </div>
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🛒</div>
+                <p>ห้างสรรพสินค้า</p>
+                <span>1 กม.</span>
+              </div>
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🚊</div>
+                <p>สถานีรถไฟฟ้า</p>
+                <span>1.5 กม.</span>
+              </div>
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🍔</div>
+                <p>ร้านอาหาร</p>
+                <span>300 ม.</span>
+              </div>
+              <div className="pd-nearby-item">
+                <div className="pd-nearby-icon">🏋️</div>
+                <p>ห้องฟิตเนส</p>
+                <span>600 ม.</span>
               </div>
             </div>
           </div>

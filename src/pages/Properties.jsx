@@ -28,7 +28,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 12900000,
       verified: true,
       rating: 4.7,
-      views: 756
+      views: 756,
+      description: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น สภาพดีมาก ตกแต่งสวย พื้นที่กว้างขวาง เหมาะสำหรับการอยู่อาศัย มีอุปกรณ์ครบครัน',
+      amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'ใกล้ห้าง', 'ใกล้โรงเรียน'],
+      owner: { name: 'คุณดำรง', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-20'
     },
     {
       id: 2,
@@ -44,7 +48,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       verified: true,
       rating: 4.9,
-      views: 1120
+      views: 1120,
+      description: 'บ้านหรูระดับเอกมัย ดีไซน์สวยงาม พื้นที่ใหญ่ สิ่งอำนวยความสะดวกครบครัน ทำเลดีตรงใจ',
+      amenities: ['สระว่ายน้ำ', 'โครงการปิด', 'ห้องยิม', 'ที่จอดรถ 2 คัน'],
+      owner: { name: 'คุณดำรง', verified: true, rating: 4.9 },
+      expiryDate: '2025-12-15'
     },
     {
       id: 3,
@@ -59,7 +67,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 5200000,
       verified: false,
       rating: 4.4,
-      views: 423
+      views: 423,
+      description: 'บ้านสวนแนวราบ บรรยากาศเงียบสงบ เหมาะสำหรับการอยู่อาศัยครอบครัว ที่ดินกว้างมีสวน',
+      amenities: ['ที่จอดรถ', 'สนามสีเขียว', 'เบาบ้าน'],
+      owner: { name: 'คุณสมศักดิ์', verified: false, rating: 4.4 },
+      expiryDate: '2025-12-25'
     },
     {
       id: 4,
@@ -74,7 +86,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 8900000,
       verified: true,
       rating: 4.6,
-      views: 542
+      views: 542,
+      description: 'บ้านเดี่ยว 3 ชั้น ตั้งอยู่ในบางแสน สภาพใหม่ ใกล้ชายหาด เหมาะสำหรับสันทนาการ',
+      amenities: ['สระว่ายน้ำ', 'จอดรถ', 'ใกล้ชายหาด', 'ห้องนั่งเล่นใหญ่'],
+      owner: { name: 'คุณอนันต์', verified: true, rating: 4.6 },
+      expiryDate: '2025-12-18'
     },
     {
       id: 5,
@@ -89,7 +105,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 9500000,
       verified: true,
       rating: 4.5,
-      views: 678
+      views: 678,
+      description: 'บ้านสไตล์ Minimalist สีขาวดีไซน์โมเดิร์น สะอาด พื้นที่ใช้สอยได้เต็มที่',
+      amenities: ['ที่จอดรถ 2 คัน', 'สวน', 'ใกล้ BTS'],
+      owner: { name: 'คุณวิชัย', verified: true, rating: 4.5 },
+      expiryDate: '2025-12-22'
     },
     // คอนโด
     {
@@ -106,7 +126,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       verified: true,
       rating: 4.8,
-      views: 980
+      views: 980,
+      description: 'คอนโดมิเนียมหรูริมแม่น้ำเจ้าพระยา วิวที่สวยงาม ติดต่อโครงการ ใกล้ BTS, MRT',
+      amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'ห้องประชุม', 'บาร์ลาว'],
+      owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 },
+      expiryDate: '2025-12-10'
     },
     {
       id: 7,
@@ -121,7 +145,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 6800000,
       verified: true,
       rating: 4.5,
-      views: 534
+      views: 534,
+      description: 'คอนโดโมเดิร์นในอารีย์ ใจกลางเมือง ใกล้สถานี BTS เหมาะสำหรับคนทำงาน',
+      amenities: ['ยิม', 'ลิฟท์', 'ที่จอดรถ', 'WiFi'],
+      owner: { name: 'บริษัท ดวลประมาณ', verified: true, rating: 4.5 },
+      expiryDate: '2025-12-28'
     },
     {
       id: 8,
@@ -136,7 +164,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 15500000,
       verified: true,
       rating: 4.7,
-      views: 890
+      views: 890,
+      description: 'คอนโด Luxury ในทองหล่อ ทำเลดี ใกล้ห้างสรรพสินค้า สิ่งอำนวยสมบูรณ์',
+      amenities: ['สระว่ายน้ำ', 'สปา', 'สลอยด์', 'จอดรถครบ'],
+      owner: { name: 'คุณเศรษฐ', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-12'
     },
     {
       id: 9,
@@ -151,7 +183,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 12000000,
       verified: true,
       rating: 4.6,
-      views: 742
+      views: 742,
+      description: 'คอนโด Hi-Rise สีลม วิวเมือง 180 องศา ตำแหน่งมุม สิ่งอำนวยครบครัน',
+      amenities: ['สระว่ายน้ำ 2 ชั้น', 'ยิมขนาดใหญ่', 'ร้านอาหาร', 'เคเบิล'],
+      owner: { name: 'คุณสิรินธร', verified: true, rating: 4.6 },
+      expiryDate: '2025-12-17'
     },
     {
       id: 10,
@@ -166,7 +202,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 9800000,
       verified: true,
       rating: 4.7,
-      views: 856
+      views: 856,
+      description: 'คอนโด Pool Villa สุขุมวิท ตำแหน่งดี ใกล้ห้างเปิดใหม่ วิวสวนฟรี',
+      amenities: ['สระว่ายน้ำ', 'สวน', 'ยิม', 'บาร์ลาว'],
+      owner: { name: 'คุณสมทรง', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-23'
     },
     // ทาวน์เฮาส์
     {
@@ -182,7 +222,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 8500000,
       verified: true,
       rating: 4.6,
-      views: 645
+      views: 645,
+      description: 'ทาวน์โฮม 3 ชั้น ตั้งอยู่ใกล้สถานีรถไฟฟ้า BTS สะดวกในการสัญจรไปมา ตกแต่งอย่างดี',
+      amenities: ['สระว่ายน้ำส่วนตัว', 'จอดรถ', 'ระบบรักษาความปลอดภัย', 'สวนหน้าบ้าน'],
+      owner: { name: 'คุณอรษา', verified: true, rating: 4.6 },
+      expiryDate: '2025-12-19'
     },
     {
       id: 12,
@@ -198,7 +242,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       verified: true,
       rating: 4.7,
-      views: 521
+      views: 521,
+      description: 'ทาวน์เฮาส์โมเดิร์นในบางนา ติดต่อศูนย์การค้า สภาพใหม่ มีสำนัก Sport Club',
+      amenities: ['สระว่ายน้ำ', 'ยิม', 'โครงการปิด', 'ที่จอดรถ 2 คัน'],
+      owner: { name: 'คุณนิยม', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-14'
     },
     {
       id: 13,
@@ -213,7 +261,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 6500000,
       verified: true,
       rating: 4.5,
-      views: 412
+      views: 412,
+      description: 'ทาวน์เฮาส์ 2 ชั้น ลาดพร้าว บรรยากาศสงบ ใกล้สถานีรถไฟฟ้า โครงการดี',
+      amenities: ['ที่จอดรถ', 'โครงการปิด', 'ระบบรักษาความปลอดภัย'],
+      owner: { name: 'คุณสมบูรณ์', verified: true, rating: 4.5 },
+      expiryDate: '2025-12-26'
     },
     {
       id: 14,
@@ -228,7 +280,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 8900000,
       verified: true,
       rating: 4.8,
-      views: 634
+      views: 634,
+      description: 'ทาวน์เฮาส์ 3 ชั้น เอกมัย ใกล้ห้างสรรพสินค้า ทำเลดี โครงการปิด',
+      amenities: ['สระว่ายน้ำ', 'ยิม', 'ที่จอดรถ 2 คัน', 'รักษาความปลอดภัย 24/7'],
+      owner: { name: 'คุณปิยา', verified: true, rating: 4.8 },
+      expiryDate: '2025-12-11'
     },
     // วิลล่า
     {
@@ -245,7 +301,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       verified: true,
       rating: 4.9,
-      views: 1250
+      views: 1250,
+      description: 'วิลล่าหรูหาดกะตะ หาดชาด วิวทะเลมหัศจรรย์ ใกล้ชายหาด สิ่งอำนวยครบครัน',
+      amenities: ['สระว่ายน้ำส่วนตัว', 'บาร์ลาว', 'ห้องยิม', 'จอดรถหลายคัน'],
+      owner: { name: 'คุณสมศรณ์', verified: true, rating: 4.9 },
+      expiryDate: '2025-12-09'
     },
     {
       id: 16,
@@ -261,7 +321,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       verified: true,
       rating: 4.8,
-      views: 945
+      views: 945,
+      description: 'วิลล่าพูลวิว เชียงใหม่ วิวธรรมชาติสวยงาม บรรยากาศเงียบสงบ ใจกลางป่า',
+      amenities: ['สระว่ายน้ำ', 'สวน', 'ห้องนั่งเล่นกลางแจ้ง', 'ที่จอดรถ'],
+      owner: { name: 'คุณวัชรา', verified: true, rating: 4.8 },
+      expiryDate: '2025-12-21'
     },
     {
       id: 17,
@@ -276,7 +340,11 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       priceValue: 35500000,
       verified: true,
       rating: 4.7,
-      views: 678
+      views: 678,
+      description: 'วิลล่าสตูดิโอสอเต้ ประมาณ สไตล์สมัยใหม่ ใกล้ทะเล สิ่งอำนวยครบ',
+      amenities: ['สระว่ายน้ำ', 'บาร์ลาว', 'ที่จอดรถ', 'ระบบรักษาความปลอดภัย'],
+      owner: { name: 'คุณวิมล', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-27'
     },
   ];
 

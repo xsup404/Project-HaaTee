@@ -47,7 +47,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       description: 'วิลล่าสมัยใหม่หรูหรา ตั้งอยู่ใกล้ชายหาดที่สวยงาม วิวทะเลอันดามันชั้นหนึ่ง สระว่ายน้ำส่วนตัว ระบบ Smart Home ครบครัน พื้นที่กว้างขวาง เหมาะสำหรับครอบครัวใหญ่',
       amenities: ['สระว่ายน้ำ', 'จอดรถ', 'Smart Home', 'เครื่องปรับอากาศ', 'ครัวเปิด'],
-      owner: { name: 'คุณสมชาย', verified: true, rating: 4.8 }
+      owner: { name: 'คุณสมชาย', verified: true, rating: 4.8 },
+      expiryDate: '2025-12-31'
     },
     {
       id: 2,
@@ -62,7 +63,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       description: 'คอนโดมิเนียมหรูริมแม่น้ำเจ้าพระยา วิวที่สวยงาม ติดต่อโครงการ ใกล้ BTS, MRT โครงการดี มีระบบรักษาความปลอดภัยครบครัน',
       amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'ห้องประชุม', 'บาร์ลาว', 'จอดรถ'],
-      owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 }
+      owner: { name: 'คุณวรรณี', verified: true, rating: 4.9 },
+      expiryDate: '2025-12-15'
     },
     {
       id: 3,
@@ -77,7 +79,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: false,
       description: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น สภาพดีมาก ตกแต่งสวย พื้นที่กว้างขวาง เหมาะสำหรับการอยู่อาศัย มีอุปกรณ์ครบครัน',
       amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'บ้านอยู่เเถบกัลปพฤกษ์', 'ใกล้ห้าง'],
-      owner: { name: 'คุณดำรง', verified: true, rating: 4.7 }
+      owner: { name: 'คุณดำรง', verified: true, rating: 4.7 },
+      expiryDate: '2025-12-20'
     },
     {
       id: 4,
@@ -92,7 +95,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: false,
       description: 'ทาวน์โฮม 3 ชั้น ตั้งอยู่ใกล้สถานีรถไฟฟ้า BTS สะดวกในการสัญจรไปมา ตกแต่งอย่างดี มีระบบรักษาความปลอดภัย',
       amenities: ['สระว่ายน้ำส่วนตัว', 'จอดรถ', 'ระบบรักษาความปลอดภัย', 'สวนหน้าบ้าน'],
-      owner: { name: 'คุณอรษา', verified: true, rating: 4.6 }
+      owner: { name: 'คุณอรษา', verified: true, rating: 4.6 },
+      expiryDate: '2025-12-25'
     },
     {
       id: 5,
@@ -107,7 +111,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: true,
       description: 'บ้านพูลวิลล่าเชียงใหม่ สภาพใหม่สวย สระว่ายน้ำเป็นส่วนตัว สวนกว้างขวาง วิวธรรมชาติสวย ราคาดีมาก',
       amenities: ['สระว่ายน้ำ', 'จอดรถ 2 คัน', 'สวนสัตว์เลี้ยง', 'ครัวใหญ่'],
-      owner: { name: 'คุณชัยศักดิ์', verified: true, rating: 5.0 }
+      owner: { name: 'คุณชัยศักดิ์', verified: true, rating: 5.0 },
+      expiryDate: '2025-12-10'
     },
     {
       id: 6,
@@ -122,7 +127,8 @@ const Home = ({ onNavigate, onLoginRequired }) => {
       featured: false,
       description: 'อพาร์ทเมนท์หรูในหัวใจของกรุงเทพ ใกล้สถานี BTS, MRT พร้อมเข้าอยู่ได้ทันที ตกแต่งสวยสมบูรณ์',
       amenities: ['สระว่ายน้ำ', 'ห้องฟิตเนส', 'จอดรถ', 'รักษาความปลอดภัย 24 ชม'],
-      owner: { name: 'บริษัท เรียลทาวเวอร์', verified: true, rating: 4.8 }
+      owner: { name: 'บริษัท เรียลทาวเวอร์', verified: true, rating: 4.8 },
+      expiryDate: '2025-12-28'
     },
   ];
 

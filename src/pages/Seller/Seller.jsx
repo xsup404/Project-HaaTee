@@ -4,7 +4,6 @@ import { Menu, X, Plus, BarChart3, MessageCircle, FileText, User, LogOut,
   Clock, TrendingUp, Users, Award, Search, Calendar, Phone, Mail, 
   Bed, Bath, Zap, Download, ArrowRight, CheckCircle, Settings, Bell, Lock, Home as HomeIcon,
   ChevronRight, MoreVertical, AlertTriangle, Send, RotateCw } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import './Seller.css';
 
 const Seller = ({ onNavigate, onLoginRequired }) => {
@@ -20,7 +19,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [showAnalyticsCharts, setShowAnalyticsCharts] = useState(true);
-  const [analyticsPeriod, setAnalyticsPeriod] = useState('7');
 
   // Form states
   const [newListing, setNewListing] = useState({
@@ -700,57 +698,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   );
 
   // Analytics View
-  const getChartData = () => {
-    const allData = {
-      '7': [
-        { date: 'วันจันทร์', views: 240, saves: 85, contacts: 24 },
-        { date: 'วันอังคาร', views: 421, saves: 98, contacts: 35 },
-        { date: 'วันพุธ', views: 380, saves: 125, contacts: 38 },
-        { date: 'วันพฤหัสบดี', views: 520, saves: 156, contacts: 52 },
-        { date: 'วันศุกร์', views: 680, saves: 182, contacts: 68 },
-        { date: 'วันเสาร์', views: 590, saves: 165, contacts: 45 },
-        { date: 'วันอาทิตย์', views: 750, saves: 198, contacts: 75 }
-      ],
-      '14': [
-        { date: 'ว่า1', views: 240, saves: 85, contacts: 24 },
-        { date: 'ว่า2', views: 421, saves: 98, contacts: 35 },
-        { date: 'ว่า3', views: 380, saves: 125, contacts: 38 },
-        { date: 'ว่า4', views: 520, saves: 156, contacts: 52 },
-        { date: 'ว่า5', views: 680, saves: 182, contacts: 68 },
-        { date: 'ว่า6', views: 590, saves: 165, contacts: 45 },
-        { date: 'ว่า7', views: 750, saves: 198, contacts: 75 },
-        { date: 'ว่า8', views: 820, saves: 215, contacts: 82 },
-        { date: 'ว่า9', views: 680, saves: 178, contacts: 65 },
-        { date: 'ว่า10', views: 920, saves: 245, contacts: 95 },
-        { date: 'ว่า11', views: 850, saves: 210, contacts: 78 },
-        { date: 'ว่า12', views: 780, saves: 190, contacts: 72 },
-        { date: 'ว่า13', views: 650, saves: 170, contacts: 58 },
-        { date: 'ว่า14', views: 950, saves: 260, contacts: 98 }
-      ],
-      '30': [
-        { date: '1-5 พ.ย.', views: 1200, saves: 420, contacts: 120 },
-        { date: '6-10 พ.ย.', views: 1850, saves: 580, contacts: 185 },
-        { date: '11-15 พ.ย.', views: 2100, saves: 650, contacts: 210 },
-        { date: '16-20 พ.ย.', views: 1950, saves: 620, contacts: 195 },
-        { date: '21-25 พ.ย.', views: 2300, saves: 720, contacts: 240 },
-        { date: '26-30 พ.ย.', views: 2050, saves: 680, contacts: 210 }
-      ],
-      '90': [
-        { date: 'ก.ย.', views: 5200, saves: 1620, contacts: 520 },
-        { date: 'ต.ค.', views: 6800, saves: 2100, contacts: 680 },
-        { date: 'พ.ย.', views: 7200, saves: 2300, contacts: 750 }
-      ]
-    };
-    return allData[analyticsPeriod] || allData['7'];
-  };
-
-  const chartData = getChartData();
-
-  const propertyTypeData = [
-    { name: 'ขาย', value: listings.filter(l => l.type === 'sell').length, color: '#3B82F6' },
-    { name: 'เช่า', value: listings.filter(l => l.type === 'rent').length, color: '#10B981' }
-  ];
-
   const renderAnalytics = () => (
     <div className="dashboard-wrapper">
       <div className="page-header">
@@ -763,147 +710,86 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       <div className="charts-grid">
         <div className="card-section large">
           <div className="section-header">
-            <h3>สถิติ {analyticsPeriod === '7' ? '7 วัน' : analyticsPeriod === '14' ? '14 วัน' : analyticsPeriod === '30' ? '1 เดือน' : '3 เดือน'}ล่าสุด</h3>
-            <select 
-              className="period-select"
-              value={analyticsPeriod}
-              onChange={(e) => setAnalyticsPeriod(e.target.value)}
-            >
-              <option value="7">7 วัน</option>
-              <option value="14">14 วัน</option>
-              <option value="30">1 เดือน</option>
-              <option value="90">3 เดือน</option>
+            <h3>สถิติ 7 วันล่าสุด</h3>
+            <select className="period-select">
+              <option>7 วัน</option>
+              <option>14 วัน</option>
+              <option>1 เดือน</option>
+              <option>3 เดือน</option>
             </select>
           </div>
-          <div className="chart-container">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <defs>
-                  <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorSaves" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorContacts" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F97316" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#F97316" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis dataKey="date" fontSize={12} stroke="#718096" />
-                <YAxis fontSize={12} stroke="#718096" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                  }}
-                  cursor={{ stroke: '#E2E8F0', strokeWidth: 2 }}
-                  formatter={(value) => value.toLocaleString()}
-                />
-                <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                <Line 
-                  type="monotone" 
-                  dataKey="views" 
-                  stroke="#3B82F6" 
-                  name="ยอดดู"
-                  strokeWidth={3}
-                  dot={{ fill: '#3B82F6', r: 5 }}
-                  activeDot={{ r: 7, fill: '#0052A3' }}
-                  fillOpacity={1} 
-                  fill="url(#colorViews)"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="saves" 
-                  stroke="#10B981" 
-                  name="ยอดสนใจ"
-                  strokeWidth={3}
-                  dot={{ fill: '#10B981', r: 5 }}
-                  activeDot={{ r: 7, fill: '#059669' }}
-                  fillOpacity={1} 
-                  fill="url(#colorSaves)"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="contacts" 
-                  stroke="#F97316" 
-                  name="ยอดติดต่อ"
-                  strokeWidth={3}
-                  dot={{ fill: '#F97316', r: 5 }}
-                  activeDot={{ r: 7, fill: '#DC2626' }}
-                  fillOpacity={1} 
-                  fill="url(#colorContacts)"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="chart-placeholder">
+            <div className="chart-svg">
+              <svg viewBox="0 0 500 200" style={{ width: '100%', height: '200px' }}>
+                {/* Bar chart simulation */}
+                <rect x="40" y="120" width="40" height="60" fill="#3B82F6" opacity="0.8" />
+                <rect x="90" y="80" width="40" height="100" fill="#3B82F6" opacity="0.6" />
+                <rect x="140" y="100" width="40" height="80" fill="#3B82F6" opacity="0.8" />
+                <rect x="190" y="60" width="40" height="120" fill="#10B981" opacity="0.8" />
+                <rect x="240" y="40" width="40" height="140" fill="#10B981" opacity="0.6" />
+                <rect x="290" y="70" width="40" height="110" fill="#F97316" opacity="0.8" />
+                <rect x="340" y="50" width="40" height="130" fill="#F97316" opacity="0.6" />
+                {/* Axes */}
+                <line x1="30" y1="30" x2="30" y2="180" stroke="#E2E8F0" strokeWidth="2" />
+                <line x1="30" y1="180" x2="400" y2="180" stroke="#E2E8F0" strokeWidth="2" />
+                {/* Labels */}
+                <text x="60" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.1</text>
+                <text x="110" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.2</text>
+                <text x="160" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.3</text>
+                <text x="210" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.4</text>
+                <text x="260" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.5</text>
+                <text x="310" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.6</text>
+                <text x="360" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.7</text>
+              </svg>
+            </div>
+            <div className="chart-legend">
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#3B82F6' }}></span>
+                <span>ยอดดู</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#10B981' }}></span>
+                <span>ยอดสนใจ</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-color" style={{ backgroundColor: '#F97316' }}></span>
+                <span>ยอดติดต่อ</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="card-section full-width-stats">
+        <div className="card-section">
           <div className="section-header">
-            <h3>สรุปสถิติสำคัญ</h3>
+            <h3>สัดส่วนประเภท</h3>
           </div>
-          
-          <div className="stats-cards-grid-2x2">
-            <div className="stat-card-2x2 blue">
-              <div className="stat-card-2x2-top">
-                <div className="stat-card-2x2-icon">👁</div>
-                <div className="stat-card-2x2-label">ยอดดูทั้งหมด</div>
-              </div>
-              <div className="stat-card-2x2-value">{stats.totalViews.toLocaleString()}</div>
-              <div className="stat-card-2x2-description">จำนวนครั้งที่ผู้ใช้เข้าดูประกาศของคุณ</div>
+          <div className="stat-info-grid">
+            <div className="stat-info-item">
+              <span className="stat-label">ขาย</span>
+              <strong>{listings.filter(l => l.type === 'sell').length}</strong>
             </div>
-
-            <div className="stat-card-2x2 green">
-              <div className="stat-card-2x2-top">
-                <div className="stat-card-2x2-icon">💚</div>
-                <div className="stat-card-2x2-label">ยอดสนใจ</div>
-              </div>
-              <div className="stat-card-2x2-value">{stats.totalSaves.toLocaleString()}</div>
-              <div className="stat-card-2x2-description">จำนวนคนที่บันทึกประกาศของคุณ</div>
-            </div>
-
-            <div className="stat-card-2x2 orange">
-              <div className="stat-card-2x2-top">
-                <div className="stat-card-2x2-icon">📞</div>
-                <div className="stat-card-2x2-label">ยอดติดต่อ</div>
-              </div>
-              <div className="stat-card-2x2-value">{stats.totalContacts.toLocaleString()}</div>
-              <div className="stat-card-2x2-description">จำนวนผู้ที่สนใจและติดต่อมา</div>
-            </div>
-
-            <div className="stat-card-2x2 purple">
-              <div className="stat-card-2x2-top">
-                <div className="stat-card-2x2-icon">📈</div>
-                <div className="stat-card-2x2-label">อัตราการแปลง</div>
-              </div>
-              <div className="stat-card-2x2-value">{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</div>
-              <div className="stat-card-2x2-description">เปอร์เซ็นต์ผู้ดูที่ติดต่อ</div>
+            <div className="stat-info-item">
+              <span className="stat-label">เช่า</span>
+              <strong>{listings.filter(l => l.type === 'rent').length}</strong>
             </div>
           </div>
 
-          <div className="property-type-section">
-            <h4>การแจกแจงประเภททรัพย์</h4>
-            <div className="property-type-cards-wide">
-              <div className="property-type-card-wide">
-                <span className="property-icon">🏢</span>
-                <div className="property-info">
-                  <p className="property-label">ขายสิ่งปลูกสร้าง</p>
-                  <p className="property-count">{listings.filter(l => l.type === 'sell').length} ประกาศ</p>
-                </div>
-              </div>
-              <div className="property-type-card-wide">
-                <span className="property-icon">🏠</span>
-                <div className="property-info">
-                  <p className="property-label">เช่าสิ่งปลูกสร้าง</p>
-                  <p className="property-count">{listings.filter(l => l.type === 'rent').length} ประกาศ</p>
-                </div>
-              </div>
+          <div className="stats-summary" style={{ marginTop: '20px' }}>
+            <div className="summary-row">
+              <span>ยอดดูทั้งหมด:</span>
+              <strong>{stats.totalViews.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row">
+              <span>ยอดสนใจทั้งหมด:</span>
+              <strong>{stats.totalSaves.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row">
+              <span>ยอดติดต่อทั้งหมด:</span>
+              <strong>{stats.totalContacts.toLocaleString()}</strong>
+            </div>
+            <div className="summary-row" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '12px', marginTop: '12px' }}>
+              <span>อัตราการแปลง:</span>
+              <strong style={{ color: '#10B981' }}>{((stats.totalContacts / Math.max(stats.totalViews, 1)) * 100).toFixed(1)}%</strong>
             </div>
           </div>
         </div>

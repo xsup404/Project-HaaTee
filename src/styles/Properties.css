@@ -877,13 +877,4 @@
     top: 70px;
   }
 }
-  .properties-grid-future {
-    grid-template-columns: 1fr;
-    gap: var(--space-xl);
-  }
-
-  .properties-results-future {
-    top: 70px;
-  }
-}
 

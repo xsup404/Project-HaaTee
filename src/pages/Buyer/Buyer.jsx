@@ -56,6 +56,22 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Load search parameters from Home page
+  useEffect(() => {
+    const params = sessionStorage.getItem('homeSearchParams');
+    if (params) {
+      try {
+        const searchParams = JSON.parse(params);
+        if (searchParams.location) setSelectedLocation(searchParams.location);
+        if (searchParams.type) setSelectedType(searchParams.type);
+        if (searchParams.price) setSelectedPrice(searchParams.price);
+        sessionStorage.removeItem('homeSearchParams');
+      } catch (e) {
+        console.error('Error parsing search params:', e);
+      }
+    }
+  }, []);
+
   const handleLogoutConfirm = () => {
     setIsLoggingOut(true);
     setTimeout(() => {
@@ -819,7 +835,6 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => setCurrentTab('browse')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">
