@@ -75,13 +75,13 @@ const Buyer = ({ onNavigate, onLoginRequired }) => {
     }
   }, []);
 
-  // Load and filter properties - OPTIMIZED: Load first 1000 only for better performance
+  // Load and filter properties - OPTIMIZED: Load first 300 only for better performance
   useEffect(() => {
     try {
-      // Sort by createdAt DESC (newest first) and limit to first 1000
+      // Sort by createdAt DESC (newest first) and limit to first 300
       const sorted = [...propertiesData]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 1000); // Limit for performance
+        .slice(0, 300); // Limit for fast performance
       setAllProperties(sorted);
       setLoading(false);
     } catch (error) {
