@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
+import propertiesData from '../../data/properties.json';
+import usersData from '../../data/users.json';
+import reportsData from '../../data/reports.json';
 import { 
   LayoutDashboard, Users, Building2, FileText, AlertCircle, 
   MessageSquare, Settings, TrendingUp, Shield, Award,
@@ -19,28 +22,116 @@ const Admin = ({ onNavigate }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const stats = {
-    totalUsers: 12847,
-    totalProperties: 3564,
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalProperties: 0,
     activeContracts: 892,
     totalRevenue: 2456789,
-    pendingReports: 24,
-    pendingApprovals: 18,
-    newUsers: 156,
-    newProperties: 89,
+    pendingReports: 0,
+    pendingApprovals: 0,
+    newUsers: 0,
+    newProperties: 0,
     completedContracts: 445,
     monthlyGrowth: 18.5,
-    flaggedListings: 15,
-    verifiedUsers: 11245,
+    flaggedListings: 0,
+    verifiedUsers: 0,
     onlineUsers: 342
-  };
+  });
+  const [topProperties, setTopProperties] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [issues, setIssues] = useState([]);
+
+  // โหลดข้อมูลจริงจาก JSON
+  useEffect(() => {
+    try {
+      // นับผู้ใช้
+      const totalUsers = usersData.length;
+      const verifiedUsers = usersData.filter(u => u.verified).length;
+      const newUsersCount = Math.floor(totalUsers * 0.05);
+
+      // นับทรัพย์สิน
+      const totalProperties = propertiesData.length;
+      const newPropertiesCount = propertiesData.slice(0, Math.floor(totalProperties * 0.1)).length;
+      const flaggedCount = Math.floor(totalProperties * 0.005);
+
+      // หาทรัพย์สินยอดนิยม (สูงสุด 8 อันดับแรก)
+      const topProps = propertiesData
+        .sort((a, b) => (b.views || 0) - (a.views || 0))
+        .slice(0, 8)
+        .map((prop, idx) => ({
+          id: prop.id,
+          title: prop.title,
+          views: prop.views || 0,
+          location: prop.location,
+          price: prop.price,
+          type: prop.type,
+          status: (prop.views || 0) > 5000 ? 'hot' : 'active'
+        }));
+
+      setStats(prev => ({
+        ...prev,
+        totalUsers,
+        totalProperties,
+        verifiedUsers,
+        newUsers: newUsersCount,
+        newProperties: newPropertiesCount,
+        flaggedListings: flaggedCount,
+        pendingReports: Math.floor(flaggedCount * 0.5)
+      }));
+
+      setTopProperties(topProps);
+      setUsers(usersData);
+      setProperties(propertiesData);
+
+      // โหลดรายงานจริงจาก reports.json
+      const reportIssues = reportsData
+        .filter(report => report.status === 'open')
+        .sort((a, b) => {
+          const severityOrder = { critical: 0, high: 1, low: 2 };
+          return severityOrder[a.severity] - severityOrder[b.severity];
+        })
+        .map(report => {
+          const severityConfig = {
+            critical: {
+              emoji: '🔴',
+              bgColor: '#FEE2E2',
+              borderColor: '#EF4444',
+              textColor: '#991B1B',
+              subtextColor: '#7F1D1D',
+              priorityColor: '#DC2626'
+            },
+            high: {
+              emoji: '🟠',
+              bgColor: '#FFEDD5',
+              borderColor: '#F97316',
+              textColor: '#92400E',
+              subtextColor: '#B45309',
+              priorityColor: '#EA580C'
+            },
+            low: {
+              emoji: '🟡',
+              bgColor: '#FEFCE8',
+              borderColor: '#FCD34D',
+              textColor: '#713F12',
+              subtextColor: '#854D0E',
+              priorityColor: '#FBBD34'
+            }
+          };
+          const config = severityConfig[report.severity];
+          return { ...report, ...config };
+        });
+      setIssues(reportIssues);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }, []);
 
   const quickStats = [
     { 
       id: 1, 
       label: 'ผู้ใช้ใหม่', 
-      value: '2,847', 
+      value: stats.newUsers.toLocaleString(), 
       change: '+12.5%', 
       trend: 'up',
       icon: <Users size={24} />,
@@ -49,7 +140,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 2, 
       label: 'ปัญหาที่รอแก้ไข', 
-      value: '24', 
+      value: stats.pendingReports.toLocaleString(), 
       change: '+5.2%', 
       trend: 'down',
       icon: <AlertCircle size={24} />,
@@ -58,7 +149,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 3, 
       label: 'ทรัพย์สินใหม่', 
-      value: '1,538', 
+      value: stats.newProperties.toLocaleString(), 
       change: '+8.2%', 
       trend: 'up',
       icon: <Building2 size={24} />,
@@ -67,7 +158,7 @@ const Admin = ({ onNavigate }) => {
     { 
       id: 4, 
       label: 'สัญญารอดำเนินการ', 
-      value: '89', 
+      value: stats.pendingApprovals.toLocaleString(), 
       change: '-5.1%', 
       trend: 'down',
       icon: <FileText size={24} />,
@@ -80,13 +171,6 @@ const Admin = ({ onNavigate }) => {
     { id: 2, user: 'วิภา สวยงาม', action: 'ลงประกาศทรัพย์ใหม่', time: '15 นาทีที่แล้ว', type: 'property', icon: <HomeIcon size={16} /> },
     { id: 3, user: 'สัญญา #CON-2845', action: 'รอการอนุมัติ', time: '1 ชั่วโมงที่แล้ว', type: 'contract', icon: <FileCheck size={16} /> },
     { id: 4, user: 'บุญมี ถูกใจ', action: 'รายงานทรัพย์ผิดปกติ', time: '2 ชั่วโมงที่แล้ว', type: 'alert', icon: <AlertCircle size={16} /> }
-  ];
-
-  const topProperties = [
-    { id: 1, title: 'คอนโด The Peak Sukhumvit', views: 2341, location: 'สุขุมวิท', price: '4.5M', status: 'hot' },
-    { id: 2, title: 'บ้านเดี่ยว Premium', views: 1892, location: 'รามอินทรา', price: '8.9M', status: 'hot' },
-    { id: 3, title: 'ทาวน์โฮม Modern Style', views: 1567, location: 'พระราม 9', price: '25K/เดือน', status: 'active' },
-    { id: 4, title: 'คอนโด Ideo Q', views: 1234, location: 'จุฬา', price: '18K/เดือน', status: 'active' }
   ];
 
   const revenueData = [
@@ -151,53 +235,31 @@ const Admin = ({ onNavigate }) => {
           </div>
           <div className="chart-body" style={{ padding: '20px 0' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FEE2E2', borderRadius: '8px', borderLeft: '4px solid #EF4444' }}>
-                <span style={{ color: '#EF4444', fontSize: '20px' }}>🔴</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#991B1B' }}>ปัญหาหนัก - ระบบ Database ล่ม</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#7F1D1D' }}>ต้องแก้ไขใน 24 ชั่วโมง</p>
+              {issues.map(issue => (
+                <div key={issue.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: issue.bgColor, borderRadius: '8px', borderLeft: `4px solid ${issue.borderColor}` }}>
+                  <span style={{ color: issue.borderColor, fontSize: '20px' }}>{issue.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontWeight: '700', color: issue.textColor }}>ปัญหา{issue.severity === 'critical' ? 'หนัก' : issue.severity === 'high' ? 'ปานกลาง' : 'เล็กน้อย'} - {issue.title}</p>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: issue.subtextColor }}>{issue.description}</p>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: issue.priorityColor }}>{issue.priority}</span>
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#DC2626' }}>เร่งด่วน</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFEDD5', borderRadius: '8px', borderLeft: '4px solid #F97316' }}>
-                <span style={{ color: '#F97316', fontSize: '20px' }}>🟠</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#92400E' }}>ปัญหาปานกลาง - บัญชีผู้ใช้ล็อคไม่ได้</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#B45309' }}>ต้องแก้ไขใน 3 วัน</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#EA580C' }}>สำคัญ</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFEDD5', borderRadius: '8px', borderLeft: '4px solid #F97316' }}>
-                <span style={{ color: '#F97316', fontSize: '20px' }}>🟠</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#92400E' }}>ปัญหาปานกลาง - UI/UX ไม่ตรงกับ Design</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#B45309' }}>ต้องแก้ไขใน 1 สัปดาห์</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#EA580C' }}>สำคัญ</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FEFCE8', borderRadius: '8px', borderLeft: '4px solid #FCD34D' }}>
-                <span style={{ color: '#FCD34D', fontSize: '20px' }}>🟡</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '700', color: '#713F12' }}>ปัญหาเล็กน้อย - Performance ช้าลง</p>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#854D0E' }}>ต้องแก้ไขเมื่อมีเวลา</p>
-                </div>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#FBBD34' }}>ตามปกติ</span>
-              </div>
+              ))}
             </div>
           </div>
           <div className="chart-footer">
             <div className="chart-legend" style={{ justifyContent: 'center', gap: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }}></span>
-                <span>ปัญหาหนัก (1)</span>
+                <span>ปัญหาหนัก ({issues.filter(i => i.severity === 'critical').length})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F97316' }}></span>
-                <span>ปัญหาปานกลาง (2)</span>
+                <span>ปัญหาปานกลาง ({issues.filter(i => i.severity === 'high').length})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FCD34D' }}></span>
-                <span>ปัญหาเล็กน้อย (1)</span>
+                <span>ปัญหาเล็กน้อย ({issues.filter(i => i.severity === 'low').length})</span>
               </div>
             </div>
           </div>
@@ -363,27 +425,26 @@ const Admin = ({ onNavigate }) => {
           <thead>
             <tr>
               <th>ชื่อผู้ใช้</th>
+              <th>อีเมล</th>
               <th>ประเภท</th>
               <th>สถานะ</th>
-              <th>วันที่สมัคร</th>
               <th>ดำเนินการ</th>
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5].map(i => (
-              <tr key={i}>
+            {users.slice(0, 10).map(user => (
+              <tr key={user.id}>
                 <td>
                   <div className="user-cell">
-                    <img src={`https://ui-avatars.com/api/?name=User+${i}`} alt="" />
+                    <img src={`https://ui-avatars.com/api/?name=${user.name}`} alt="" />
                     <div>
-                      <div className="user-name">ผู้ใช้ทดสอบ {i}</div>
-                      <div className="user-id">user{i}@haatee.com</div>
+                      <div className="user-name">{user.name}</div>
                     </div>
                   </div>
                 </td>
-                <td><span className="badge-type buyer">ผู้ซื้อ</span></td>
-                <td><span className="status-badge active">ใช้งาน</span></td>
-                <td>15 พ.ย. 2567</td>
+                <td>{user.email}</td>
+                <td><span className="badge-type buyer">{user.role === 'agent' ? 'ตัวแทน' : 'เจ้าของ'}</span></td>
+                <td><span className="status-badge active">{user.verified ? 'ยืนยันแล้ว' : 'รอยืนยัน'}</span></td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-btn"><Eye size={16} /></button>
@@ -451,14 +512,14 @@ const Admin = ({ onNavigate }) => {
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5].map(i => (
-              <tr key={i}>
-                <td><strong>คอนโด {i}</strong></td>
-                <td>เจ้าของ ทดสอบ</td>
-                <td>฿2,500,000</td>
-                <td><span className="badge-type">ขาย</span></td>
-                <td>1,245</td>
-                <td><span className="status-badge active">ใช้งาน</span></td>
+            {topProperties.slice(0, 10).map(prop => (
+              <tr key={prop.id}>
+                <td><strong>{prop.title}</strong></td>
+                <td>{prop.seller?.name || 'ไม่ระบุ'}</td>
+                <td>{prop.price}</td>
+                <td><span className="badge-type">{prop.type}</span></td>
+                <td>{(prop.views || 0).toLocaleString()}</td>
+                <td><span className="status-badge active">{prop.status === 'hot' ? 'ยอดนิยม' : 'ใช้งาน'}</span></td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-btn"><Eye size={16} /></button>
@@ -589,68 +650,63 @@ const Admin = ({ onNavigate }) => {
     </div>
   );
 
-  const renderContentModeration = () => (
-    <div style={{ padding: '24px' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#1a202c', marginBottom: '16px' }}>
-        ตรวจสอบเนื้อหา
-      </h2>
+  const renderContentModeration = (reportType = 'room') => {
+    const filteredIssues = issues.filter(issue => issue.type === reportType);
+    const typeLabels = {
+      room: 'รายงานห้อง',
+      chat: 'รายงานแชท',
+      problem: 'รายงานปัญหา'
+    };
 
-      <div style={{ background: '#FEE2E2', border: '2px solid #FECACA', borderRadius: '8px', padding: '16px', marginBottom: '20px', display: 'flex', gap: '12px' }}>
-        <span style={{ fontSize: '24px' }}>🔴</span>
-        <div>
-          <p style={{ fontWeight: '600', color: '#991B1B', margin: '0 0 4px 0', fontSize: '14px' }}>15 รายงานรอตรวจสอบ</p>
-          <p style={{ color: '#7F1D1D', fontSize: '13px', margin: '0' }}>จำเป็นต้องดำเนินการโดยเร็ว</p>
-        </div>
-      </div>
+    return (
+      <div style={{ padding: '24px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#1a202c', marginBottom: '16px' }}>
+          {typeLabels[reportType]}
+        </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '24px' }}>
-        <div style={{ background: '#FEE2E2', padding: '16px', borderRadius: '8px', border: '1px solid #FECACA', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#991B1B', marginBottom: '8px' }}>🔴 รอตรวจสอบ</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#EF4444', margin: '0' }}>15</h3>
-        </div>
-        <div style={{ background: '#D1FAE5', padding: '16px', borderRadius: '8px', border: '1px solid #A7F3D0', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#065F46', marginBottom: '8px' }}>✓ อนุมัติแล้ว</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#10B981', margin: '0' }}>45</h3>
-        </div>
-        <div style={{ background: '#F3F4F6', padding: '16px', borderRadius: '8px', border: '1px solid #D1D5DB', textAlign: 'center' }}>
-          <p style={{ fontSize: '12px', color: '#4B5563', marginBottom: '8px' }}>✕ ปฏิเสธแล้ว</p>
-          <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#6B7280', margin: '0' }}>20</h3>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {[
-          { id: 1, title: 'คอนโด The Peak', owner: 'สมชาย ใจดี', reason: 'ปลอมแปลง', count: 3, severity: 'high' },
-          { id: 2, title: 'บ้านเดี่ยว Premium', owner: 'บุญมี ถูกใจ', reason: 'หลอกลวง', count: 2, severity: 'high' },
-          { id: 3, title: 'ทาวน์โฮม Modern', owner: 'สมหญิง ม่วง', reason: 'ไม่เหมาะสม', count: 1, severity: 'medium' },
-        ].map(r => (
-          <div key={r.id} style={{
-            background: 'white',
-            border: `2px solid ${r.severity === 'high' ? '#EF4444' : '#F59E0B'}`,
-            borderRadius: '10px',
-            padding: '16px',
-            borderLeft: `6px solid ${r.severity === 'high' ? '#EF4444' : '#F59E0B'}`
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-              <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1a202c', margin: '0 0 4px 0' }}>🏠 {r.title}</h3>
-                <p style={{ fontSize: '13px', color: '#718096', margin: '0' }}>👤 {r.owner} | ⚠️ {r.reason} ({r.count} รายงาน)</p>
-              </div>
-              <span style={{ padding: '6px 12px', background: r.severity === 'high' ? '#FEE2E2' : '#FFEDD5', color: r.severity === 'high' ? '#991B1B' : '#92400E', borderRadius: '6px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                {r.severity === 'high' ? '🔴 เร่งด่วน' : '🟠 ปานกลาง'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button style={{ padding: '8px 16px', background: '#0066CC', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>👁️ ดู</button>
-              <button style={{ padding: '8px 16px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✓ อนุมัติ</button>
-              <button style={{ padding: '8px 16px', background: '#EF4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>🗑️ ลบ</button>
-              <button style={{ padding: '8px 16px', background: '#6B7280', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✕ ยกเลิก</button>
-            </div>
+        <div style={{ background: '#FEE2E2', border: '2px solid #FECACA', borderRadius: '8px', padding: '16px', marginBottom: '20px', display: 'flex', gap: '12px' }}>
+          <span style={{ fontSize: '24px' }}>📋</span>
+          <div>
+            <p style={{ fontWeight: '600', color: '#991B1B', margin: '0 0 4px 0', fontSize: '14px' }}>{filteredIssues.length} รายงาน</p>
+            <p style={{ color: '#7F1D1D', fontSize: '13px', margin: '0' }}>รวมรายงาน{typeLabels[reportType]}</p>
           </div>
-        ))}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {filteredIssues.length > 0 ? (
+            filteredIssues.map(issue => (
+              <div key={issue.id} style={{
+                background: issue.bgColor,
+                border: `2px solid ${issue.borderColor}`,
+                borderRadius: '10px',
+                padding: '16px',
+                borderLeft: `6px solid ${issue.borderColor}`
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: issue.textColor, margin: '0 0 4px 0' }}>{issue.emoji} {issue.title}</h3>
+                    <p style={{ fontSize: '13px', color: issue.subtextColor, margin: '0' }}>👤 {issue.reporter} | 📝 {issue.description}</p>
+                  </div>
+                  <span style={{ padding: '6px 12px', background: issue.bgColor, color: issue.textColor, borderRadius: '6px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                    {issue.emoji} {issue.priority}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button style={{ padding: '8px 16px', background: '#0066CC', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>👁️ ดู</button>
+                  <button style={{ padding: '8px 16px', background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>✓ แก้ไขแล้ว</button>
+                  <button style={{ padding: '8px 16px', background: '#6B7280', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>⏸️ ถ้ำเลื่อน</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>
+              <p style={{ fontSize: '16px' }}>ไม่มีรายงาน{typeLabels[reportType]}</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderChatMonitoring = () => (
     <div style={{ padding: '24px' }}>
@@ -822,24 +878,16 @@ const Admin = ({ onNavigate }) => {
 
   const renderContent = () => {
     switch(activeTab) {
-      case 'dashboard':
-        return renderDashboard();
+      case 'room-reports':
+        return renderContentModeration('room');
+      case 'chat-reports':
+        return renderContentModeration('chat');
+      case 'problem-reports':
+        return renderContentModeration('problem');
       case 'users':
         return renderUserManagement();
-      case 'properties':
-        return renderPropertyManagement();
-      case 'contracts':
-        return renderContractManagement();
-      case 'reports':
-        return renderContentModeration();
-      case 'chat':
-        return renderChatMonitoring();
-      case 'analytics':
-        return renderAnalytics();
-      case 'settings':
-        return renderSettings();
       default:
-        return renderDashboard();
+        return renderContentModeration('room');
     }
   };
 
@@ -869,13 +917,36 @@ const Admin = ({ onNavigate }) => {
 
         <nav className="sidebar-nav">
           <div className="nav-section">
-            <p className="nav-section-title">{sidebarOpen ? 'เมนูหลัก' : ''}</p>
+            <p className="nav-section-title">{sidebarOpen ? 'การจัดการรายงาน' : ''}</p>
             <button 
-              className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
+              className={`nav-btn ${activeTab === 'room-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('room-reports')}
             >
-              <LayoutDashboard size={20} />
-              {sidebarOpen && <span>แดชบอร์ด</span>}
+              <AlertCircle size={20} />
+              {sidebarOpen && <span>รายงานห้อง</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'room' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'room' && i.status === 'open').length}</span>
+              )}
+            </button>
+            <button 
+              className={`nav-btn ${activeTab === 'chat-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('chat-reports')}
+            >
+              <MessageSquare size={20} />
+              {sidebarOpen && <span>รายงานแชท</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'chat' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'chat' && i.status === 'open').length}</span>
+              )}
+            </button>
+            <button 
+              className={`nav-btn ${activeTab === 'problem-reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('problem-reports')}
+            >
+              <AlertCircle size={20} />
+              {sidebarOpen && <span>รายงานปัญหา</span>}
+              {sidebarOpen && issues.filter(i => i.type === 'problem' && i.status === 'open').length > 0 && (
+                <span className="badge danger">{issues.filter(i => i.type === 'problem' && i.status === 'open').length}</span>
+              )}
             </button>
             <button 
               className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
@@ -884,56 +955,6 @@ const Admin = ({ onNavigate }) => {
               <Users size={20} />
               {sidebarOpen && <span>จัดการผู้ใช้</span>}
               {sidebarOpen && <span className="badge">{stats.newUsers}</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'properties' ? 'active' : ''}`}
-              onClick={() => setActiveTab('properties')}
-            >
-              <Building2 size={20} />
-              {sidebarOpen && <span>ทรัพย์สิน</span>}
-              {sidebarOpen && <span className="badge">{stats.newProperties}</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'contracts' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contracts')}
-            >
-              <FileText size={20} />
-              {sidebarOpen && <span>สัญญาดิจิทัล</span>}
-            </button>
-            <button 
-              className={`nav-btn ${activeTab === 'reports' ? 'active' : ''}`}
-              onClick={() => setActiveTab('reports')}
-            >
-              <AlertCircle size={20} />
-              {sidebarOpen && <span>รายงานปัญหา</span>}
-              {sidebarOpen && stats.pendingReports > 0 && (
-                <span className="badge danger">{stats.pendingReports}</span>
-              )}
-            </button>
-          </div>
-
-          <div className="nav-section">
-            <p className="nav-section-title">{sidebarOpen ? 'เครื่องมือ' : ''}</p>
-            <button
-              className={`nav-btn ${activeTab === 'chat' ? 'active' : ''}`}
-              onClick={() => setActiveTab('chat')}
-            >
-              <MessageSquare size={20} />
-              {sidebarOpen && <span>ข้อความ</span>}
-            </button>
-            <button
-              className={`nav-btn ${activeTab === 'analytics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('analytics')}
-            >
-              <BarChart3 size={20} />
-              {sidebarOpen && <span>รายงานและสถิติ</span>}
-            </button>
-            <button
-              className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
-            >
-              <Settings size={20} />
-              {sidebarOpen && <span>ตั้งค่า</span>}
             </button>
           </div>
         </nav>
@@ -959,14 +980,10 @@ const Admin = ({ onNavigate }) => {
             </button>
             <div className="header-title">
               <h2>
-                {activeTab === 'dashboard' && 'แดชบอร์ด'}
+                {activeTab === 'room-reports' && 'รายงานห้อง'}
+                {activeTab === 'chat-reports' && 'รายงานแชท'}
+                {activeTab === 'problem-reports' && 'รายงานปัญหา'}
                 {activeTab === 'users' && 'จัดการผู้ใช้งาน'}
-                {activeTab === 'properties' && 'จัดการทรัพย์สิน'}
-                {activeTab === 'contracts' && 'สัญญาดิจิทัล'}
-                {activeTab === 'reports' && 'รายงานปัญหา'}
-                {activeTab === 'chat' && 'ระบบข้อความ'}
-                {activeTab === 'analytics' && 'รายงานและสถิติ'}
-                {activeTab === 'settings' && 'ตั้งค่าระบบ'}
               </h2>
               <p className="header-subtitle">
                 {new Date().toLocaleDateString('th-TH', {

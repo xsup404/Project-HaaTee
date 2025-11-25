@@ -17,6 +17,7 @@ import {
   FileText,
   Filter,
   Heart,
+  ImageIcon,
   LogOut,
   MapPin,
   Menu,
@@ -65,7 +66,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   });
   const [showFilters, setShowFilters] = useState(false);
   
-  // Profile data - Load from localStorage or use default
+  // Profile data - Use default profile first, then load from localStorage if user has saved
   const [profileData, setProfileData] = useState(() => {
     const defaultProfile = {
       name: 'นางสาวหนูดี รวยมาก',
@@ -85,18 +86,20 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       const savedProfile = localStorage.getItem('sellerProfile');
       if (savedProfile) {
         const parsed = JSON.parse(savedProfile);
-        // Check if name is invalid (like "admin" or empty)
-        if (parsed.name && parsed.name.toLowerCase() !== 'admin' && parsed.name.trim() !== '') {
+        // Only use saved profile if it has valid name and user has explicitly saved it
+        // Check if name is valid and not the old default
+        if (parsed.name && 
+            parsed.name.toLowerCase() !== 'admin' && 
+            parsed.name.trim() !== '' &&
+            parsed.name !== 'Admin Seller') {
           // Ensure verified field exists, default to true if not present
           if (parsed.verified === undefined) {
             parsed.verified = true;
           }
-          // If profile has images, use it
-          if (parsed.profileImage || parsed.coverPhoto) {
-            return parsed;
-          }
+          // Merge with default to ensure all fields exist
+          return { ...defaultProfile, ...parsed };
         } else {
-          // Invalid name, clear localStorage and use default
+          // Invalid or old default name, clear localStorage and use default
           localStorage.removeItem('sellerProfile');
         }
       }
@@ -104,15 +107,19 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       const savedBasicProfile = localStorage.getItem('sellerProfileBasic');
       if (savedBasicProfile) {
         const parsed = JSON.parse(savedBasicProfile);
-        // Check if name is invalid (like "admin" or empty)
-        if (parsed.name && parsed.name.toLowerCase() !== 'admin' && parsed.name.trim() !== '') {
+        // Only use saved profile if it has valid name and user has explicitly saved it
+        if (parsed.name && 
+            parsed.name.toLowerCase() !== 'admin' && 
+            parsed.name.trim() !== '' &&
+            parsed.name !== 'Admin Seller') {
           // Ensure verified field exists, default to true if not present
           if (parsed.verified === undefined) {
             parsed.verified = true;
           }
-          return parsed;
+          // Merge with default to ensure all fields exist
+          return { ...defaultProfile, ...parsed };
         } else {
-          // Invalid name, clear localStorage and use default
+          // Invalid or old default name, clear localStorage and use default
           localStorage.removeItem('sellerProfileBasic');
         }
       }
@@ -122,10 +129,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       localStorage.removeItem('sellerProfile');
       localStorage.removeItem('sellerProfileBasic');
     }
-    // Ensure verified field exists in default profile
-    if (!defaultProfile.verified) {
-      defaultProfile.verified = true;
-    }
+    // Return default profile
     return defaultProfile;
   });
 
@@ -1917,223 +1921,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
         </div>
       )}
 
-      {/* Pending Review Listings Section */}
-      {listings.filter(l => l.status === 'pending_review').length > 0 && (
-        <div className="card-section">
-          <div className="section-header">
-            <h3>ประกาศรอแก้ไข</h3>
-            <span className="draft-count warning">{listings.filter(l => l.status === 'pending_review').length} ประกาศ</span>
-          </div>
-          <div className="draft-listings-grid">
-            {listings.filter(l => l.status === 'pending_review').map(listing => (
-              <div key={listing.id} className="draft-listing-card">
-                <div className="draft-listing-header">
-                  <div className="draft-listing-info">
-                    <div className="property-icon-small">{getPropertyIcon(listing.propertyType, listing.type)}</div>
-                    <div>
-                      <h4 className="draft-listing-title">{listing.title || 'ไม่มีชื่อ'}</h4>
-                      <p className="draft-listing-location">
-                        <MapPin size={12} /> {listing.location || 'ยังไม่ได้ระบุที่อยู่'}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="badge warning">⚠️ รอแก้ไข</span>
-                </div>
-                <div className="draft-listing-details">
-                  <div className="draft-detail-item">
-                    <span className="draft-label">ประเภท:</span>
-                    <span className="draft-value">{listing.type === 'sell' ? 'ขาย' : 'เช่า'}</span>
-                  </div>
-                  {listing.price && (
-                    <div className="draft-detail-item">
-                      <span className="draft-label">ราคา:</span>
-                      <span className="draft-value">
-                        {listing.type === 'sell' 
-                          ? `฿${parseFloat(listing.price).toLocaleString()}` 
-                          : `฿${parseFloat(listing.price).toLocaleString()}/เดือน`}
-                      </span>
-                    </div>
-                  )}
-                  {listing.reportReason && (
-                    <div className="draft-detail-item">
-                      <span className="draft-label">สาเหตุ:</span>
-                      <span className="draft-value" style={{ color: '#FF9800' }}>{listing.reportReason}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="draft-listing-actions">
-                  <button 
-                    className="btn-primary"
-                    onClick={() => handleEditListing(listing.id)}
-                  >
-                    <Edit2 size={14} />
-                    แก้ไขประกาศ
-                  </button>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => {
-                      if (window.confirm('คุณต้องการยืนยันว่าข้อมูลถูกต้องและขอให้ระบบตรวจสอบอีกครั้งหรือไม่?')) {
-                        setListings(listings.map(l => 
-                          l.id === listing.id 
-                            ? { ...l, status: 'active' } 
-                            : l
-                        ));
-                        alert('ส่งคำขอตรวจสอบแล้ว ระบบจะตรวจสอบและแจ้งผลภายใน 24 ชั่วโมง');
-                      }
-                    }}
-                  >
-                    <CheckCircle2 size={14} />
-                    ยืนยันความถูกต้อง
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Pending Review Listings Section */}
-      {listings.filter(l => l.status === 'pending_review').length > 0 && (
-        <div className="card-section">
-          <div className="section-header">
-            <h3>ประกาศรอแก้ไข</h3>
-            <span className="draft-count warning">{listings.filter(l => l.status === 'pending_review').length} ประกาศ</span>
-          </div>
-          <div className="draft-listings-grid">
-            {listings.filter(l => l.status === 'pending_review').map(listing => (
-              <div key={listing.id} className="draft-listing-card">
-                <div className="draft-listing-header">
-                  <div className="draft-listing-info">
-                    <div className="property-icon-small">{getPropertyIcon(listing.propertyType, listing.type)}</div>
-                    <div>
-                      <h4 className="draft-listing-title">{listing.title || 'ไม่มีชื่อ'}</h4>
-                      <p className="draft-listing-location">
-                        <MapPin size={12} /> {listing.location || 'ยังไม่ได้ระบุที่อยู่'}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="badge warning">⚠️ รอแก้ไข</span>
-                </div>
-                <div className="draft-listing-details">
-                  <div className="draft-detail-item">
-                    <span className="draft-label">ประเภท:</span>
-                    <span className="draft-value">{listing.type === 'sell' ? 'ขาย' : 'เช่า'}</span>
-                  </div>
-                  {listing.price && (
-                    <div className="draft-detail-item">
-                      <span className="draft-label">ราคา:</span>
-                      <span className="draft-value">
-                        {listing.type === 'sell' 
-                          ? `฿${parseFloat(listing.price).toLocaleString()}` 
-                          : `฿${parseFloat(listing.price).toLocaleString()}/เดือน`}
-                      </span>
-                    </div>
-                  )}
-                  {listing.reportReason && (
-                    <div className="draft-detail-item">
-                      <span className="draft-label">สาเหตุ:</span>
-                      <span className="draft-value" style={{ color: '#FF9800', fontWeight: '600' }}>{listing.reportReason}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="draft-listing-actions">
-                  <button 
-                    className="btn-primary"
-                    onClick={() => handleEditListing(listing.id)}
-                  >
-                    <Edit2 size={14} />
-                    แก้ไขประกาศ
-                  </button>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => {
-                      if (window.confirm('คุณต้องการยืนยันว่าข้อมูลถูกต้องและขอให้ระบบตรวจสอบอีกครั้งหรือไม่?')) {
-                        setListings(listings.map(l => 
-                          l.id === listing.id 
-                            ? { ...l, status: 'active' } 
-                            : l
-                        ));
-                        alert('ส่งคำขอตรวจสอบแล้ว ระบบจะตรวจสอบและแจ้งผลภายใน 24 ชั่วโมง');
-                      }
-                    }}
-                  >
-                    <CheckCircle2 size={14} />
-                    ยืนยันความถูกต้อง
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Closed Listings Section */}
-      {listings.filter(l => l.status === 'closed').length > 0 && (
-        <div className="card-section">
-          <div className="section-header">
-            <h3>ประกาศที่ปิดการขาย</h3>
-            <span className="draft-count">{listings.filter(l => l.status === 'closed').length} ประกาศ</span>
-          </div>
-          <div className="draft-listings-grid">
-            {listings.filter(l => l.status === 'closed').map(listing => (
-              <div key={listing.id} className="draft-listing-card">
-                <div className="draft-listing-header">
-                  <div className="draft-listing-info">
-                    <div className="property-icon-small">{getPropertyIcon(listing.propertyType, listing.type)}</div>
-                    <div>
-                      <h4 className="draft-listing-title">{listing.title}</h4>
-                      <p className="draft-listing-location">
-                        <MapPin size={12} /> {listing.location}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="badge secondary">💰 ปิดการขาย</span>
-                </div>
-                <div className="draft-listing-details">
-                  <div className="draft-detail-item">
-                    <span className="draft-label">ประเภท:</span>
-                    <span className="draft-value">{listing.type === 'sell' ? 'ขาย' : 'เช่า'}</span>
-                  </div>
-                  <div className="draft-detail-item">
-                    <span className="draft-label">ราคา:</span>
-                    <span className="draft-value">
-                      {listing.type === 'sell' 
-                        ? `฿${parseFloat(listing.price).toLocaleString()}` 
-                        : `฿${parseFloat(listing.price).toLocaleString()}/เดือน`}
-                    </span>
-                  </div>
-                </div>
-                <div className="draft-listing-actions">
-                  <button 
-                    className="btn-primary"
-                    onClick={() => {
-                      if (window.confirm('คุณต้องการเปิดการขายประกาศนี้อีกครั้งหรือไม่?')) {
-                        setListings(listings.map(l => 
-                          l.id === listing.id 
-                            ? { ...l, status: 'active' } 
-                            : l
-                        ));
-                        alert('เปิดการขายประกาศสำเร็จ!');
-                      }
-                    }}
-                  >
-                    <RotateCw size={14} />
-                    เปิดการขายอีกครั้ง
-                  </button>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => handleEditListing(listing.id)}
-                  >
-                    <Edit2 size={14} />
-                    แก้ไข
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Draft Listings Section */}
       {listings.filter(l => l.status === 'draft').length > 0 && (
         <div className="card-section">
@@ -2307,15 +2094,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
                             <FileText size={16} />
                           </button>
                         </>
-                      )}
-                      {listing.status === 'pending_review' && (
-                        <button 
-                          className="btn-icon" 
-                          title="แก้ไขประกาศ"
-                          onClick={() => handleEditListing(listing.id)}
-                        >
-                          <Edit2 size={16} />
-                        </button>
                       )}
                       {listing.status === 'closed' && (
                         <button 
@@ -3161,35 +2939,6 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
         <div className="page-header-content">
           <h2>ตั้งค่า</h2>
           <p>จัดการการตั้งค่าระบบ</p>
-        </div>
-      </div>
-
-      <div className="card-section">
-        <div className="section-header">
-          <h3>การตั้งค่าทั่วไป</h3>
-        </div>
-        <div className="settings-list">
-          <div className="setting-item">
-            <div className="setting-info">
-              <h4>ภาษา</h4>
-              <p>เลือกภาษาที่ต้องการใช้</p>
-            </div>
-            <select className="setting-control">
-              <option value="th">ไทย</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-          <div className="setting-item">
-            <div className="setting-info">
-              <h4>ธีม</h4>
-              <p>เลือกโหมดการแสดงผล</p>
-            </div>
-            <select className="setting-control">
-              <option value="light">สว่าง</option>
-              <option value="dark">มืด</option>
-              <option value="auto">อัตโนมัติ</option>
-            </select>
-          </div>
         </div>
       </div>
 

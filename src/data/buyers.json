@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "email": "buyer@haatee.com",
+    "name": "นายสมศักดิ์ ผู้ซื้อ",
+    "phone": "089-111-2222",
+    "verified": true,
+    "avatar": "https://i.pravatar.cc/150?img=20",
+    "joinDate": "2023-08-15",
+    "savedProperties": [1, 5, 8],
+    "searchHistory": ["บ้านเดี่ยว", "คอนโด", "สุขุมวิท"],
+    "preferences": {
+      "type": "บ้านเดี่ยว",
+      "priceMin": 5000000,
+      "priceMax": 20000000,
+      "location": "กรุงเทพฯ"
+    }
+  },
+  {
+    "id": 2,
+    "email": "niran@haatee.com",
+    "name": "นางสาวนิรันดร์ นันท์สวัสดิ์",
+    "phone": "087-222-3333",
+    "verified": true,
+    "avatar": "https://i.pravatar.cc/150?img=21",
+    "joinDate": "2023-09-22",
+    "savedProperties": [2, 6, 12],
+    "searchHistory": ["คอนโด", "สุขุมวิท"],
+    "preferences": {
+      "type": "คอนโด",
+      "priceMin": 3000000,
+      "priceMax": 10000000,
+      "location": "สุขุมวิท"
+    }
+  },
+  {
+    "id": 3,
+    "email": "somchai@haatee.com",
+    "name": "นายสมชาย จันทร์สว่าง",
+    "phone": "086-333-4444",
+    "verified": false,
+    "avatar": "https://i.pravatar.cc/150?img=22",
+    "joinDate": "2024-01-10",
+    "savedProperties": [3, 7],
+    "searchHistory": ["ทาวน์เฮาส์"],
+    "preferences": {
+      "type": "ทาวน์เฮาส์",
+      "priceMin": 4000000,
+      "priceMax": 8000000,
+      "location": "ลาดพร้าว"
+    }
+  },
+  {
+    "id": 4,
+    "email": "jiab@haatee.com",
+    "name": "นางสาวเจียบ พิมพ์พร้อย",
+    "phone": "085-444-5555",
+    "verified": true,
+    "avatar": "https://i.pravatar.cc/150?img=23",
+    "joinDate": "2023-10-05",
+    "savedProperties": [4, 9, 14],
+    "searchHistory": ["วิลล่า", "บ่อน้ำ"],
+    "preferences": {
+      "type": "วิลล่า",
+      "priceMin": 10000000,
+      "priceMax": 50000000,
+      "location": "เชียงใหม่"
+    }
+  },
+  {
+    "id": 5,
+    "email": "wittaya@haatee.com",
+    "name": "นายวิทยะ สิทธิเสมอ",
+    "phone": "089-555-6666",
+    "verified": true,
+    "avatar": "https://i.pravatar.cc/150?img=24",
+    "joinDate": "2023-07-18",
+    "savedProperties": [5, 10, 15],
+    "searchHistory": ["อพาร์ตเมนท์", "เช่า"],
+    "preferences": {
+      "type": "อพาร์ตเมนท์",
+      "priceMin": 1000000,
+      "priceMax": 5000000,
+      "location": "สาทร"
+    }
+  }
+]

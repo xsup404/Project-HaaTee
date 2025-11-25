@@ -1,285 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MapPin, Bath, Bed, Search, ChevronDown, Star, CheckCircle, SlidersHorizontal, ArrowRight, TrendingUp, Building, Sparkles, FileCheck, Shield, Zap, Clock, Bell, Award, Home as HomeIcon, BarChart3, Menu } from 'lucide-react';
 
 import '../styles/Properties.css';
+import propertiesData from '../data/properties.json';
 
 const Properties = ({ onNavigate, onLoginRequired }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
   const [priceRangeOpen, setPriceRangeOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
-  const [searchType, setSearchType] = useState('buy'); // 'buy', 'rent', 'sell'
+  const [searchType, setSearchType] = useState('buy'); // 'buy' for sale, 'rent' for rent
   const [selectedType, setSelectedType] = useState('ทั้งหมด');
   const [selectedPrice, setSelectedPrice] = useState('ทั้งหมด');
   const [selectedLocation, setSelectedLocation] = useState('ทั้งหมด');
+  const [allProperties, setAllProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [displayedCount, setDisplayedCount] = useState(40);
+  const itemsPerPage = 40;
 
-  const allProperties = [
-    // บ้านเดี่ยว
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-      title: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น',
-      price: '฿12,900,000',
-      location: 'พระราม 9 กรุงเทพฯ',
-      beds: 4,
-      baths: 3,
-      size: '320 ตร.ม.',
-      type: 'บ้านเดี่ยว',
-      priceValue: 12900000,
-      verified: true,
-      rating: 4.7,
-      views: 756
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-      title: 'บ้านหรู 2 ชั้น สไตล์ Contemporary',
-      price: '฿22,000,000',
-      location: 'เอกมัย กรุงเทพฯ',
-      beds: 5,
-      baths: 4,
-      size: '400 ตร.ม.',
-      type: 'บ้านเดี่ยว',
-      priceValue: 22000000,
-      featured: true,
-      verified: true,
-      rating: 4.9,
-      views: 1120
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop',
-      title: 'บ้านสวน 1 ชั้น บรรยากาศสงบ',
-      price: '฿5,200,000',
-      location: 'รังสิต ปทุมธานี',
-      beds: 3,
-      baths: 2,
-      size: '280 ตร.ม.',
-      type: 'บ้านเดี่ยว',
-      priceValue: 5200000,
-      verified: false,
-      rating: 4.4,
-      views: 423
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      title: 'บ้านเดี่ยว 3 ชั้น บางแสน',
-      price: '฿8,900,000',
-      location: 'บางแสน ชลบุรี',
-      beds: 4,
-      baths: 3,
-      size: '300 ตร.ม.',
-      type: 'บ้านเดี่ยว',
-      priceValue: 8900000,
-      verified: true,
-      rating: 4.6,
-      views: 542
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-      title: 'บ้านสไตล์ Minimalist สีขาว',
-      price: '฿9,500,000',
-      location: 'ลาดพร้าว กรุงเทพฯ',
-      beds: 3,
-      baths: 3,
-      size: '250 ตร.ม.',
-      type: 'บ้านเดี่ยว',
-      priceValue: 9500000,
-      verified: true,
-      rating: 4.5,
-      views: 678
-    },
-    // คอนโด
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-      title: 'คอนโดหรู ริมแม่น้ำเจ้าพระยา',
-      price: '฿18,500,000',
-      location: 'สาทร กรุงเทพฯ',
-      beds: 3,
-      baths: 2,
-      size: '180 ตร.ม.',
-      type: 'คอนโด',
-      priceValue: 18500000,
-      featured: true,
-      verified: true,
-      rating: 4.8,
-      views: 980
-    },
-    {
-      id: 7,
-      image: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=800&h=600&fit=crop',
-      title: 'คอนโดโมเดิร์น ใจกลางเมือง',
-      price: '฿6,800,000',
-      location: 'อารีย์ กรุงเทพฯ',
-      beds: 2,
-      baths: 2,
-      size: '85 ตร.ม.',
-      type: 'คอนโด',
-      priceValue: 6800000,
-      verified: true,
-      rating: 4.5,
-      views: 534
-    },
-    {
-      id: 8,
-      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      title: 'คอนโด Luxury ทำเลดี',
-      price: '฿15,500,000',
-      location: 'ทองหล่อ กรุงเทพฯ',
-      beds: 3,
-      baths: 2,
-      size: '150 ตร.ม.',
-      type: 'คอนโด',
-      priceValue: 15500000,
-      verified: true,
-      rating: 4.7,
-      views: 890
-    },
-    {
-      id: 9,
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a9a6fded0?w=800&h=600&fit=crop',
-      title: 'คอนโด Hi-Rise วิวเมือง',
-      price: '฿12,000,000',
-      location: 'สีลม กรุงเทพฯ',
-      beds: 2,
-      baths: 2,
-      size: '100 ตร.ม.',
-      type: 'คอนโด',
-      priceValue: 12000000,
-      verified: true,
-      rating: 4.6,
-      views: 742
-    },
-    {
-      id: 10,
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-      title: 'คอนโด Pool Villa สุขุมวิท',
-      price: '฿9,800,000',
-      location: 'สุขุมวิท กรุงเทพฯ',
-      beds: 3,
-      baths: 2,
-      size: '120 ตร.ม.',
-      type: 'คอนโด',
-      priceValue: 9800000,
-      verified: true,
-      rating: 4.7,
-      views: 856
-    },
-    // ทาวน์เฮาส์
-    {
-      id: 11,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      title: 'ทาวน์โฮม 3 ชั้น ใกล้ BTS',
-      price: '฿8,500,000',
-      location: 'สุขุมวิท กรุงเทพฯ',
-      beds: 3,
-      baths: 3,
-      size: '200 ตร.ม.',
-      type: 'ทาวน์เฮาส์',
-      priceValue: 8500000,
-      verified: true,
-      rating: 4.6,
-      views: 645
-    },
-    {
-      id: 12,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      title: 'ทาวน์เฮาส์โมเดิร์น บางนา',
-      price: '฿7,200,000',
-      location: 'บางนา กรุงเทพฯ',
-      beds: 3,
-      baths: 3,
-      size: '180 ตร.ม.',
-      type: 'ทาวน์เฮาส์',
-      priceValue: 7200000,
-      featured: true,
-      verified: true,
-      rating: 4.7,
-      views: 521
-    },
-    {
-      id: 13,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      title: 'ทาวน์เฮาส์ 2 ชั้น ลาดพร้าว',
-      price: '฿6,500,000',
-      location: 'ลาดพร้าว กรุงเทพฯ',
-      beds: 3,
-      baths: 2,
-      size: '150 ตร.ม.',
-      type: 'ทาวน์เฮาส์',
-      priceValue: 6500000,
-      verified: true,
-      rating: 4.5,
-      views: 412
-    },
-    {
-      id: 14,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      title: 'ทาวน์เฮาส์ เอกมัย',
-      price: '฿8,900,000',
-      location: 'เอกมัย กรุงเทพฯ',
-      beds: 4,
-      baths: 3,
-      size: '220 ตร.ม.',
-      type: 'ทาวน์เฮาส์',
-      priceValue: 8900000,
-      verified: true,
-      rating: 4.8,
-      views: 634
-    },
-    // วิลล่า
-    {
-      id: 15,
-      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-      title: 'วิลล่าสมัยใหม่ หาดกะตะ ภูเก็ต',
-      price: '฿45,000,000',
-      location: 'หาดกะตะ ภูเก็ต',
-      beds: 5,
-      baths: 4,
-      size: '450 ตร.ม.',
-      type: 'วิลล่า',
-      priceValue: 45000000,
-      featured: true,
-      verified: true,
-      rating: 4.9,
-      views: 1250
-    },
-    {
-      id: 16,
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-      title: 'วิลล่าพูลวิว เชียงใหม่',
-      price: '฿28,000,000',
-      location: 'หางดง เชียงใหม่',
-      beds: 4,
-      baths: 3,
-      size: '380 ตร.ม.',
-      type: 'วิลล่า',
-      priceValue: 28000000,
-      featured: true,
-      verified: true,
-      rating: 4.8,
-      views: 945
-    },
-    {
-      id: 17,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-      title: 'วิลล่าสตูดิโอ ประมาณ',
-      price: '฿35,500,000',
-      location: 'ประมาณ สมุทรปราการ',
-      beds: 3,
-      baths: 3,
-      size: '320 ตร.ม.',
-      type: 'วิลล่า',
-      priceValue: 35500000,
-      verified: true,
-      rating: 4.7,
-      views: 678
-    },
-  ];
+  // Load properties from imported JSON
+  useEffect(() => {
+    try {
+      setAllProperties(propertiesData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setAllProperties([]);
+      setLoading(false);
+    }
+  }, []);
 
+  const filteredProperties = allProperties.filter(prop => {
+    const matchesSearch = prop.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         prop.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === 'ทั้งหมด' || prop.type === selectedType;
+    const matchesListingType = searchType === 'buy' ? prop.listingType === 'sale' : prop.listingType === 'rent';
+    
+    return matchesSearch && matchesType && matchesListingType;
+  });
+
+  const displayedProperties = filteredProperties.slice(0, displayedCount);
+  const hasMore = displayedCount < filteredProperties.length;
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '40px' }}>กำลังโหลดข้อมูล...</div>;
+  }
+
+  // Mock data removed - all data loaded from JSON
+  
   const propertyTypes = [
     { name: 'ทั้งหมด', count: allProperties.length },
     { name: 'บ้านเดี่ยว', count: allProperties.filter(p => p.type === 'บ้านเดี่ยว').length },
@@ -306,18 +74,6 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
     { name: 'พัทยา' },
   ];
 
-  const filteredProperties = allProperties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === 'ทั้งหมด' || property.type === selectedType;
-    const matchesLocation = selectedLocation === 'ทั้งหมด' || property.location.includes(selectedLocation);
-    
-    const priceRange = priceRanges.find(p => p.name === selectedPrice);
-    const matchesPrice = !priceRange || (property.priceValue >= priceRange.min && property.priceValue <= priceRange.max);
-    
-    return matchesSearch && matchesType && matchesLocation && matchesPrice;
-  });
-
   return (
     <div className="properties-page-future">
       <header className="header-future">
@@ -325,7 +81,6 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => onNavigate('home')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">
@@ -524,10 +279,14 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
       {/* ===== PROPERTIES GRID ===== */}
       <section className="properties-listing-future">
         <div className="container-future">
-          {filteredProperties.length > 0 ? (
+          {displayedProperties.length > 0 ? (
             <div className="properties-grid-future">
-              {filteredProperties.map((property) => (
-                <div key={property.id} className="property-card-future">
+              {displayedProperties.map((property) => (
+                <div 
+                  key={property.id} 
+                  className="property-card-future"
+                  onClick={() => onNavigate('propertyDetail', { property })}
+                >
                   <div className="property-image-future">
                     <img src={property.image} alt={property.title} />
                     <div className="property-overlay-future"></div>
@@ -539,10 +298,9 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
                       </div>
                     )}
                     
-                    {property.featured && (
-                      <div className="featured-badge-future">
-                        <Star size={14} fill="currentColor" />
-                        <span>แนะนำ</span>
+                    {property.listingType === 'rent' && (
+                      <div className="listing-type-badge-future" style={{ background: '#FF6B6B', position: 'absolute', top: '45px', right: '10px', padding: '4px 8px', borderRadius: '4px', color: 'white', fontSize: '12px', fontWeight: 'bold' }}>
+                        <span>เช่า</span>
                       </div>
                     )}
                     
@@ -623,12 +381,19 @@ const Properties = ({ onNavigate, onLoginRequired }) => {
           )}
 
           {filteredProperties.length > 0 && (
-            <div className="load-more-section-future">
-              <button className="btn-future btn-outline-future">
-                <span>โหลดทรัพย์สินเพิ่มเติม</span>
-                <ChevronDown size={18} />
-              </button>
-              <p className="showing-text-future">แสดง {filteredProperties.length} จาก {allProperties.length} รายการ</p>
+            <div className="load-more-section-future" style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <p className="showing-text-future" style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
+                แสดง {displayedCount} จาก {filteredProperties.length} รายการ
+              </p>
+              {hasMore && (
+                <button
+                  className="btn-future btn-primary-future"
+                  onClick={() => setDisplayedCount(prev => prev + 40)}
+                  style={{ padding: '12px 40px', fontSize: '16px', borderRadius: '8px' }}
+                >
+                  <span>แสดงเพิ่มเติม (+40)</span>
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -130,7 +130,6 @@ const About = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => onNavigate('home')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">

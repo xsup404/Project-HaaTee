@@ -17,27 +17,46 @@ export default function Login({ onNavigate }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState('user');
+  const [usersData, setUsersData] = useState([]);
+  const [buyersData, setBuyersData] = useState([]);
   const otpRefs = useRef([]);
+
+  // Load users data from JSON file
+  useEffect(() => {
+    const loadUsersData = async () => {
+      try {
+        const [sellersRes, buyersRes] = await Promise.all([
+          fetch('/src/data/users.json'),
+          fetch('/src/data/buyers.json')
+        ]);
+        const sellers = await sellersRes.json();
+        const buyers = await buyersRes.json();
+        setUsersData(sellers);
+        setBuyersData(buyers);
+      } catch (error) {
+        console.error('Failed to load users data:', error);
+      }
+    };
+    loadUsersData();
+  }, []);
 
   // Admin Credentials
   const ADMIN_CREDENTIALS = {
-    'admin@haatee.com': '123456',
-    'admin123': '123456',
+    'admin@haatee.com': 'admin123456',
+    'admin123': 'admin123456',
   };
 
-  // User Credentials (สำหรับผู้ใช้ทั่วไป)
-  const USER_CREDENTIALS = {
-    'user@haatee.com': 'user123456',
-    'buyer@haatee.com': 'buyer123456',
-    'test@haatee.com': 'test123456',
-  };
+  // User/Buyer Credentials - สร้างจาก buyers.json
+  const USER_CREDENTIALS = buyersData.reduce((acc, buyer) => {
+    acc[buyer.email] = 'buyer123456';
+    return acc;
+  }, {});
 
-  // Seller Credentials (สำหรับเจ้าของทรัพย์สิน/นายหน้า)
-  const SELLER_CREDENTIALS = {
-    'seller@haatee.com': 'seller123456',
-    'agent@haatee.com': 'agent123456',
-    'property@haatee.com': 'property123456',
-  };
+  // Seller Credentials - สร้างจาก users.json
+  const SELLER_CREDENTIALS = usersData.reduce((acc, user) => {
+    acc[user.email] = 'seller123456';
+    return acc;
+  }, {});
 
   useEffect(() => {
     if (step !== 'otp' || timer <= 0) return;
@@ -113,15 +132,9 @@ export default function Login({ onNavigate }) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(sellerEmail)) {
-      setMessage({ type: 'error', text: '⚠️ รูปแบบอีเมลไม่ถูกต้อง' });
-      return;
-    }
-
     setLoading(true);
     setTimeout(() => {
-      if (SELLER_CREDENTIALS[sellerEmail] === sellerPassword) {
+      if (SELLER_CREDENTIALS[sellerEmail.trim()] === sellerPassword) {
         setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
         setTimeout(() => {
           setStep('otp');
@@ -132,7 +145,7 @@ export default function Login({ onNavigate }) {
           otpRefs.current[0]?.focus();
         }, 1500);
       } else {
-        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาใช้อีเมลเจ้าของทรัพย์สิน' });
         setLoading(false);
       }
     }, 1200);
@@ -193,26 +206,27 @@ export default function Login({ onNavigate }) {
               alert('เข้าสู่ระบบ Admin สำเร็จ!');
               onNavigate('admin');
             } else if (loginType === 'seller') {
-              // บันทึก Seller Data
-              const sellerData = {
-                name: 'เจ้าของทรัพย์สิน',
+              // บันทึก Seller Data จาก users.json
+              // ค้นหาเจ้าของทรัพย์สินจากอีเมล
+              const sellerInfo = {
                 email: sellerEmail,
-                role: 'Property Owner/Agent',
+                role: 'seller',
                 lastLogin: new Date().toLocaleString('th-TH')
               };
-              localStorage.setItem('sellerUser', JSON.stringify(sellerData));
+              localStorage.setItem('sellerUser', JSON.stringify(sellerInfo));
+              localStorage.setItem('sellerEmail', sellerEmail); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
               console.log('Seller login successful, navigating to seller page', { loginType, sellerEmail });
-              alert('เข้าสู่ระบบ Seller สำเร็จ!');
+              alert('เข้าสู่ระบบสำเร็จ!');
               onNavigate('seller');
             } else {
               // บันทึก Buyer/User Data
               const userData = {
-                name: 'ผู้ใช้ HaaTee',
                 email: email,
                 role: 'Buyer',
                 lastLogin: new Date().toLocaleString('th-TH')
               };
               localStorage.setItem('buyerUser', JSON.stringify(userData));
+              localStorage.setItem('buyerEmail', email); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
               console.log('User login successful, navigating to buyer page', { loginType, email });
               alert('เข้าสู่ระบบ HaaTee สำเร็จ!');
               onNavigate('buyer');
@@ -346,6 +360,20 @@ export default function Login({ onNavigate }) {
               {/* User Login Form */}
               {activeTab === 'user' && (
                 <form onSubmit={handleUserLogin} className="login-form">
+                  <div style={{
+                    padding: '12px 14px',
+                    background: 'transparent',
+                    border: '1px solid rgba(25, 118, 210, 0.15)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginBottom: '12px',
+                    fontSize: '11px',
+                    color: 'var(--text-dark)',
+                    lineHeight: '1.4'
+                  }}>
+                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
+                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer@haatee.com</code></p>
+                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer123456</code></p>
+                  </div>
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
                       อีเมล <span className="required">*</span>
@@ -436,8 +464,9 @@ export default function Login({ onNavigate }) {
                     lineHeight: '1.4'
                   }}>
                     <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
-                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller@haatee.com</code></p>
+                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>damrong@haatee.com</code></p>
                     <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller123456</code></p>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '10px', opacity: 0.7 }}>ใช้ email ผู้ขายจาก users.json ได้เลย</p>
                   </div>
 
                   <div className="form-group">
@@ -531,7 +560,7 @@ export default function Login({ onNavigate }) {
                   }}>
                     <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
                     <p style={{ margin: '2px 0' }}>🆔 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin@haatee.com</code></p>
-                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>123456</code></p>
+                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin123456</code></p>
                   </div>
 
                   <div className="form-group">

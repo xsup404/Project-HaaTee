@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "type": "room",
+    "title": "ระบบ Database ล่ม",
+    "description": "ต้องแก้ไขใน 24 ชั่วโมง",
+    "severity": "critical",
+    "priority": "เร่งด่วน",
+    "reporter": "ทีม Backend",
+    "reportedAt": "2025-11-25T08:30:00Z",
+    "status": "open"
+  },
+  {
+    "id": 2,
+    "type": "room",
+    "title": "บัญชีผู้ใช้ล็อคไม่ได้",
+    "description": "ต้องแก้ไขใน 3 วัน",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "ทีม Support",
+    "reportedAt": "2025-11-24T14:15:00Z",
+    "status": "open"
+  },
+  {
+    "id": 3,
+    "type": "chat",
+    "title": "UI/UX ไม่ตรงกับ Design",
+    "description": "ต้องแก้ไขใน 1 สัปดาห์",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "ทีม Design",
+    "reportedAt": "2025-11-23T10:45:00Z",
+    "status": "open"
+  },
+  {
+    "id": 4,
+    "type": "problem",
+    "title": "Performance ช้าลง",
+    "description": "ต้องแก้ไขเมื่อมีเวลา",
+    "severity": "low",
+    "priority": "ตามปกติ",
+    "reporter": "ผู้ใช้ทั่วไป",
+    "reportedAt": "2025-11-22T09:20:00Z",
+    "status": "open"
+  },
+  {
+    "id": 5,
+    "type": "room",
+    "title": "API Response ช้า",
+    "description": "ต้องปรับปรุงใน 1 สัปดาห์",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "ทีม Devops",
+    "reportedAt": "2025-11-21T15:30:00Z",
+    "status": "in-progress"
+  },
+  {
+    "id": 6,
+    "type": "chat",
+    "title": "เอกสาร API ไม่ชัดเจน",
+    "description": "ต้องปรับปรุง Docs",
+    "severity": "low",
+    "priority": "ตามปกติ",
+    "reporter": "ผู้พัฒนา Junior",
+    "reportedAt": "2025-11-20T11:00:00Z",
+    "status": "in-progress"
+  },
+  {
+    "id": 7,
+    "type": "problem",
+    "title": "Server Error 500",
+    "description": "ต้องแก้ไขด่วน",
+    "severity": "critical",
+    "priority": "เร่งด่วน",
+    "reporter": "ผู้ใช้ทั่วไป",
+    "reportedAt": "2025-11-25T07:45:00Z",
+    "status": "open"
+  }
+]

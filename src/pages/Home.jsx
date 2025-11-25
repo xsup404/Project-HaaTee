@@ -1,17 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MapPin, Bath, Bed, Search, ChevronRight, Menu, X, ArrowRight, Home as HomeIcon, Building, Key, Shield, Clock, CheckCircle, Star, TrendingUp, Users, Award, Sparkles, ChevronLeft, FileCheck, Bell, Zap } from 'lucide-react';
 import '../styles/Home.css';
+import propertiesData from '../data/properties.json';
 
 const Home = ({ onNavigate, onLoginRequired }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchType, setSearchType] = useState('');
+  const [searchPrice, setSearchPrice] = useState('');
+  const [savedProperties, setSavedProperties] = useState([]);
+  const [featuredProperties, setFeaturedProperties] = useState([]);
+  const [displayedCount, setDisplayedCount] = useState(20);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load featured properties from imported JSON
+  useEffect(() => {
+    try {
+      // Get all properties and shuffle them
+      const shuffled = [...propertiesData].sort(() => Math.random() - 0.5);
+      setFeaturedProperties(shuffled);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setFeaturedProperties([]);
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -28,81 +50,6 @@ const Home = ({ onNavigate, onLoginRequired }) => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
-
-  const featuredProperties = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&h=800&fit=crop',
-      title: 'วิลล่าสมัยใหม่ ทะเลอันดามัน',
-      location: 'หาดกะตะ ภูเก็ต',
-      price: '฿45,000,000',
-      beds: 5,
-      baths: 4,
-      size: '450 ตร.ม.',
-      type: 'ขาย',
-      featured: true
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop',
-      title: 'คอนโดหรู ริมแม่น้ำเจ้าพระยา',
-      location: 'สาทร กรุงเทพฯ',
-      price: '฿18,500,000',
-      beds: 3,
-      baths: 2,
-      size: '180 ตร.ม.',
-      type: 'ขาย',
-      featured: true
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=800&fit=crop',
-      title: 'บ้านเดี่ยว 2 ชั้น สไตล์โมเดิร์น',
-      location: 'พระราม 9 กรุงเทพฯ',
-      price: '฿12,900,000',
-      beds: 4,
-      baths: 3,
-      size: '320 ตร.ม.',
-      type: 'ขาย',
-      featured: false
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=800&fit=crop',
-      title: 'ทาวน์โฮม 3 ชั้น ใกล้ BTS',
-      location: 'สุขุมวิท กรุงเทพฯ',
-      price: '฿8,500,000',
-      beds: 3,
-      baths: 3,
-      size: '200 ตร.ม.',
-      type: 'ขาย',
-      featured: false
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&h=800&fit=crop',
-      title: 'บ้านพูลวิลล่า เชียงใหม่',
-      location: 'หางดง เชียงใหม่',
-      price: '฿22,000,000',
-      beds: 4,
-      baths: 3,
-      size: '380 ตร.ม.',
-      type: 'ขาย',
-      featured: true
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&h=800&fit=crop',
-      title: 'อพาร์ทเมนท์หรู อโศก',
-      location: 'อโศก กรุงเทพฯ',
-      price: '฿35,000/เดือน',
-      beds: 2,
-      baths: 2,
-      size: '95 ตร.ม.',
-      type: 'เช่า',
-      featured: false
-    },
-  ];
 
   const categories = [
     {
@@ -148,6 +95,24 @@ const Home = ({ onNavigate, onLoginRequired }) => {
     onNavigate('login');
   };
 
+  const handleSearch = () => {
+    const searchParams = {
+      location: searchLocation,
+      type: searchType,
+      price: searchPrice
+    };
+    sessionStorage.setItem('homeSearchParams', JSON.stringify(searchParams));
+    onNavigate('properties');
+  };
+
+  const toggleSavedProperty = (propertyId) => {
+    if (savedProperties.includes(propertyId)) {
+      setSavedProperties(savedProperties.filter(id => id !== propertyId));
+    } else {
+      setSavedProperties([...savedProperties, propertyId]);
+    }
+  };
+
   return (
     <div className="home-page-future">
       <div
@@ -163,7 +128,6 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           <div className="logo-future" onClick={() => onNavigate('home')}>
             <Sparkles size={24} />
             <span>HaaTee</span>
-            <span className="logo-badge-future">Beta</span>
           </div>
 
           <nav className="nav-menu-future">
@@ -237,32 +201,37 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           <div className="hero-search-future">
             <div className="search-field-future">
               <MapPin size={18} />
-              <input type="text" placeholder="ค้นหาทำเล, ประเภททรัพย์สิน, ชื่อโครงการ..." />
+              <input 
+                type="text" 
+                placeholder="ค้นหาทำเล, ประเภททรัพย์สิน, ชื่อโครงการ..." 
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+              />
             </div>
             <div className="search-field-future">
               <Building size={18} />
-              <select>
-                <option>ประเภททรัพย์สิน</option>
-                <option>บ้านเดี่ยว</option>
-                <option>คอนโด</option>
-                <option>ทาวน์โฮม</option>
-                <option>ที่ดิน</option>
-                <option>อพาร์ทเม้นท์</option>
-                <option>อาคารพาณิชย์</option>
+              <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                <option value="">ประเภททรัพย์สิน</option>
+                <option value="บ้านเดี่ยว">บ้านเดี่ยว</option>
+                <option value="คอนโด">คอนโด</option>
+                <option value="ทาวน์โฮม">ทาวน์โฮม</option>
+                <option value="ที่ดิน">ที่ดิน</option>
+                <option value="อพาร์ทเม้นท์">อพาร์ทเม้นท์</option>
+                <option value="อาคารพาณิชย์">อาคารพาณิชย์</option>
               </select>
             </div>
             <div className="search-field-future">
               <span className="currency-icon">฿</span>
-              <select>
-                <option>ช่วงราคา</option>
-                <option>ต่ำกว่า 1 ล้าน</option>
-                <option>1-3 ล้าน</option>
-                <option>3-5 ล้าน</option>
-                <option>5-10 ล้าน</option>
-                <option>มากกว่า 10 ล้าน</option>
+              <select value={searchPrice} onChange={(e) => setSearchPrice(e.target.value)}>
+                <option value="">ช่วงราคา</option>
+                <option value="under-1m">ต่ำกว่า 1 ล้าน</option>
+                <option value="1-3m">1-3 ล้าน</option>
+                <option value="3-5m">3-5 ล้าน</option>
+                <option value="5-10m">5-10 ล้าน</option>
+                <option value="over-10m">มากกว่า 10 ล้าน</option>
               </select>
             </div>
-            <button className="search-btn-future" onClick={() => onNavigate('properties')}>
+            <button className="search-btn-future" onClick={handleSearch}>
               <Search size={18} />
               <span>ค้นหา</span>
             </button>
@@ -323,11 +292,11 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           </div>
 
           <div className="properties-grid-future">
-            {featuredProperties.map((property) => (
+            {featuredProperties.slice(0, displayedCount).map((property) => (
               <div
                 key={property.id}
                 className="property-card-future"
-                onClick={() => onNavigate('properties')}
+                onClick={() => onNavigate('propertyDetail', { property })}
               >
                 <div className="property-image-future">
                   <img src={property.image} alt={property.title} />
@@ -337,10 +306,10 @@ const Home = ({ onNavigate, onLoginRequired }) => {
                     className="favorite-btn-future"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onLoginRequired('บันทึกรายการโปรด');
+                      toggleSavedProperty(property.id);
                     }}
                   >
-                    <Heart size={16} />
+                    <Heart size={16} fill={savedProperties.includes(property.id) ? 'currentColor' : 'none'} />
                   </button>
                 </div>
                 <div className="property-content-future">
@@ -370,6 +339,18 @@ const Home = ({ onNavigate, onLoginRequired }) => {
               </div>
             ))}
           </div>
+
+          {displayedCount < featuredProperties.length && (
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <button
+                className="btn-future btn-primary-future"
+                onClick={() => setDisplayedCount(prev => prev + 20)}
+                style={{ padding: '12px 40px', fontSize: '16px', borderRadius: '8px' }}
+              >
+                <span>แสดงเพิ่มเติม ({Math.min(20, featuredProperties.length - displayedCount)} รายการ)</span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -594,6 +575,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           </div>
         </div>
       </footer>
+
     </div>
   );
 };
