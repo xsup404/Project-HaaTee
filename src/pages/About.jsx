@@ -210,6 +210,13 @@ const About = ({ onNavigate, onLoginRequired }) => {
               ))}
             </ul>
           </div>
+          <div className="story-image-wrapper">
+            <img 
+              src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=600&fit=crop" 
+              alt="HaaTee Team" 
+              className="story-image"
+            />
+          </div>
           <div className="story-cards">
             {valuesHighlights.map((item) => (
               <article key={item.title} className="story-card">
@@ -227,14 +234,23 @@ const About = ({ onNavigate, onLoginRequired }) => {
       </section>
 
       <section className="about-luxe-brands">
-        <div className="about-luxe-container">
-          <p className="eyebrow">Our Mission</p>
-          <h2>
-            "ให้อสังหาริมทรัพย์กลายเป็นสิ่งที่เข้าใจแต่ละคน"
-          </h2>
-          <p className="mission-content">
-            เราเชื่อว่าการค้นหาบ้าน ห้องชุด หรือพื้นที่ทำงานที่เหมาะสม ไม่ควรซับซ้อน และการทำธุรกรรมควรเป็นขบวนการที่สะดวก โปร่งใส และไว้วางใจได้
-          </p>
+        <div className="about-luxe-container mission-grid">
+          <div className="mission-content-wrapper">
+            <p className="eyebrow">Our Mission</p>
+            <h2>
+              "ให้อสังหาริมทรัพย์กลายเป็นสิ่งที่เข้าใจแต่ละคน"
+            </h2>
+            <p className="mission-content">
+              เราเชื่อว่าการค้นหาบ้าน ห้องชุด หรือพื้นที่ทำงานที่เหมาะสม ไม่ควรซับซ้อน และการทำธุรกรรมควรเป็นขบวนการที่สะดวก โปร่งใส และไว้วางใจได้
+            </p>
+          </div>
+          <div className="mission-image-wrapper">
+            <img 
+              src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop" 
+              alt="Our Mission" 
+              className="mission-image"
+            />
+          </div>
         </div>
       </section>
 
@@ -250,14 +266,30 @@ const About = ({ onNavigate, onLoginRequired }) => {
             </div>
           </div>
           <div className="magazine-grid solutions-grid">
-            {solutionsForBuyers.map((solution) => (
-              <article key={solution.title} className="magazine-card standard">
-                <div className="magazine-content">
-                  <h3>{solution.title}</h3>
-                  <p className="description">{solution.desc}</p>
-                </div>
-              </article>
-            ))}
+            {solutionsForBuyers.map((solution, idx) => {
+              const solutionImages = [
+                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop'
+              ];
+              return (
+                <article key={solution.title} className="magazine-card standard">
+                  <div className="magazine-image-wrapper">
+                    <img 
+                      src={solutionImages[idx % solutionImages.length]} 
+                      alt={solution.title}
+                      className="magazine-image"
+                    />
+                  </div>
+                  <div className="magazine-content">
+                    <h3>{solution.title}</h3>
+                    <p className="description">{solution.desc}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -274,14 +306,30 @@ const About = ({ onNavigate, onLoginRequired }) => {
             </div>
           </div>
           <div className="magazine-grid solutions-grid">
-            {solutionsForOwners.map((solution) => (
-              <article key={solution.title} className="magazine-card standard">
-                <div className="magazine-content">
-                  <h3>{solution.title}</h3>
-                  <p className="description">{solution.desc}</p>
-                </div>
-              </article>
-            ))}
+            {solutionsForOwners.map((solution, idx) => {
+              const ownerImages = [
+                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop'
+              ];
+              return (
+                <article key={solution.title} className="magazine-card standard">
+                  <div className="magazine-image-wrapper">
+                    <img 
+                      src={ownerImages[idx % ownerImages.length]} 
+                      alt={solution.title}
+                      className="magazine-image"
+                    />
+                  </div>
+                  <div className="magazine-content">
+                    <h3>{solution.title}</h3>
+                    <p className="description">{solution.desc}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

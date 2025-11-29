@@ -99,10 +99,16 @@ const Home = ({ onNavigate, onLoginRequired }) => {
     const searchParams = {
       location: searchLocation,
       type: searchType,
-      price: searchPrice
+      price: searchPrice,
+      searchTerm: searchLocation, // Also pass searchLocation as searchTerm for Buyer page
+      fromHome: true // Flag to indicate search came from Home page
     };
     sessionStorage.setItem('homeSearchParams', JSON.stringify(searchParams));
-    onNavigate('properties');
+    sessionStorage.setItem('previousPageFromHome', 'home'); // Store that we came from Home
+    
+    // Always navigate to buyer page to show search results (same as buyer page)
+    // The buyer page will handle login check if needed
+    onNavigate('buyer');
   };
 
   const toggleSavedProperty = (propertyId) => {
@@ -292,7 +298,7 @@ const Home = ({ onNavigate, onLoginRequired }) => {
           </div>
 
           <div className="properties-grid-future">
-            {featuredProperties.slice(0, displayedCount).map((property) => (
+            {featuredProperties.slice(0, 8).map((property) => (
               <div
                 key={property.id}
                 className="property-card-future"
@@ -340,17 +346,6 @@ const Home = ({ onNavigate, onLoginRequired }) => {
             ))}
           </div>
 
-          {displayedCount < featuredProperties.length && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-              <button
-                className="btn-future btn-primary-future"
-                onClick={() => setDisplayedCount(prev => prev + 20)}
-                style={{ padding: '12px 40px', fontSize: '16px', borderRadius: '8px' }}
-              >
-                <span>แสดงเพิ่มเติม ({Math.min(20, featuredProperties.length - displayedCount)} รายการ)</span>
-              </button>
-            </div>
-          )}
         </div>
       </section>
 
@@ -366,18 +361,34 @@ const Home = ({ onNavigate, onLoginRequired }) => {
               <div
                 key={idx}
                 className="category-card-future"
-                onClick={() => onNavigate('properties')}
+                onClick={() => {
+                  // Map category names to Properties page format
+                  const typeMap = {
+                    'บ้านเดี่ยว': 'บ้านเดี่ยว',
+                    'คอนโดมิเนียม': 'คอนโด',
+                    'ทาวน์เฮาส์': 'ทาวน์เฮาส์',
+                    'รีสอร์ท': 'วิลล่า'
+                  };
+                  const propertyType = typeMap[category.name] || category.name;
+                  
+                  // Save search params to sessionStorage
+                  const searchParams = {
+                    type: propertyType,
+                    fromCategory: true
+                  };
+                  sessionStorage.setItem('homeSearchParams', JSON.stringify(searchParams));
+                  
+                  // Navigate to properties page
+                  onNavigate('properties');
+                }}
               >
                 <div
                   className="category-image-future"
                   style={{ backgroundImage: `url(${category.image})` }}
                 >
-                  <div className={`category-gradient bg-gradient-to-br ${category.gradient}`} />
+                  <div className="category-gradient" />
                 </div>
                 <div className="category-content-future">
-                  <div className="category-icon-future">
-                    {category.icon}
-                  </div>
                   <h3 className="category-name-future">{category.name}</h3>
                   <p className="category-count-future">{category.count} ประกาศ</p>
                   <button className="category-btn-future">

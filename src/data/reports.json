@@ -1,36 +1,15 @@
 [
   {
-    "id": 1,
-    "type": "room",
-    "title": "ระบบ Database ล่ม",
-    "description": "ต้องแก้ไขใน 24 ชั่วโมง",
-    "severity": "critical",
-    "priority": "เร่งด่วน",
-    "reporter": "ทีม Backend",
-    "reportedAt": "2025-11-25T08:30:00Z",
-    "status": "open"
-  },
-  {
-    "id": 2,
-    "type": "room",
-    "title": "บัญชีผู้ใช้ล็อคไม่ได้",
-    "description": "ต้องแก้ไขใน 3 วัน",
-    "severity": "high",
-    "priority": "สำคัญ",
-    "reporter": "ทีม Support",
-    "reportedAt": "2025-11-24T14:15:00Z",
-    "status": "open"
-  },
-  {
     "id": 3,
     "type": "chat",
-    "title": "UI/UX ไม่ตรงกับ Design",
-    "description": "ต้องแก้ไขใน 1 สัปดาห์",
+    "title": "แชทไม่สุภาพ/หยาบคาย",
+    "description": "ผู้ใช้มีพฤติกรรมไม่เหมาะสมในการสื่อสาร ใช้ภาษาหยาบคายต่อนายหน้า",
     "severity": "high",
     "priority": "สำคัญ",
-    "reporter": "ทีม Design",
+    "reporter": "บุญมี ถูกใจ",
     "reportedAt": "2025-11-23T10:45:00Z",
-    "status": "open"
+    "status": "open",
+    "referenceId": null
   },
   {
     "id": 4,
@@ -39,9 +18,10 @@
     "description": "ต้องแก้ไขเมื่อมีเวลา",
     "severity": "low",
     "priority": "ตามปกติ",
-    "reporter": "ผู้ใช้ทั่วไป",
+    "reporter": "สุนทร เสรจริตร",
     "reportedAt": "2025-11-22T09:20:00Z",
-    "status": "open"
+    "status": "open",
+    "referenceId": null
   },
   {
     "id": 5,
@@ -50,9 +30,10 @@
     "description": "ต้องปรับปรุงใน 1 สัปดาห์",
     "severity": "high",
     "priority": "สำคัญ",
-    "reporter": "ทีม Devops",
+    "reporter": "สมหญิง ม่วง",
     "reportedAt": "2025-11-21T15:30:00Z",
-    "status": "in-progress"
+    "status": "in-progress",
+    "referenceId": 20478
   },
   {
     "id": 6,
@@ -61,9 +42,10 @@
     "description": "ต้องปรับปรุง Docs",
     "severity": "low",
     "priority": "ตามปกติ",
-    "reporter": "ผู้พัฒนา Junior",
+    "reporter": "เกิดชัย บูรณ์",
     "reportedAt": "2025-11-20T11:00:00Z",
-    "status": "in-progress"
+    "status": "in-progress",
+    "referenceId": null
   },
   {
     "id": 7,
@@ -72,8 +54,105 @@
     "description": "ต้องแก้ไขด่วน",
     "severity": "critical",
     "priority": "เร่งด่วน",
-    "reporter": "ผู้ใช้ทั่วไป",
+    "reporter": "พัฒนา วงษ์",
     "reportedAt": "2025-11-25T07:45:00Z",
-    "status": "open"
+    "status": "open",
+    "referenceId": null
+  },
+  {
+    "id": 8,
+    "type": "user",
+    "title": "ผู้ใช้ Spam ลิงก์สงสัย",
+    "description": "ลิงก์อันตรายในโปรไฟล์",
+    "severity": "critical",
+    "priority": "เร่งด่วน",
+    "reporter": "ประยุกต์ สุขา",
+    "reportedAt": "2025-11-25T09:10:00Z",
+    "status": "open",
+    "referenceId": 2058
+  },
+  {
+    "id": 9,
+    "type": "user",
+    "title": "การจ้างงานปลอม",
+    "description": "บัญชีนี้สงสัยว่าจ้างงานปลอม",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "กาญจน์ แก้ว",
+    "reportedAt": "2025-11-24T16:25:00Z",
+    "status": "open",
+    "referenceId": 2059
+  },
+  {
+    "id": 10,
+    "type": "user",
+    "title": "ภาษาหรือการทำร้ายอาจารย์",
+    "description": "ผู้ใช้ใช้ภาษาหยาบคายในแชท",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "สรรพยา ศิริ",
+    "reportedAt": "2025-11-23T13:40:00Z",
+    "status": "in-progress",
+    "referenceId": 2060
+  },
+  {
+    "id": 11,
+    "type": "room",
+    "title": "ภาพหลอกลวงและข้อมูลเท็จ",
+    "description": "ห้องมีภาพและข้อมูลที่ปลอมแปลง",
+    "severity": "critical",
+    "priority": "เร่งด่วน",
+    "reporter": "สัฤษดี เสรมงคล",
+    "reportedAt": "2025-11-25T10:15:00Z",
+    "status": "open",
+    "referenceId": 20705
+  },
+  {
+    "id": 12,
+    "type": "room",
+    "title": "ข้อมูลห้องไม่ตรงความเป็นจริง",
+    "description": "ราคา ที่ตั้ง และขนาดห้องไม่ตรงกับความเป็นจริง",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "ชัชชา สินสุข",
+    "reportedAt": "2025-11-25T09:45:00Z",
+    "status": "open",
+    "referenceId": 20478
+  },
+  {
+    "id": 13,
+    "type": "room",
+    "title": "ห้องไม่มีอยู่จริง",
+    "description": "ที่อยู่ที่ระบุไม่มีอาคารหรือห้องนั้น",
+    "severity": "critical",
+    "priority": "เร่งด่วน",
+    "reporter": "อรัญญา ม่วง",
+    "reportedAt": "2025-11-24T11:20:00Z",
+    "status": "open",
+    "referenceId": 20705
+  },
+  {
+    "id": 14,
+    "type": "room",
+    "title": "ภาพห้องคัดลอกจากที่อื่น",
+    "description": "ภาพที่ใช้ดูเหมือนคัดลอกจากเว็บไซต์อื่น",
+    "severity": "high",
+    "priority": "สำคัญ",
+    "reporter": "ธันยชัย จันทร์",
+    "reportedAt": "2025-11-23T14:30:00Z",
+    "status": "in-progress",
+    "referenceId": 20478
+  },
+  {
+    "id": 15,
+    "type": "room",
+    "title": "ห้องหมดแล้วแต่ยังขายอยู่",
+    "description": "ข้อมูลเก่าแล้ว ห้องหมดหลายเดือนแล้ว",
+    "severity": "medium",
+    "priority": "ปานกลาง",
+    "reporter": "สจรา ปั่นขัน",
+    "reportedAt": "2025-11-22T16:00:00Z",
+    "status": "open",
+    "referenceId": 20705
   }
 ]

@@ -1,27 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Mail, Lock, Eye, EyeOff, Shield, User, Building2 } from 'lucide-react';
 import '../styles/Login.css';
 
-export default function Login({ onNavigate }) {
-  const [activeTab, setActiveTab] = useState('user');
-  const [step, setStep] = useState('credentials');
+export default function Login({ onNavigate, onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [adminId, setAdminId] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
-  const [sellerEmail, setSellerEmail] = useState('');
-  const [sellerPassword, setSellerPassword] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [step, setStep] = useState('login');
   const [timer, setTimer] = useState(120);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loginType, setLoginType] = useState('user');
+  const [userType, setUserType] = useState('buyer');
   const [usersData, setUsersData] = useState([]);
   const [buyersData, setBuyersData] = useState([]);
   const otpRefs = useRef([]);
 
-  // Load users data from JSON file
   useEffect(() => {
     const loadUsersData = async () => {
       try {
@@ -40,23 +34,20 @@ export default function Login({ onNavigate }) {
     loadUsersData();
   }, []);
 
-  // Admin Credentials
-  const ADMIN_CREDENTIALS = {
-    'admin@haatee.com': 'admin123456',
-    'admin123': 'admin123456',
+  const CREDENTIALS = {
+    admin: {
+      'admin@haatee.com': 'admin123456',
+      'admin123': 'admin123456',
+    },
+    buyer: buyersData.reduce((acc, buyer) => {
+      acc[buyer.email] = 'buyer123456';
+      return acc;
+    }, {}),
+    seller: usersData.reduce((acc, user) => {
+      acc[user.email] = 'seller123456';
+      return acc;
+    }, {})
   };
-
-  // User/Buyer Credentials - สร้างจาก buyers.json
-  const USER_CREDENTIALS = buyersData.reduce((acc, buyer) => {
-    acc[buyer.email] = 'buyer123456';
-    return acc;
-  }, {});
-
-  // Seller Credentials - สร้างจาก users.json
-  const SELLER_CREDENTIALS = usersData.reduce((acc, user) => {
-    acc[user.email] = 'seller123456';
-    return acc;
-  }, {});
 
   useEffect(() => {
     if (step !== 'otp' || timer <= 0) return;
@@ -64,88 +55,34 @@ export default function Login({ onNavigate }) {
     return () => clearInterval(interval);
   }, [timer, step]);
 
-  // User Login Handler
-  const handleUserLogin = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      setMessage({ type: 'error', text: '⚠️ กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน' });
+      setMessage({ type: 'error', text: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setMessage({ type: 'error', text: '⚠️ รูปแบบอีเมลไม่ถูกต้อง' });
-      return;
-    }
-
-    setLoading(true);
-    setTimeout(() => {
-      if (USER_CREDENTIALS[email] === password) {
-        setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
-        setTimeout(() => {
-          setStep('otp');
-          setTimer(120);
-          setMessage({ type: '', text: '' });
-          setLoading(false);
-          setLoginType('user');
-          otpRefs.current[0]?.focus();
-        }, 1500);
-      } else {
-        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
-        setLoading(false);
+    if (userType !== 'admin') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setMessage({ type: 'error', text: 'รูปแบบอีเมลไม่ถูกต้อง' });
+        return;
       }
-    }, 1200);
-  };
-
-  // Admin Login Handler
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    if (!adminId.trim() || !adminPassword.trim()) {
-      setMessage({ type: 'error', text: '⚠️ กรุณากรอก Admin ID และรหัสผ่าน' });
-      return;
     }
 
     setLoading(true);
     setTimeout(() => {
-      if (ADMIN_CREDENTIALS[adminId] === adminPassword) {
-        setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลแล้ว' });
+      if (CREDENTIALS[userType][email] === password) {
+        setMessage({ type: 'success', text: 'ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
         setTimeout(() => {
           setStep('otp');
           setTimer(120);
           setMessage({ type: '', text: '' });
           setLoading(false);
-          setLoginType('admin');
           otpRefs.current[0]?.focus();
         }, 1500);
       } else {
-        setMessage({ type: 'error', text: '❌ Admin ID หรือรหัสผ่านไม่ถูกต้อง' });
-        setLoading(false);
-      }
-    }, 1200);
-  };
-
-  // Seller Login Handler
-  const handleSellerLogin = (e) => {
-    e.preventDefault();
-    if (!sellerEmail.trim() || !sellerPassword.trim()) {
-      setMessage({ type: 'error', text: '⚠️ กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน' });
-      return;
-    }
-
-    setLoading(true);
-    setTimeout(() => {
-      if (SELLER_CREDENTIALS[sellerEmail.trim()] === sellerPassword) {
-        setMessage({ type: 'success', text: '✅ ส่งรหัส OTP ไปยังอีเมลของคุณแล้ว' });
-        setTimeout(() => {
-          setStep('otp');
-          setTimer(120);
-          setMessage({ type: '', text: '' });
-          setLoading(false);
-          setLoginType('seller');
-          otpRefs.current[0]?.focus();
-        }, 1500);
-      } else {
-        setMessage({ type: 'error', text: '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาใช้อีเมลเจ้าของทรัพย์สิน' });
+        setMessage({ type: 'error', text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
         setLoading(false);
       }
     }, 1200);
@@ -172,7 +109,7 @@ export default function Login({ onNavigate }) {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').slice(0, 6);
     if (!/^\d+$/.test(pastedData)) return;
-    
+
     const newOtp = pastedData.split('').concat(Array(6).fill('')).slice(0, 6);
     setOtp(newOtp);
     otpRefs.current[Math.min(pastedData.length, 5)]?.focus();
@@ -182,59 +119,42 @@ export default function Login({ onNavigate }) {
     e.preventDefault();
     const otpValue = otp.join('');
     if (otpValue.length !== 6) {
-      setMessage({ type: 'error', text: '⚠️ กรุณากรอกรหัส OTP 6 หลักให้ครบถ้วน' });
+      setMessage({ type: 'error', text: 'กรุณากรอกรหัส OTP 6 หลักให้ครบถ้วน' });
       return;
     }
     setLoading(true);
     setTimeout(() => {
       if (otpValue === '123456') {
-        setMessage({ type: 'success', text: '✅ ยืนยันสำเร็จ! กำลังเข้าสู่ระบบ...' });
+        setMessage({ type: 'success', text: 'ยืนยันสำเร็จ! กำลังเข้าสู่ระบบ...' });
         setTimeout(() => {
           setStep('success');
           setLoading(false);
           setTimeout(() => {
-            if (loginType === 'admin') {
-              // บันทึก Admin User
-              const adminData = {
-                name: adminId === 'admin@haatee.com' ? 'Admin HaaTee' : 'Admin Manager',
-                email: adminId,
-                role: 'System Administrator',
-                lastLogin: new Date().toLocaleString('th-TH')
-              };
-              localStorage.setItem('adminUser', JSON.stringify(adminData));
-              console.log('Admin login successful, navigating to admin page', { loginType, adminId });
-              alert('เข้าสู่ระบบ Admin สำเร็จ!');
+            const userData = {
+              email: email,
+              type: userType,
+              role: userType === 'admin' ? 'System Administrator' : userType === 'seller' ? 'seller' : 'Buyer',
+              lastLogin: new Date().toLocaleString('th-TH')
+            };
+
+            if (onLogin) onLogin(userData);
+
+            if (userType === 'admin') {
+              localStorage.setItem('adminUser', JSON.stringify(userData));
               onNavigate('admin');
-            } else if (loginType === 'seller') {
-              // บันทึก Seller Data จาก users.json
-              // ค้นหาเจ้าของทรัพย์สินจากอีเมล
-              const sellerInfo = {
-                email: sellerEmail,
-                role: 'seller',
-                lastLogin: new Date().toLocaleString('th-TH')
-              };
-              localStorage.setItem('sellerUser', JSON.stringify(sellerInfo));
-              localStorage.setItem('sellerEmail', sellerEmail); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
-              console.log('Seller login successful, navigating to seller page', { loginType, sellerEmail });
-              alert('เข้าสู่ระบบสำเร็จ!');
+            } else if (userType === 'seller') {
+              localStorage.setItem('sellerUser', JSON.stringify(userData));
+              localStorage.setItem('sellerEmail', email);
               onNavigate('seller');
             } else {
-              // บันทึก Buyer/User Data
-              const userData = {
-                email: email,
-                role: 'Buyer',
-                lastLogin: new Date().toLocaleString('th-TH')
-              };
               localStorage.setItem('buyerUser', JSON.stringify(userData));
-              localStorage.setItem('buyerEmail', email); // เก็บอีเมลไว้ใช้ในการดึงข้อมูล
-              console.log('User login successful, navigating to buyer page', { loginType, email });
-              alert('เข้าสู่ระบบ HaaTee สำเร็จ!');
+              localStorage.setItem('buyerEmail', email);
               onNavigate('buyer');
             }
           }, 2000);
         }, 1200);
       } else {
-        setMessage({ type: 'error', text: '⚠️ รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง (ทดสอบ: 123456)' });
+        setMessage({ type: 'error', text: 'รหัส OTP ไม่ถูกต้อง (ทดสอบ: 123456)' });
         setOtp(['', '', '', '', '', '']);
         otpRefs.current[0]?.focus();
         setLoading(false);
@@ -245,7 +165,7 @@ export default function Login({ onNavigate }) {
   const handleResendOtp = () => {
     setOtp(['', '', '', '', '', '']);
     setTimer(120);
-    setMessage({ type: 'success', text: '📧 ส่งรหัส OTP ใหม่ไปยังอีเมลของคุณแล้ว' });
+    setMessage({ type: 'success', text: 'ส่งรหัส OTP ใหม่ไปยังอีเมลของคุณแล้ว' });
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
@@ -255,388 +175,158 @@ export default function Login({ onNavigate }) {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  if (step === 'credentials') {
+  const getTestCredentials = () => {
+    switch(userType) {
+      case 'admin':
+        return { email: 'admin@haatee.com', password: 'admin123456' };
+      case 'seller':
+        return { email: 'damrong@haatee.com', password: 'seller123456' };
+      default:
+        return { email: 'buyer@haatee.com', password: 'buyer123456' };
+    }
+  };
+
+  if (step === 'login') {
+    const testCreds = getTestCredentials();
+
     return (
-      <div className="auth-container">
-        <div className="auth-wrapper">
-          <div className="auth-visual" style={{
-            backgroundImage: 'url(/A.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}>
-            <div className="visual-overlay" style={{
-              background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.3) 0%, rgba(0, 188, 212, 0.3) 100%)',
-              backdropFilter: 'blur(2px)'
-            }}></div>
+      <div className="login-container">
+        <div className="login-wrapper">
+          <div className="login-left">
+            <div className="login-visual" style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=1600&fit=crop&q=80)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <div className="visual-overlay"></div>
+            </div>
           </div>
 
-          <div className="auth-form-section">
-            <div className="form-container">
-              <div className="form-header">
-                <div className="mobile-brand">
-                  <div className="mobile-logo">🏠</div>
-                  <h2 className="mobile-brand-name">HaaTee</h2>
-                </div>
-                <h1 className="form-title">เข้าสู่ระบบ</h1>
-                <p className="form-subtitle">ยินดีต้อนรับกลับมา! กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+          <div className="login-right">
+            <div className="login-form-container">
+              <button className="btn-back-home" onClick={() => onNavigate('home')}>
+                <ArrowLeft size={20} />
+                <span>กลับหน้าหลัก</span>
+              </button>
+
+              <div className="login-header">
+                <h2 className="login-title">เข้าสู่ระบบ</h2>
+                <p className="login-subtitle">เลือกประเภทผู้ใช้และเข้าสู่ระบบ</p>
               </div>
 
-              {/* Tabs */}
-              <div className="login-tabs" style={{
-                display: 'flex',
-                gap: '0',
-                borderBottom: '2px solid var(--border)',
-                marginBottom: 'var(--space-lg)'
-              }}>
+              <div className="user-type-selector">
                 <button
-                  className={activeTab === 'user' ? 'tab-btn active' : 'tab-btn'}
+                  className={`type-btn ${userType === 'buyer' ? 'active' : ''}`}
                   onClick={() => {
-                    setActiveTab('user');
+                    setUserType('buyer');
+                    setEmail('');
+                    setPassword('');
                     setMessage({ type: '', text: '' });
                   }}
-                  style={{
-                    padding: '14px 24px',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: activeTab === 'user' ? '4px solid var(--primary)' : '4px solid transparent',
-                    cursor: 'pointer',
-                    fontWeight: '700',
-                    color: activeTab === 'user' ? 'var(--primary)' : 'var(--text-gray)',
-                    fontSize: '14px',
-                    transition: 'all var(--transition)'
-                  }}
                 >
-                  👤 ผู้ใช้ทั่วไป
+                  <User size={20} />
+                  <span>ผู้ซื้อ</span>
                 </button>
                 <button
-                  className={activeTab === 'seller' ? 'tab-btn active' : 'tab-btn'}
+                  className={`type-btn ${userType === 'seller' ? 'active' : ''}`}
                   onClick={() => {
-                    setActiveTab('seller');
+                    setUserType('seller');
+                    setEmail('');
+                    setPassword('');
                     setMessage({ type: '', text: '' });
                   }}
-                  style={{
-                    padding: '14px 24px',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: activeTab === 'seller' ? '4px solid var(--primary)' : '4px solid transparent',
-                    cursor: 'pointer',
-                    fontWeight: '700',
-                    color: activeTab === 'seller' ? 'var(--primary)' : 'var(--text-gray)',
-                    fontSize: '14px',
-                    transition: 'all var(--transition)'
-                  }}
                 >
-                  🏢 เจ้าของทรัพย์
+                  <Building2 size={20} />
+                  <span>เจ้าของทรัพย์</span>
                 </button>
                 <button
-                  className={activeTab === 'admin' ? 'tab-btn active' : 'tab-btn'}
+                  className={`type-btn ${userType === 'admin' ? 'active' : ''}`}
                   onClick={() => {
-                    setActiveTab('admin');
+                    setUserType('admin');
+                    setEmail('');
+                    setPassword('');
                     setMessage({ type: '', text: '' });
                   }}
-                  style={{
-                    padding: '14px 24px',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: activeTab === 'admin' ? '4px solid var(--primary)' : '4px solid transparent',
-                    cursor: 'pointer',
-                    fontWeight: '700',
-                    color: activeTab === 'admin' ? 'var(--primary)' : 'var(--text-gray)',
-                    fontSize: '14px',
-                    transition: 'all var(--transition)'
-                  }}
                 >
-                  🛡️ Admin
+                  <Shield size={20} />
+                  <span>Admin</span>
                 </button>
               </div>
 
               {message.text && (
-                <div className={`alert alert-${message.type}`}>
-                  <span className="alert-icon">{message.type === 'error' ? '⚠️' : '✅'}</span>
-                  <span className="alert-text">{message.text}</span>
+                <div className={`message message-${message.type}`}>
+                  {message.text}
                 </div>
               )}
 
-              {/* User Login Form */}
-              {activeTab === 'user' && (
-                <form onSubmit={handleUserLogin} className="login-form">
-                  <div style={{
-                    padding: '12px 14px',
-                    background: 'transparent',
-                    border: '1px solid rgba(25, 118, 210, 0.15)',
-                    borderRadius: 'var(--radius-lg)',
-                    marginBottom: '12px',
-                    fontSize: '11px',
-                    color: 'var(--text-dark)',
-                    lineHeight: '1.4'
-                  }}>
-                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
-                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer@haatee.com</code></p>
-                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>buyer123456</code></p>
+              <form onSubmit={handleLogin} className="login-form">
+                <div className="form-group">
+                  <label className="form-label">
+                    {userType === 'admin' ? 'Admin ID / Email' : 'อีเมล'}
+                  </label>
+                  <div className="input-group">
+                    <Mail size={20} className="input-icon" />
+                    <input
+                      type={userType === 'admin' ? 'text' : 'email'}
+                      className="form-input"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={userType === 'admin' ? 'admin@haatee.com' : 'your@email.com'}
+                      disabled={loading}
+                    />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="email" className="form-label">
-                      อีเมล <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">📧</span>
-                      <input
-                        id="email"
-                        type="email"
-                        className="form-input"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="กรุณากรอกอีเมลของคุณ"
-                        disabled={loading}
-                        autoComplete="email"
-                      />
-                    </div>
-                  </div>
+                </div>
 
-                  <div className="form-group">
-                    <label htmlFor="password" className="form-label">
-                      รหัสผ่าน <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">🔒</span>
-                      <input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        className="form-input"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="กรุณากรอกรหัสผ่าน"
-                        disabled={loading}
-                        autoComplete="current-password"
-                      />
-                      <button
-                        type="button"
-                        className="password-toggle"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex="-1"
-                      >
-                        {showPassword ? '👁️' : '👁️‍🗨️'}
-                      </button>
-                    </div>
+                <div className="form-group">
+                  <label className="form-label">รหัสผ่าน</label>
+                  <div className="input-group">
+                    <Lock size={20} className="input-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="form-input"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
+                </div>
 
-                  <div className="form-options">
-                    <label className="checkbox-container">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                      />
-                      <span className="checkbox-label">จดจำฉันไว้</span>
-                    </label>
-                    <a href="#" className="forgot-password" onClick={(e) => e.preventDefault()}>
-                      ลืมรหัสผ่าน?
-                    </a>
-                  </div>
-
-                  <button type="submit" className="btn-login" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <span className="spinner"></span>
-                        <span>กำลังตรวจสอบ...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🔐</span>
-                        <span>เข้าสู่ระบบ</span>
-                      </>
-                    )}
+                <div className="form-footer">
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>จดจำฉันไว้</span>
+                  </label>
+                  <button type="button" className="forgot-password">
+                    ลืมรหัสผ่าน?
                   </button>
-                </form>
-              )}
+                </div>
 
-              {/* Seller Login Form */}
-              {activeTab === 'seller' && (
-                <form onSubmit={handleSellerLogin} className="login-form">
-                  <div style={{
-                    padding: '12px 14px',
-                    background: 'transparent',
-                    border: '1px solid rgba(25, 118, 210, 0.15)',
-                    borderRadius: 'var(--radius-lg)',
-                    marginBottom: '12px',
-                    fontSize: '11px',
-                    color: 'var(--text-dark)',
-                    lineHeight: '1.4'
-                  }}>
-                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
-                    <p style={{ margin: '2px 0' }}>📧 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>damrong@haatee.com</code></p>
-                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>seller123456</code></p>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '10px', opacity: 0.7 }}>ใช้ email ผู้ขายจาก users.json ได้เลย</p>
-                  </div>
+                <button type="submit" className="btn-submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <span className="spinner"></span>
+                      <span>กำลังตรวจสอบ...</span>
+                    </>
+                  ) : (
+                    <span>เข้าสู่ระบบ</span>
+                  )}
+                </button>
+              </form>
 
-                  <div className="form-group">
-                    <label htmlFor="sellerEmail" className="form-label">
-                      อีเมล <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">📧</span>
-                      <input
-                        id="sellerEmail"
-                        type="email"
-                        className="form-input"
-                        value={sellerEmail}
-                        onChange={(e) => setSellerEmail(e.target.value)}
-                        placeholder="seller@haatee.com"
-                        disabled={loading}
-                        autoComplete="email"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="sellerPassword" className="form-label">
-                      รหัสผ่าน <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">🔒</span>
-                      <input
-                        id="sellerPassword"
-                        type={showPassword ? 'text' : 'password'}
-                        className="form-input"
-                        value={sellerPassword}
-                        onChange={(e) => setSellerPassword(e.target.value)}
-                        placeholder="กรุณากรอกรหัสผ่าน"
-                        disabled={loading}
-                        autoComplete="current-password"
-                      />
-                      <button
-                        type="button"
-                        className="password-toggle"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex="-1"
-                      >
-                        {showPassword ? '👁️' : '👁️‍🗨️'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="form-options">
-                    <label className="checkbox-container">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                      />
-                      <span className="checkbox-label">จดจำฉันไว้</span>
-                    </label>
-                    <a href="#" className="forgot-password" onClick={(e) => e.preventDefault()}>
-                      ลืมรหัสผ่าน?
-                    </a>
-                  </div>
-
-                  <button type="submit" className="btn-login" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <span className="spinner"></span>
-                        <span>กำลังตรวจสอบ...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🔐</span>
-                        <span>เข้าสู่ระบบ</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-
-              {/* Admin Login Form */}
-              {activeTab === 'admin' && (
-                <form onSubmit={handleAdminLogin} className="login-form">
-                  <div style={{
-                    padding: '12px 14px',
-                    background: 'transparent',
-                    border: '1px solid rgba(25, 118, 210, 0.15)',
-                    borderRadius: 'var(--radius-lg)',
-                    marginBottom: '12px',
-                    fontSize: '11px',
-                    color: 'var(--text-dark)',
-                    lineHeight: '1.4'
-                  }}>
-                    <p style={{ margin: '0 0 4px 0', fontWeight: '700' }}>💡 ทดสอบ:</p>
-                    <p style={{ margin: '2px 0' }}>🆔 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin@haatee.com</code></p>
-                    <p style={{ margin: '2px 0' }}>🔐 <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: '2px' }}>admin123456</code></p>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="adminId" className="form-label">
-                      Admin ID / Email <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">🆔</span>
-                      <input
-                        id="adminId"
-                        type="text"
-                        className="form-input"
-                        value={adminId}
-                        onChange={(e) => setAdminId(e.target.value)}
-                        placeholder="admin@haatee.com"
-                        disabled={loading}
-                        autoComplete="username"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="adminPassword" className="form-label">
-                      รหัสผ่าน <span className="required">*</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <span className="input-icon">🔒</span>
-                      <input
-                        id="adminPassword"
-                        type={showPassword ? 'text' : 'password'}
-                        className="form-input"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        placeholder="กรุณากรอกรหัสผ่าน"
-                        disabled={loading}
-                        autoComplete="current-password"
-                      />
-                      <button
-                        type="button"
-                        className="password-toggle"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex="-1"
-                      >
-                        {showPassword ? '👁️' : '👁️‍🗨️'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <button type="submit" className="btn-login" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <span className="spinner"></span>
-                        <span>กำลังตรวจสอบ...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🔐</span>
-                        <span>เข้าสู่ระบบ Admin</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-
-              <div className="form-footer">
-                <p className="footer-text">
+              <div className="register-section">
+                <p>
                   ยังไม่มีบัญชี?{' '}
-                  <a onClick={() => onNavigate('register')} className="link-register">
-                    สมัครสมาชิกเลย
-                  </a>
-                </p>
-                <p className="terms-text">
-                  การเข้าสู่ระบบถือว่าคุณยอมรับ{' '}
-                  <a href="#" onClick={(e) => e.preventDefault()}>เงื่อนไขการใช้งาน</a>
-                  {' '}และ{' '}
-                  <a href="#" onClick={(e) => e.preventDefault()}>นโยบายความเป็นส่วนตัว</a>
+                  <button onClick={() => onNavigate('register')} className="link-register">
+                    สมัครสมาชิก
+                  </button>
                 </p>
               </div>
             </div>
@@ -648,116 +338,92 @@ export default function Login({ onNavigate }) {
 
   if (step === 'otp') {
     return (
-      <div className="auth-container">
-        <div className="auth-wrapper">
-          <div className="auth-visual" style={{
-            backgroundImage: 'url(/A.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}>
-            <div className="visual-overlay" style={{
-              background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.3) 0%, rgba(0, 188, 212, 0.3) 100%)',
-              backdropFilter: 'blur(2px)'
-            }}></div>
+      <div className="login-container">
+        <div className="login-wrapper">
+          <div className="login-left">
+            <div className="login-visual" style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=1600&fit=crop&q=80)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <div className="visual-overlay"></div>
+            </div>
           </div>
 
-          <div className="auth-form-section">
-            <div className="form-container">
-              <button onClick={() => {
-                setStep('credentials');
-                setOtp(['', '', '', '', '', '']);
-                setMessage({ type: '', text: '' });
-              }} className="btn-back">
-                <span>←</span>
+          <div className="login-right">
+            <div className="login-form-container">
+              <button
+                className="btn-back-home"
+                onClick={() => {
+                  setStep('login');
+                  setOtp(['', '', '', '', '', '']);
+                  setMessage({ type: '', text: '' });
+                }}
+              >
+                <ArrowLeft size={20} />
                 <span>กลับ</span>
               </button>
 
-              <div className="form-header">
-                <div className="mobile-brand">
-                  <div className="mobile-logo">🔐</div>
-                </div>
-                <h1 className="form-title">ยืนยันตัวตน</h1>
-                <p className="form-subtitle">
+              <div className="login-header">
+                <div className="otp-icon">🔐</div>
+                <h2 className="login-title">ยืนยันตัวตน</h2>
+                <p className="login-subtitle">
                   เราได้ส่งรหัส OTP 6 หลักไปยัง<br />
-                  <strong>{loginType === 'admin' ? adminId : email}</strong>
+                  <strong>{email}</strong>
                 </p>
               </div>
 
               {message.text && (
-                <div className={`alert alert-${message.type}`}>
-                  <span className="alert-icon">{message.type === 'error' ? '⚠️' : '✅'}</span>
-                  <span className="alert-text">{message.text}</span>
+                <div className={`message message-${message.type}`}>
+                  {message.text}
                 </div>
               )}
 
               <form onSubmit={handleVerifyOtp} className="otp-form">
-                <div className="form-group">
-                  <label className="form-label">
-                    รหัส OTP 6 หลัก <span className="required">*</span>
-                  </label>
-                  <div className="otp-inputs" onPaste={handleOtpPaste}>
-                    {otp.map((digit, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => (otpRefs.current[i] = el)}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength="1"
-                        value={digit}
-                        onChange={(e) => handleOtpChange(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                        className="otp-input"
-                        placeholder="•"
-                        disabled={loading}
-                        autoComplete="off"
-                      />
-                    ))}
-                  </div>
+                <div className="otp-inputs" onPaste={handleOtpPaste}>
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => (otpRefs.current[i] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength="1"
+                      value={digit}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      className="otp-input"
+                      disabled={loading}
+                    />
+                  ))}
                 </div>
 
-                <div className="timer-container">
-                  <div className="timer-display">
-                    <span className="timer-icon">⏱️</span>
-                    <span className="timer-label">หมดอายุใน:</span>
-                    <span className="timer-value">{formatTime()}</span>
-                  </div>
+                <div className="timer-display">
+                  <span>รหัสหมดอายุใน {formatTime()}</span>
                 </div>
 
-                <button type="submit" className="btn-verify" disabled={loading}>
+                <button type="submit" className="btn-submit" disabled={loading}>
                   {loading ? (
                     <>
                       <span className="spinner"></span>
                       <span>กำลังยืนยัน...</span>
                     </>
                   ) : (
-                    <>
-                      <span>✓</span>
-                      <span>ยืนยัน OTP</span>
-                    </>
+                    <span>ยืนยัน OTP</span>
                   )}
                 </button>
+
+                <div className="resend-section">
+                  {timer <= 0 ? (
+                    <button type="button" onClick={handleResendOtp} className="btn-resend">
+                      ส่งรหัสใหม่อีกครั้ง
+                    </button>
+                  ) : (
+                    <p className="resend-text">
+                      ไม่ได้รับรหัส? รอ {formatTime()} เพื่อส่งใหม่
+                    </p>
+                  )}
+                </div>
               </form>
-
-              <div className="resend-section">
-                <p className="resend-text">ไม่ได้รับรหัส OTP?</p>
-                {timer <= 0 ? (
-                  <button onClick={handleResendOtp} className="btn-resend">
-                    <span>📧</span>
-                    <span>ส่งรหัสใหม่อีกครั้ง</span>
-                  </button>
-                ) : (
-                  <p className="wait-text">
-                    กรุณารอ <strong>{formatTime()}</strong> เพื่อส่งรหัสใหม่
-                  </p>
-                )}
-              </div>
-
-              <div className="security-note">
-                <p>
-                  <span className="note-icon">🔒</span>
-                  รหัส OTP จะหมดอายุใน 2 นาที และใช้ได้เพียงครั้งเดียวเท่านั้น
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -766,30 +432,26 @@ export default function Login({ onNavigate }) {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-wrapper">
-        <div className="auth-visual" style={{
-          backgroundImage: 'url(/A.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}>
-          <div className="visual-overlay" style={{
-            background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.3) 0%, rgba(0, 188, 212, 0.3) 100%)',
-            backdropFilter: 'blur(2px)'
-          }}></div>
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-left">
+          <div className="login-visual" style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=1600&fit=crop&q=80)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}>
+            <div className="visual-overlay"></div>
+          </div>
         </div>
 
-        <div className="auth-form-section">
-          <div className="form-container success-container">
-            <div className="success-animation">
-              <div className="success-checkmark">✓</div>
-            </div>
-            <h1 className="success-title">เข้าสู่ระบบสำเร็จ!</h1>
+        <div className="login-right">
+          <div className="login-form-container success-container">
+            <div className="success-icon">✓</div>
+            <h2 className="success-title">เข้าสู่ระบบสำเร็จ!</h2>
             <p className="success-subtitle">ยินดีต้อนรับกลับสู่ HaaTee</p>
             <div className="loading-bar">
               <div className="loading-progress"></div>
             </div>
-            <p className="redirect-text">กำลังนำคุณเข้าสู่หน้าหลัก...</p>
           </div>
         </div>
       </div>

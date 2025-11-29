@@ -97,86 +97,51 @@
 /* ===== GALLERY SECTION ===== */
 .pd-gallery-wrapper {
   width: 100%;
-  background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
-  padding: 12px;
+  background: #f9fafb;
+  padding: 0;
 }
 
-.pd-gallery-main-container {
-  width: 100%;
-  height: 380px;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border: 1.5px solid #e5e7eb;
-  margin-bottom: 14px;
+.pd-gallery-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
 }
 
 .pd-gallery-main {
-  width: 100%;
-  height: 100%;
-  background: #f0f0f0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  width: 100%;
+  height: 600px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
 }
 
 .pd-gallery-main img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.pd-gallery-main:hover img {
-  transform: scale(1.02);
-}
-
-.pd-gallery-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10;
-}
-
-.pd-badge-featured {
-  display: inline-block;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .pd-gallery-thumbnails {
   display: flex;
   gap: 12px;
-  padding: 12px 0;
-  background: white;
-  border-radius: 14px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-right: 12px;
+  padding: 4px 0;
 }
 
 .pd-gallery-thumbnails::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
 
 .pd-gallery-thumbnails::-webkit-scrollbar-track {
   background: #f0f0f0;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .pd-gallery-thumbnails::-webkit-scrollbar-thumb {
   background: #d1d5db;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .pd-gallery-thumbnails::-webkit-scrollbar-thumb:hover {
@@ -185,15 +150,14 @@
 
 .pd-thumbnail-item {
   flex-shrink: 0;
-  width: 85px;
-  height: 85px;
-  border-radius: 10px;
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 3px solid transparent;
   cursor: pointer;
+  border: 3px solid transparent;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  position: relative;
+  background: #f0f0f0;
 }
 
 .pd-thumbnail-item img {
@@ -204,62 +168,91 @@
 }
 
 .pd-thumbnail-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  border-color: #bfdbfe;
+  border-color: #d1d5db;
+  transform: translateY(-2px);
 }
 
 .pd-thumbnail-item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .pd-thumbnail-item.active {
-  border-color: #3b82f6;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border-color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.pd-thumbnail-item.active::after {
-  content: '';
+.pd-gallery-badge {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%);
-  pointer-events: none;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+.pd-badge-featured {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 /* ===== CONTENT INNER ===== */
 .pd-content-inner {
-  padding: 24px 16px;
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
   background: white;
+}
+
+/* ===== LAYOUT GRID ===== */
+.pd-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 48px;
+  align-items: start;
+}
+
+.pd-main-column {
+  min-width: 0;
+}
+
+.pd-sidebar-column {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* ===== HEADER INFO ===== */
 .pd-header-info {
-  margin-bottom: 28px;
-  padding: 20px;
-  background: linear-gradient(135deg, #fafbff 0%, #f5f7ff 100%);
-  border-radius: 16px;
-  border: 2px solid #e0eaff;
+  margin-bottom: 32px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
 }
 
 .pd-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #0a0a0a;
-  margin: 0 0 14px 0;
-  line-height: 1.3;
-  letter-spacing: -0.5px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .pd-price {
-  font-size: 32px;
-  font-weight: 900;
-  color: #3b82f6;
-  margin: 16px 0 12px 0;
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
+  font-size: 40px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 4px 0 0 0;
+  letter-spacing: -0.02em;
 }
 
 .pd-meta-info {
@@ -273,16 +266,18 @@
 .pd-location {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #555;
+  gap: 6px;
+  color: #6b7280;
   font-size: 16px;
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .pd-location svg {
-  color: #3b82f6;
+  color: #9ca3af;
   flex-shrink: 0;
+  width: 20px;
+  height: 20px;
 }
 
 .pd-verified-badge {
@@ -302,41 +297,25 @@
 
 /* ===== SPECS GRID ===== */
 .pd-specs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 28px;
-  padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
-  border-radius: 16px;
-  border: 2px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  gap: 32px;
+  margin: 32px 0;
+  padding: 32px 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .pd-spec-box {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  border: 1.5px solid #f0f0f0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-.pd-spec-box:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  align-items: center;
+  gap: 12px;
 }
 
 .pd-spec-box svg {
-  color: #3b82f6;
+  color: #1a1a1a;
   flex-shrink: 0;
-  margin-top: 2px;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .pd-spec-box > div {
@@ -346,75 +325,60 @@
 }
 
 .pd-spec-label {
-  font-size: 11px;
-  color: #999;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.6px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .pd-spec-value {
-  font-size: 19px;
-  font-weight: 800;
-  color: #0a0a0a;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 /* ===== SECTIONS ===== */
 .pd-section {
-  margin-bottom: 28px;
-  padding: 20px 16px;
-  background: linear-gradient(135deg, #fafbfc 0%, #f5f6f8 100%);
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-.pd-section:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.05);
+  margin-bottom: 48px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
 }
 
 .pd-section h3 {
-  font-size: 17px;
-  font-weight: 700;
-  color: #0a0a0a;
-  margin: 0 0 14px 0;
-  letter-spacing: -0.3px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
 }
 
 .pd-section p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #555;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4b5563;
   margin: 0;
 }
 
 /* ===== AMENITIES ===== */
 .pd-amenities-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
 .pd-amenity-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: white;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #0a0a0a;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
   border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
-  cursor: default;
   font-weight: 500;
-}
-
-.pd-amenity-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-  border-color: #10b981;
 }
 
 .pd-amenity-chip svg {
@@ -428,31 +392,23 @@
 .pd-owner-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px;
-  background: linear-gradient(135deg, #f8faff 0%, #f0f5ff 100%);
-  border-radius: 14px;
-  border: 2px solid #e0eaff;
-  transition: all 0.3s ease;
-}
-
-.pd-owner-card:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.08);
-  transform: translateY(-2px);
+  gap: 16px;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .pd-owner-avatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: #1a1a1a;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .pd-owner-info {
@@ -460,24 +416,155 @@
 }
 
 .pd-owner-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0a0a0a;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
   margin: 0;
 }
 
 .pd-owner-role {
-  font-size: 13px;
-  color: #3b82f6;
+  font-size: 14px;
+  color: #6b7280;
   margin: 4px 0 0 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .pd-owner-rating {
-  font-size: 13px;
+  font-size: 14px;
   color: #f59e0b;
-  margin: 6px 0 0 0;
-  font-weight: 700;
+  margin: 8px 0 0 0;
+  font-weight: 600;
+}
+
+/* ===== SIDEBAR CARDS ===== */
+.pd-sidebar-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.pd-sidebar-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.pd-owner-section {
+  padding: 0;
+}
+
+.pd-owner-section .pd-owner-card {
+  border: none;
+  border-radius: 0;
+  padding: 24px;
+  margin: 0;
+}
+
+.pd-contact-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 24px 24px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pd-contact-buttons .pd-btn {
+  width: 100%;
+}
+
+.pd-save-card {
+  padding: 0;
+}
+
+.pd-btn-save {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  color: #1a1a1a;
+  border: 2px solid #e5e7eb;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.pd-btn-save:hover {
+  border-color: #1a1a1a;
+  transform: none;
+}
+
+.pd-btn-save.active {
+  background: #1a1a1a;
+  color: white;
+  border-color: #1a1a1a;
+}
+
+.pd-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.pd-detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pd-detail-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.pd-detail-value {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pd-nearby-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-nearby-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-nearby-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.pd-nearby-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pd-nearby-name {
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.pd-nearby-distance {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 /* ===== CHAT BOX ===== */
@@ -633,14 +720,15 @@
 }
 
 .pd-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  background: #1a1a1a;
   color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  border: 2px solid #1a1a1a;
 }
 
 .pd-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.35);
+  background: #000;
+  border-color: #000;
+  transform: translateY(-1px);
 }
 
 .pd-btn-primary:active {
@@ -649,23 +737,21 @@
 
 .pd-btn-secondary {
   background: white;
-  color: #3b82f6;
-  border: 2px solid #3b82f6;
+  color: #1a1a1a;
+  border: 2px solid #e5e7eb;
   transition: all 0.2s ease;
 }
 
 .pd-btn-secondary:hover {
-  background: #f0f7ff;
-  border-color: #2563eb;
-  color: #2563eb;
+  background: #f9fafb;
+  border-color: #1a1a1a;
   transform: translateY(-1px);
 }
 
 .pd-btn-secondary.active {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: #1a1a1a;
   color: white;
-  border-color: #ef4444;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  border-color: #1a1a1a;
 }
 
 /* ===== MAP SECTION ===== */
@@ -820,6 +906,757 @@
   font-weight: 600;
 }
 
+/* ===== MORTGAGE CALCULATOR SECTION - PREMIUM DESIGN ===== */
+.pd-mortgage-calculator {
+  margin-bottom: 32px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.pd-mortgage-calculator:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #D1D5DB;
+}
+
+.pd-mortgage-header {
+  padding: 24px 28px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  background: #1F2937;
+  border-bottom: none;
+}
+
+.pd-mortgage-header:hover {
+  background: #111827;
+}
+
+.pd-mortgage-header.expanded {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pd-mortgage-header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pd-mortgage-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pd-mortgage-header:hover .pd-mortgage-icon-wrapper {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pd-mortgage-icon-svg {
+  color: #FFFFFF;
+}
+
+.pd-mortgage-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pd-mortgage-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.3px;
+}
+
+.pd-mortgage-amount {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.pd-mortgage-period {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.pd-mortgage-arrow-svg {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pd-mortgage-arrow-svg.expanded {
+  transform: rotate(180deg);
+}
+
+.pd-mortgage-details {
+  background: #F9FAFB;
+  padding: 28px;
+  border-top: 1px solid #E5E7EB;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pd-mortgage-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pd-mortgage-metric {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-mortgage-metric:hover {
+  border-color: #D1D5DB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.pd-mortgage-metric-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pd-mortgage-metric.down-payment .pd-mortgage-metric-icon {
+  background: #ECFDF5;
+  color: #10B981;
+}
+
+.pd-mortgage-metric.loan-amount .pd-mortgage-metric-icon {
+  background: #EFF6FF;
+  color: #3B82F6;
+}
+
+.pd-mortgage-metric.interest .pd-mortgage-metric-icon {
+  background: #FFFBEB;
+  color: #F59E0B;
+}
+
+.pd-mortgage-metric.term .pd-mortgage-metric-icon {
+  background: #F5F3FF;
+  color: #8B5CF6;
+}
+
+.pd-mortgage-metric-content {
+  flex: 1;
+}
+
+.pd-mortgage-metric-label {
+  font-size: 12px;
+  color: #6B7280;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.pd-mortgage-metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.pd-mortgage-composition {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+}
+
+.pd-mortgage-bar {
+  display: flex;
+  gap: 2px;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 32px;
+  background: #F3F4F6;
+  margin-bottom: 16px;
+}
+
+.pd-mortgage-bar-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 40px;
+  transition: all 0.2s ease;
+}
+
+.pd-mortgage-bar-segment.principal {
+  background: #10B981;
+}
+
+.pd-mortgage-bar-segment.interest {
+  background: #F59E0B;
+}
+
+.pd-mortgage-bar-segment span {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+}
+
+.pd-mortgage-legend {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+}
+
+.pd-mortgage-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-mortgage-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.pd-mortgage-legend-color.principal {
+  background: #10B981;
+}
+
+.pd-mortgage-legend-color.interest {
+  background: #F59E0B;
+}
+
+.pd-mortgage-legend-text {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.pd-mortgage-legend-value {
+  font-weight: 700;
+  color: #111827;
+  margin-left: 4px;
+}
+
+.pd-mortgage-inputs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.pd-mortgage-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-mortgage-input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  color: #374151;
+  letter-spacing: 0.1px;
+}
+
+.pd-mortgage-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.pd-mortgage-input-wrapper:focus-within {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pd-mortgage-input-prefix {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+.pd-mortgage-input {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pd-mortgage-input::placeholder {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.pd-mortgage-input-suffix {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+.pd-mortgage-calculate-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pd-mortgage-calculate-btn:hover {
+  background: #1F2937;
+}
+
+.pd-mortgage-calculate-btn:active {
+  background: #0F172A;
+}
+
+.pd-mortgage-calculate-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pd-mortgage-error {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-mortgage-error::before {
+  content: '⚠';
+  font-size: 18px;
+}
+
+/* ===== CHAT MODAL ===== */
+.pd-chat-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pd-chat-container {
+  width: 100%;
+  max-width: 500px;
+  height: 600px;
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pd-chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #F9FAFB;
+}
+
+.pd-chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #111827;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pd-chat-header-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pd-chat-header-info p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.pd-chat-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #6B7280;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pd-chat-close:hover {
+  background: #F3F4F6;
+  color: #111827;
+}
+
+.pd-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #F9FAFB;
+}
+
+.pd-chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pd-chat-messages::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+.pd-chat-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  animation: messageSlide 0.3s ease;
+}
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pd-chat-message.buyer {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.pd-chat-message.seller {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.pd-chat-text {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.pd-chat-message.buyer .pd-chat-text {
+  background: #111827;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.pd-chat-message.seller .pd-chat-text {
+  background: white;
+  color: #111827;
+  border: 1px solid #E5E7EB;
+  border-bottom-left-radius: 4px;
+}
+
+.pd-chat-image {
+  margin-bottom: 4px;
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.pd-chat-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pd-chat-time {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.pd-chat-image-preview {
+  padding: 12px 20px;
+  background: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-chat-image-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.pd-chat-image-preview button {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #EF4444;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pd-chat-image-preview button:hover {
+  background: #DC2626;
+}
+
+.pd-chat-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid #E5E7EB;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-chat-attach-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #E5E7EB;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B7280;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pd-chat-attach-btn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  color: #111827;
+}
+
+.pd-chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.pd-chat-input:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+.pd-chat-send-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #111827;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pd-chat-send-btn:hover:not(:disabled) {
+  background: #1F2937;
+}
+
+.pd-chat-send-btn:disabled {
+  background: #D1D5DB;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pd-mortgage-summary {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  border: 1px solid #E5E7EB;
+}
+
+.pd-mortgage-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.pd-mortgage-summary-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pd-mortgage-summary-row.highlight {
+  padding-top: 12px;
+  border-top: 1px solid #E5E7EB;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pd-mortgage-summary-label {
+  color: #6B7280;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.pd-mortgage-summary-value {
+  font-weight: 700;
+  color: #111827;
+  font-size: 14px;
+}
+
+.pd-mortgage-summary-value.price {
+  color: #111827;
+}
+
+.pd-mortgage-summary-value.down-payment {
+  color: #10B981;
+}
+
+.pd-mortgage-summary-value.loan {
+  color: #3B82F6;
+}
+
+.pd-mortgage-summary-value.total-interest {
+  color: #F59E0B;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .pd-gallery-main {
@@ -846,6 +1683,18 @@
 
   .pd-chat-box {
     height: 300px;
+  }
+
+  .pd-mortgage-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pd-mortgage-inputs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pd-mortgage-summary {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -887,5 +1736,26 @@
 
   .pd-msg-content {
     max-width: 90%;
+  }
+
+  .pd-mortgage-header {
+    padding: 16px 18px;
+  }
+
+  .pd-mortgage-amount {
+    font-size: 22px;
+  }
+
+  .pd-mortgage-metrics {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .pd-mortgage-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-mortgage-details {
+    padding: 18px;
   }
 }

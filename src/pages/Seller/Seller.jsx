@@ -23,6 +23,16 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [showAnalyticsCharts, setShowAnalyticsCharts] = useState(true);
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+  const [contractDrafts, setContractDrafts] = useState([]);
+  const [editingDraftId, setEditingDraftId] = useState(null);
+  const [showTenantSelector, setShowTenantSelector] = useState(false);
+  const [showContractView, setShowContractView] = useState(false);
+  const [viewingContract, setViewingContract] = useState(null);
+  const [chatDrafts, setChatDrafts] = useState(() => {
+    const saved = localStorage.getItem('sellerChatDrafts');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // Load seller data from localStorage and properties from JSON
   useEffect(() => {
@@ -62,6 +72,69 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       
       setSellerProperties(formattedProperties);
       setListings(formattedProperties);
+
+      // โหลดข้อความแชทจาก localStorage
+      const sellerChatKey = `seller_chats_${seller.id}`;
+      const savedChats = localStorage.getItem(sellerChatKey);
+      
+      if (savedChats) {
+        try {
+          const chatsData = JSON.parse(savedChats);
+          // แปลงรูปแบบข้อมูลจาก localStorage เป็นรูปแบบที่ใช้ใน state
+          const messagesData = {};
+          Object.keys(chatsData).forEach(chatId => {
+            if (chatsData[chatId].messages && Array.isArray(chatsData[chatId].messages)) {
+              // แปลง messages ให้เข้ากับรูปแบบเดิม
+              messagesData[chatId] = chatsData[chatId].messages.map(msg => ({
+                id: msg.id,
+                sender: msg.sender === 'buyer' ? 'contact' : msg.sender === 'seller' ? 'me' : msg.sender,
+                text: msg.text || msg.message,
+                time: msg.time || (msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })),
+                timestamp: msg.timestamp || new Date().toISOString()
+              }));
+            }
+          });
+          
+          // ถ้ามีข้อมูลแชท ให้ใช้ข้อมูลนั้น ถ้าไม่มีให้ใช้ข้อมูลเริ่มต้น
+          if (Object.keys(messagesData).length > 0) {
+            setChatMessages(messagesData);
+          } else {
+            // ข้อมูลเริ่มต้นถ้ายังไม่มีแชท
+            setChatMessages({
+              1: [
+                { id: 1, sender: 'contact', text: 'สนใจเช่าคอนโดนี้ได้ไหม?', time: '10:30' },
+                { id: 2, sender: 'me', text: 'ได้ครับ พร้อมดูต่อตามที่ต้องการได้ครับ', time: '10:35' }
+              ],
+              2: [
+                { id: 1, sender: 'contact', text: 'ราคากรรมสิทธิ์เท่าไหร่?', time: '09:15' }
+              ]
+            });
+          }
+        } catch (e) {
+          console.error('Error loading chat messages:', e);
+          // ข้อมูลเริ่มต้นถ้าโหลดไม่สำเร็จ
+          setChatMessages({
+            1: [
+              { id: 1, sender: 'contact', text: 'สนใจเช่าคอนโดนี้ได้ไหม?', time: '10:30' },
+              { id: 2, sender: 'me', text: 'ได้ครับ พร้อมดูต่อตามที่ต้องการได้ครับ', time: '10:35' }
+            ],
+            2: [
+              { id: 1, sender: 'contact', text: 'ราคากรรมสิทธิ์เท่าไหร่?', time: '09:15' }
+            ]
+          });
+        }
+      } else {
+        // ข้อมูลเริ่มต้นถ้ายังไม่มีแชทใน localStorage
+        setChatMessages({
+          1: [
+            { id: 1, sender: 'contact', text: 'สนใจเช่าคอนโดนี้ได้ไหม?', time: '10:30' },
+            { id: 2, sender: 'me', text: 'ได้ครับ พร้อมดูต่อตามที่ต้องการได้ครับ', time: '10:35' }
+          ],
+          2: [
+            { id: 1, sender: 'contact', text: 'ราคากรรมสิทธิ์เท่าไหร่?', time: '09:15' }
+          ]
+        });
+      }
     }
   }, [onNavigate]);
 
@@ -81,7 +154,9 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
   const [contractData, setContractData] = useState({
     propertyId: '',
-    tenantEmail: '',
+    tenantId: '',
+    firstName: '',
+    lastName: '',
     monthlyRent: '',
     leaseDuration: '12',
     deposit: '',
@@ -89,17 +164,20 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
     startDate: ''
   });
 
-  const [chatMessages, setChatMessages] = useState({
-    1: [
-      { id: 1, sender: 'contact', text: 'สนใจเช่าคอนโดนี้ได้ไหม?', time: '10:30' },
-      { id: 2, sender: 'me', text: 'ได้ครับ พร้อมดูต่อตามที่ต้องการได้ครับ', time: '10:35' }
-    ],
-    2: [
-      { id: 1, sender: 'contact', text: 'ราคากรรมสิทธิ์เท่าไหร่?', time: '09:15' }
-    ]
-  });
-
+  const [chatMessages, setChatMessages] = useState({});
   const [messages, setMessages] = useState('');
+
+  // Auto-save chat messages to localStorage whenever they change
+  useEffect(() => {
+    if (currentSeller && Object.keys(chatMessages).length > 0) {
+      saveChatToLocalStorage(chatMessages);
+    }
+  }, [chatMessages, currentSeller]);
+
+  // Save chat drafts to localStorage
+  useEffect(() => {
+    localStorage.setItem('sellerChatDrafts', JSON.stringify(chatDrafts));
+  }, [chatDrafts]);
 
   // Listings data
   const [listings, setListings] = useState([
@@ -246,6 +324,44 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
     }
   };
 
+  // Helper function to save chat messages to localStorage
+  const saveChatToLocalStorage = (updatedMessages) => {
+    if (!currentSeller) return;
+    
+    try {
+      const sellerChatKey = `seller_chats_${currentSeller.id}`;
+      const chatsData = {};
+      
+      // บันทึกข้อความทั้งหมดจาก state
+      Object.keys(updatedMessages).forEach(chatId => {
+        const allMessages = updatedMessages[chatId] || [];
+        const lastMsg = allMessages[allMessages.length - 1];
+        
+        chatsData[chatId] = {
+          propertyId: chatId,
+          propertyTitle: 'ทรัพย์สิน',
+          buyerEmail: '',
+          buyerName: chatId === '1' ? 'นายสินธ์ กิจการ' : chatId === '2' ? 'สมศรี อินทร์เสม' : 'ผู้ติดต่อ',
+          lastMessage: lastMsg?.text || '',
+          lastMessageTime: lastMsg?.timestamp || new Date().toISOString(),
+          unreadCount: 0,
+          messages: allMessages.map(msg => ({
+            id: msg.id,
+            sender: msg.sender === 'me' ? 'seller' : msg.sender === 'contact' ? 'buyer' : msg.sender,
+            text: msg.text,
+            time: msg.time,
+            timestamp: msg.timestamp || new Date().toISOString(),
+            type: 'text'
+          }))
+        };
+      });
+      
+      localStorage.setItem(sellerChatKey, JSON.stringify(chatsData));
+    } catch (e) {
+      console.error('Error saving chats to localStorage:', e);
+    }
+  };
+
   // Handle Repost Listing
   const handleRepostListing = (id) => {
     setListings(listings.map(l => 
@@ -258,15 +374,49 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
   // Handle Create Contract
   const handleCreateContract = () => {
-    if (!contractData.propertyId || !contractData.tenantEmail || !contractData.monthlyRent) {
+    if (!contractData.propertyId || !contractData.firstName || !contractData.lastName || !contractData.monthlyRent) {
       alert('กรุณากรอกข้อมูลที่จำเป็น');
       return;
     }
-    alert('ร่างสัญญาสำเร็จ! ส่งไปยัง ' + contractData.tenantEmail);
+    // Show tenant selector popup
+    setShowTenantSelector(true);
+  };
+
+  const handleSendContractToTenant = (tenantId) => {
+    // Add contract message to chat
+    const contractMessage = `📋 ส่งสัญญาดิจิทัล E-Contract
+ทรัพย์สิน: ${listings.find(l => l.id == contractData.propertyId)?.title}
+ค่าเช่า: ฿${contractData.monthlyRent}/เดือน
+ระยะเวลา: ${contractData.leaseDuration} เดือน
+กรุณาตรวจสอบและลงนาม`;
+
+    const newMessage = {
+      id: (chatMessages[tenantId]?.length || 0) + 1,
+      sender: 'me',
+      text: contractMessage,
+      time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+      isContract: true,
+      contractData: { ...contractData }
+    };
+
+    setChatMessages({
+      ...chatMessages,
+      [tenantId]: [
+        ...chatMessages[tenantId],
+        newMessage
+      ]
+    });
+    
+    alert('ส่งสัญญาเรียบร้อยแล้ว! ไปที่แชทเพื่อติดต่อผู้เช่า');
     setShowContractModal(false);
+    setShowTenantSelector(false);
+    setActiveTab('chat');
+    setSelectedChatId(tenantId);
     setContractData({
       propertyId: '',
-      tenantEmail: '',
+      tenantId: '',
+      firstName: '',
+      lastName: '',
       monthlyRent: '',
       leaseDuration: '12',
       deposit: '',
@@ -275,23 +425,124 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
     });
   };
 
+  const handleSaveDraft = () => {
+    const newDraft = {
+      id: editingDraftId || Date.now(),
+      ...contractData,
+      createdAt: new Date().toLocaleDateString('th-TH'),
+      isDraft: true
+    };
+    if (editingDraftId) {
+      setContractDrafts(contractDrafts.map(d => d.id === editingDraftId ? newDraft : d));
+      alert('บันทึกร่างสัญญาเรียบร้อยแล้ว');
+    } else {
+      setContractDrafts([...contractDrafts, newDraft]);
+      alert('บันทึกร่างสัญญาเรียบร้อยแล้ว');
+    }
+    setEditingDraftId(null);
+    setShowContractModal(false);
+    setContractData({
+      propertyId: '',
+      tenantId: '',
+      firstName: '',
+      lastName: '',
+      monthlyRent: '',
+      leaseDuration: '12',
+      deposit: '',
+      conditions: '',
+      startDate: ''
+    });
+  };
+
+  const handleLoadDraft = (draft) => {
+    setContractData({
+      propertyId: draft.propertyId,
+      tenantId: draft.tenantId,
+      firstName: draft.firstName,
+      lastName: draft.lastName,
+      monthlyRent: draft.monthlyRent,
+      leaseDuration: draft.leaseDuration,
+      deposit: draft.deposit,
+      startDate: draft.startDate,
+      conditions: draft.conditions
+    });
+    setEditingDraftId(draft.id);
+    setShowContractModal(true);
+  };
+
+  const handleDeleteDraft = (draftId) => {
+    setContractDrafts(contractDrafts.filter(d => d.id !== draftId));
+    alert('ลบร่างสัญญาเรียบร้อยแล้ว');
+  };
+
+  const getAnalyticsData = () => {
+    const periods = {
+      '7': {
+        title: '7 วันล่าสุด',
+        labels: ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์', 'วันอาทิตย์'],
+        views: [120, 135, 155, 128, 142, 165, 148],
+        saves: [8, 12, 15, 10, 14, 18, 16],
+        contacts: [3, 5, 7, 4, 6, 8, 7]
+      },
+      '14': {
+        title: '2 สัปดาห์ล่าสุด',
+        labels: ['สัปดาห์ที่ 1', 'สัปดาห์ที่ 2'],
+        views: [942, 1087],
+        saves: [83, 102],
+        contacts: [40, 47]
+      },
+      '30': {
+        title: '1 เดือนล่าสุด',
+        labels: ['สัปดาห์ที่ 1', 'สัปดาห์ที่ 2', 'สัปดาห์ที่ 3', 'สัปดาห์ที่ 4'],
+        views: [942, 1087, 1156, 892],
+        saves: [83, 102, 108, 78],
+        contacts: [40, 47, 51, 35]
+      },
+      '90': {
+        title: '3 เดือนล่าสุด',
+        labels: ['เดือนที่ 1', 'เดือนที่ 2', 'เดือนที่ 3'],
+        views: [4077, 4312, 3956],
+        saves: [371, 410, 385],
+        contacts: [173, 201, 188]
+      }
+    };
+    return periods[selectedPeriod] || periods['7'];
+  };
+
   // Handle Send Message
+  // Helper function to save chat messages to localStorage
   const handleSendMessage = () => {
-    if (!messages.trim() || !selectedChatId) return;
+    if (!messages.trim() || !selectedChatId || !currentSeller) return;
     
-    setChatMessages({
+    const newMessage = {
+      id: (chatMessages[selectedChatId]?.length || 0) + 1,
+      sender: 'me',
+      text: messages,
+      time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedChatMessages = {
       ...chatMessages,
       [selectedChatId]: [
-        ...chatMessages[selectedChatId],
-        {
-          id: chatMessages[selectedChatId].length + 1,
-          sender: 'me',
-          text: messages,
-          time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-        }
+        ...(chatMessages[selectedChatId] || []),
+        newMessage
       ]
+    };
+    
+    // Update state
+    setChatMessages(updatedChatMessages);
+    
+    // Save message as draft
+    setChatDrafts({
+      ...chatDrafts,
+      [selectedChatId]: messages
     });
+    
     setMessages('');
+
+    // Save to localStorage
+    saveChatToLocalStorage(updatedChatMessages);
   };
 
   // Dashboard View
@@ -743,7 +994,13 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
   );
 
   // Analytics View
-  const renderAnalytics = () => (
+  const renderAnalytics = () => {
+    const analyticsData = getAnalyticsData();
+    const maxValue = Math.max(
+      ...analyticsData.labels.map((_, i) => Math.max(analyticsData.views[i], analyticsData.saves[i], analyticsData.contacts[i]))
+    );
+    
+    return (
     <div className="dashboard-wrapper">
       <div className="page-header">
         <div className="page-header-content">
@@ -755,36 +1012,44 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       <div className="charts-grid">
         <div className="card-section large">
           <div className="section-header">
-            <h3>สถิติ 7 วันล่าสุด</h3>
-            <select className="period-select">
-              <option>7 วัน</option>
-              <option>14 วัน</option>
-              <option>1 เดือน</option>
-              <option>3 เดือน</option>
+            <h3>สถิติประกาศ</h3>
+            <select 
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="period-select"
+            >
+              <option value="7">7 วัน</option>
+              <option value="14">14 วัน</option>
+              <option value="30">1 เดือน</option>
+              <option value="90">3 เดือน</option>
             </select>
           </div>
           <div className="chart-placeholder">
             <div className="chart-svg">
-              <svg viewBox="0 0 500 200" style={{ width: '100%', height: '200px' }}>
-                {/* Bar chart simulation */}
-                <rect x="40" y="120" width="40" height="60" fill="#3B82F6" opacity="0.8" />
-                <rect x="90" y="80" width="40" height="100" fill="#3B82F6" opacity="0.6" />
-                <rect x="140" y="100" width="40" height="80" fill="#3B82F6" opacity="0.8" />
-                <rect x="190" y="60" width="40" height="120" fill="#10B981" opacity="0.8" />
-                <rect x="240" y="40" width="40" height="140" fill="#10B981" opacity="0.6" />
-                <rect x="290" y="70" width="40" height="110" fill="#F97316" opacity="0.8" />
-                <rect x="340" y="50" width="40" height="130" fill="#F97316" opacity="0.6" />
+              <svg viewBox="0 0 700 280" style={{ width: '100%', height: '250px' }}>
+                {/* Grouped bar chart */}
+                {analyticsData.labels.map((label, i) => {
+                  const baseX = 60 + i * 80;
+                  const viewsHeight = (analyticsData.views[i] / maxValue) * 180;
+                  const savesHeight = (analyticsData.saves[i] / maxValue) * 180;
+                  const contactsHeight = (analyticsData.contacts[i] / maxValue) * 180;
+                  
+                  return (
+                    <g key={i}>
+                      {/* Views bar */}
+                      <rect x={baseX - 15} y={220 - viewsHeight} width="12" height={viewsHeight} fill="#3B82F6" opacity="0.8" />
+                      {/* Saves bar */}
+                      <rect x={baseX} y={220 - savesHeight} width="12" height={savesHeight} fill="#10B981" opacity="0.8" />
+                      {/* Contacts bar */}
+                      <rect x={baseX + 15} y={220 - contactsHeight} width="12" height={contactsHeight} fill="#F97316" opacity="0.8" />
+                      {/* Label */}
+                      <text x={baseX} y="240" fontSize="11" textAnchor="middle" fill="#718096">{label}</text>
+                    </g>
+                  );
+                })}
                 {/* Axes */}
-                <line x1="30" y1="30" x2="30" y2="180" stroke="#E2E8F0" strokeWidth="2" />
-                <line x1="30" y1="180" x2="400" y2="180" stroke="#E2E8F0" strokeWidth="2" />
-                {/* Labels */}
-                <text x="60" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.1</text>
-                <text x="110" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.2</text>
-                <text x="160" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.3</text>
-                <text x="210" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.4</text>
-                <text x="260" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.5</text>
-                <text x="310" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.6</text>
-                <text x="360" y="195" fontSize="12" textAnchor="middle" fill="#718096">จ.7</text>
+                <line x1="50" y1="30" x2="50" y2="220" stroke="#E2E8F0" strokeWidth="2" />
+                <line x1="50" y1="220" x2="680" y2="220" stroke="#E2E8F0" strokeWidth="2" />
               </svg>
             </div>
             <div className="chart-legend">
@@ -869,6 +1134,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
       </div>
     </div>
   );
+  };
 
   // Chat View
   const renderChat = () => (
@@ -927,6 +1193,27 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
                   <div key={msg.id} className={`message ${msg.sender === 'me' ? 'sent' : 'received'}`}>
                     <div className="message-bubble">
                       <p>{msg.text}</p>
+                      {msg.isContract && (
+                        <button 
+                          onClick={() => {
+                            setViewingContract(msg.contractData);
+                            setShowContractView(true);
+                          }}
+                          style={{
+                            marginTop: '8px',
+                            padding: '6px 12px',
+                            backgroundColor: '#3B82F6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: '600'
+                          }}
+                        >
+                          👁️ ดูสัญญา
+                        </button>
+                      )}
                       <span className="message-time">{msg.time}</span>
                     </div>
                   </div>
@@ -956,10 +1243,42 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
           )}
         </div>
       </div>
+
+      {/* View Contract Modal */}
+      {showContractView && viewingContract && (
+        <div className="modal-overlay" onClick={() => setShowContractView(false)}>
+          <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>ดูสัญญาดิจิทัล E-Contract</h3>
+              <button onClick={() => setShowContractView(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="contract-preview">
+                <div className="preview-box">
+                  <p><strong>สัญญาเช่าอสังหาริมทรัพย์</strong></p>
+                  <p>ประเภท: ระหว่างปีที่ 1 ถึง 3 ปี</p>
+                  <p>ผู้ให้เช่า: [ชื่อของคุณ]</p>
+                  <p>ผู้เช่า: {viewingContract.firstName} {viewingContract.lastName}</p>
+                  <p>ทรัพย์สิน: {listings.find(l => l.id == viewingContract.propertyId)?.title}</p>
+                  <p>ค่าเช่ารายเดือน: ฿{viewingContract.monthlyRent}</p>
+                  <p>ระยะเวลา: {viewingContract.leaseDuration} เดือน</p>
+                  {viewingContract.deposit && <p>เงินมัดจำ: ฿{viewingContract.monthlyRent * viewingContract.deposit} ({viewingContract.deposit} เดือน)</p>}
+                  {viewingContract.startDate && <p>วันที่เริ่มเช่า: {viewingContract.startDate}</p>}
+                  {viewingContract.conditions && <p>เงื่อนไข: {viewingContract.conditions}</p>}
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowContractView(false)}>ปิด</button>
+              <button className="btn-primary"><Download size={16} /> ดาวน์โหลด</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-
-  // Contracts View
   const renderContracts = () => (
     <div className="dashboard-wrapper">
       <div className="page-header">
@@ -974,6 +1293,40 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
       <div className="card-section">
         <div className="contracts-list">
+          {contractDrafts.length > 0 && (
+            <>
+              <div style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #E5E7EB' }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>📝 บันทึกร่างสัญญา ({contractDrafts.length})</h4>
+                {contractDrafts.map(draft => (
+                  <div key={draft.id} style={{ padding: '12px', backgroundColor: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: '6px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: '13px', color: '#92400E' }}>
+                        {listings.find(l => l.id == draft.propertyId)?.title}
+                      </p>
+                      <p style={{ margin: '0', fontSize: '12px', color: '#B45309' }}>
+                        ผู้เช่า: {draft.firstName} {draft.lastName} | สร้างเมื่อ: {draft.createdAt}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => handleLoadDraft(draft)}
+                        style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        ✏️ แก้ไข
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteDraft(draft.id)}
+                        style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#EF4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🗑️ ลบ
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>สัญญาที่เสร็จสมบูรณ์</h4>
           <div className="contract-item">
             <div className="contract-header">
               <div className="contract-info">
@@ -1040,14 +1393,25 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
 
                 <div className="wizard-step active">
                   <h4>ขั้นที่ 2: ข้อมูลผู้เช่า</h4>
-                  <div className="form-group">
-                    <label>อีเมลผู้เช่า *</label>
-                    <input 
-                      type="email"
-                      value={contractData.tenantEmail}
-                      onChange={(e) => setContractData({ ...contractData, tenantEmail: e.target.value })}
-                      placeholder="ผู้เช่า@example.com"
-                    />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>ชื่อผู้เช่า *</label>
+                      <input 
+                        type="text"
+                        value={contractData.firstName}
+                        onChange={(e) => setContractData({ ...contractData, firstName: e.target.value })}
+                        placeholder="ชื่อ"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>นามสกุลผู้เช่า *</label>
+                      <input 
+                        type="text"
+                        value={contractData.lastName}
+                        onChange={(e) => setContractData({ ...contractData, lastName: e.target.value })}
+                        placeholder="นามสกุล"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1111,7 +1475,7 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
                   <p><strong>สัญญาเช่าอสังหาริมทรัพย์</strong></p>
                   <p>ประเภท: ระหว่างปีที่ 1 ถึง 3 ปี</p>
                   <p>ผู้ให้เช่า: [ชื่อของคุณ]</p>
-                  <p>ผู้เช่า: {contractData.tenantEmail}</p>
+                  <p>ผู้เช่า: {contractData.firstName} {contractData.lastName}</p>
                   <p>ทรัพย์สิน: {listings.find(l => l.id == contractData.propertyId)?.title}</p>
                   <p>ค่าเช่ารายเดือน: ฿{contractData.monthlyRent}</p>
                   <p>ระยะเวลา: {contractData.leaseDuration} เดือน</p>
@@ -1122,6 +1486,60 @@ const Seller = ({ onNavigate, onLoginRequired }) => {
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => setShowContractModal(false)}>ยกเลิก</button>
               <button className="btn-primary" onClick={handleCreateContract}>ส่งสัญญาให้ผู้เช่า</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tenant Selector Modal */}
+      {showTenantSelector && (
+        <div className="modal-overlay" onClick={() => setShowTenantSelector(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>เลือกผู้เช่าเพื่อส่งสัญญา</h3>
+              <button onClick={() => setShowTenantSelector(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="tenant-list">
+                {chatList.map(chat => (
+                  <div 
+                    key={chat.id}
+                    onClick={() => handleSendContractToTenant(chat.id)}
+                    style={{
+                      padding: '12px',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '6px',
+                      marginBottom: '8px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      ':hover': {
+                        backgroundColor: '#F3F4F6',
+                        borderColor: '#3B82F6'
+                      }
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F3F4F6';
+                      e.currentTarget.style.borderColor = '#3B82F6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.borderColor = '#E5E7EB';
+                    }}
+                  >
+                    <p style={{ margin: '0 0 4px 0', fontWeight: '600', color: '#1F2937' }}>
+                      {chat.name}
+                    </p>
+                    <p style={{ margin: '0', fontSize: '13px', color: '#6B7280' }}>
+                      {chat.lastMessage?.substring(0, 40) || 'ยังไม่มีข้อความ'}...
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowTenantSelector(false)}>ยกเลิก</button>
             </div>
           </div>
         </div>
